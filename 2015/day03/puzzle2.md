@@ -19,4 +19,4 @@ For example:
   direction and Robo-Santa going the other.
 
 Although it hasn't changed, you can still
-[get your puzzle input](../part1/input.txt).
+[get your puzzle input](input.txt).
