@@ -34,7 +34,7 @@ function main() {
     var coordX = dimensions["west"]
     var coordY = dimensions["south"]
     
-    const homeIndex = coordY * horizontal + coordX // index of Santa's base house
+    const homeIndex = coordY * horizontal + coordX
     
     grid[homeIndex] = 1
         
