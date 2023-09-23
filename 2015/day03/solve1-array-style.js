@@ -7,15 +7,15 @@ function main() {
     const data = Deno.readTextFileSync("input.txt").trim()
     
     // first we must determine the size of the grid of houses,
-    // by finding how far from the starting house Santa walks;
+    // by finding how far from the base house Santa walks;
     // we will construct the grid with the smallest possible size,
     // without unused "margins" - we don't want to waste computer memory
     
     const dimensions = calcGridDimensions(data)
  
-    const vertical = dimensions["south"] + 1 + dimensions["north"] // 1 means the starting house Y coordinate
+    const vertical = dimensions["south"] + 1 + dimensions["north"] // 1 means the base house Y coordinate
     
-    const horizontal = dimensions["west"] + 1 + dimensions["east"] // 1 means the starting house X coordinate   
+    const horizontal = dimensions["west"] + 1 + dimensions["east"] // 1 means the base house X coordinate   
     
     const grid = [ ]
     
@@ -29,12 +29,12 @@ function main() {
     // note that the 0,0 coordinate means the upper left corner
     // of the grid, NOT its center
     
-    // we must adjust the Santa's starting house coordinates to our grid: 
+    // we must adjust the Santa's base house coordinates to our grid: 
     
     var coordX = dimensions["west"]
     var coordY = dimensions["south"]
     
-    const homeIndex = coordY * horizontal + coordX // where Santa is before start moving
+    const homeIndex = coordY * horizontal + coordX // index of Santa's base house
     
     grid[homeIndex] = 1
         
