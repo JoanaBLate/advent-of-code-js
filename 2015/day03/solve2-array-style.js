@@ -29,7 +29,7 @@ function main() {
     // note that the 0,0 coordinate means the upper left corner
     // of the grid, NOT its center
     
-    // we must adjust the Santa's (and robot) base coordinates to our grid:
+    // we must adjust the Santa's (and robot) base house coordinates to our grid:
     
     var santaX = dimensions["west"]
     var santaY = dimensions["south"]
@@ -37,7 +37,7 @@ function main() {
     var robotX = santaX
     var robotY = santaY
 
-    const homeIndex = santaY * horizontal + santaX // where Santa and robot are before start moving
+    const homeIndex = santaY * horizontal + santaX 
     
     grid[homeIndex] = 1
 
