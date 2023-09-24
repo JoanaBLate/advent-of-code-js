@@ -41,7 +41,7 @@ function main() {
     console.log("number of steps for creating the medicine from a electron is", steps)
 }
 
-function transformMedicineOnce() { // one of the formulas granted to work (we are walking backwards)
+function transformMedicineOnce() { // one of the formulas is granted to work (we are walking backwards)
 
     for (const formula of formulas) { 
         
