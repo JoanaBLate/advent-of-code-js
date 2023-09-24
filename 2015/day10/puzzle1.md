@@ -22,5 +22,4 @@ For example:
 Starting with the digits in your puzzle input, apply this process 40 times.
 What is **the length of the result**?
 
-
-Your puzzle input is `1113222113`.
+To begin, [get your puzzle input](input.txt).
