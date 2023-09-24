@@ -46,4 +46,5 @@ For example:
 Given Santa's current password (your puzzle input), what should his **next
 password** be?
 
-Your puzzle input is `vzbxkghb`.
+To begin, [get your puzzle input](input.txt).
+

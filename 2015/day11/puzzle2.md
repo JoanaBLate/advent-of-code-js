@@ -2,4 +2,4 @@
 
 Santa's password expired again. What's the next one?
 
-Your puzzle input is still `vzbxkghb`.
+The program will ask you to type the correct answer for the part 1 of this puzzle.
