@@ -2,18 +2,16 @@
 
 // solving the puzzle takes (my computer) 0.017s
 
-let string = ""
-
 function main() {
 
-    string = Deno.readTextFileSync("input.txt").trim()
+    let string = Deno.readTextFileSync("input.txt").trim()
     
-    for (let n = 0; n < 40; n++) { processString() }    
+    for (let n = 0; n < 40; n++) { string = processString(string) }    
 
     console.log("result length is", string.length)
 }
 
-function processString() {
+function processString(string) {
 
     let newString = ""
 
@@ -41,7 +39,7 @@ function processString() {
         group = c
     }
 
-    string = newString
+    return newString
 }
 
 main()
