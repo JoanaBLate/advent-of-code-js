@@ -1,10 +1,18 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.090s (does not count the time taken for the user input)
+// solving the puzzle takes (my computer) 0.320s 
 
 function main() {
 
-    let password = prompt("Please write the correct answer for the part 1 of this puzzle:").trim()
+    let password = Deno.readTextFileSync("input.txt").trim()
+
+    password = getNextPassword(password)
+    password = getNextPassword(password)
+    
+    console.log("new password is", password)
+}
+
+function getNextPassword(password) {
 
     while (true) {
 
@@ -18,9 +26,9 @@ function main() {
         
         break
     }
-            
-    console.log("new password is", password)
-}
+    
+    return password
+}           
 
 function increasePassword(password) {
 
