@@ -4,7 +4,7 @@
 
 const people = [ ]
    
-const data = { } // person~neighbor: happinnes
+const data = { } // person~neighbor: hapinnes
 
 var best = -999999999
     
