@@ -118,11 +118,11 @@ function fight(obj) {
     
     while (true) {
     
-        bossLife -= myAttack - BOSS_ARMOR
+        bossLife -= Math.max(1, myAttack - BOSS_ARMOR)
         
         if (bossLife <= 0) { return true }
     
-        myLife -= BOSS_DAMAGE - myDefense
+        myLife -= Math.max(1, BOSS_DAMAGE - myDefense)
         
         if (myLife <= 0) { return false }
     }
