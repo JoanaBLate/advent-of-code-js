@@ -22,11 +22,13 @@ function main() {
 
     houses.fill(0) 
     
+    let elf = 0
     
-    const maxElves = maxHouses // granted: no elf will be missing,
-                               // the first elf alone is enough to deliver all the presents
+    while (true) {
 
-    for (let elf = 1; elf <= maxElves; elf++) { // taking elf by elf
+        elf += 1  // taking elf by elf
+        
+        if (elf > maxHouses) { break } // elf couldn't deliver any present
         
         for (let house = elf; house <= maxHouses; house += elf) { // taking only the houses that match the elf step
         
