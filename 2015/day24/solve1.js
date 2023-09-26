@@ -108,11 +108,13 @@ function search(node) {  // recursive function (calls itself)
     }
 }
 
-function search2(frontNode) { // prepares the checking whether side compartments are balanced
+function search2(frontNode) { 
 
     frontNode.quantumE = calcQuantumE(frontNode)
+    
+    // checking whether side compartments are balanced
 
-    const remainings = [ ] // weights node used in the passenger compartment 
+    const remainings = [ ] // weights not used in the passenger compartment 
     
     for (const weight of WEIGHTS) {
     
