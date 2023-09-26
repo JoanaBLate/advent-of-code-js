@@ -1,9 +1,6 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 7.7s
-
-
-// ** SLOW ALGORITHM - NOT USING COMBINATORICS ** 
+// solving the puzzle takes (my computer) 0.777s
 
 // for this puzzle, a combination like [ 1, 3, 2 ] is the same as [ 1, 2, 3 ]
 
@@ -64,7 +61,16 @@ function createNode(w) {
 
 function cloneNode(source) {
 
-    return JSON.parse(JSON.stringify(source))
+    return { 
+        
+        "weights": source.weights.slice(),
+     
+        "lowestWeight": source.lowestWeight, 
+     
+        "totalWeight": source.totalWeight, 
+     
+        "quantumE": source.quantumE
+    }
 }
 
 function calcQuantumE(node) {
