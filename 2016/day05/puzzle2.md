@@ -34,11 +34,3 @@ extra proud of your solution if it uses a cinematic "decrypting" animation.
 Although it hasn't changed, you can still
 [get your puzzle input](input.txt).
 
-
-
-
-
-
-
-
-
