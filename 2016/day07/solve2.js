@@ -69,7 +69,7 @@ function supportsSSL(string) {
     
     for (const inside of insides) { clearABAs(list, inside) }
     
-    // if list is shorter, at elas one match (aba vs bab) happened
+    // if list is shorter, at least one match (aba vs bab) happened
     
     return list.length < oldLength
 }
