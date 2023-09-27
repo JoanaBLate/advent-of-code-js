@@ -18,11 +18,7 @@ function main() {
         
     for (const rawLine of rawLines) { instructions.push(rawLine.trim()) }        
         
-    while (targetBotId == "") { 
-        
-        executeBatch() 
-        if (instructions.length == 0) { console.log(boxes); Deno.exit() } //TODO
-    }
+    while (targetBotId == "") { executeBatch() }
         
     console.log("number of the bot is", targetBotId.replace("bot", ""))
 }
