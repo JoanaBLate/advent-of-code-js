@@ -14,9 +14,11 @@ function main() {
     
     for (const rawLine of rawLines) { executeInstruction(rawLine.trim()) }
         
+    console.log("the code is\n")
+        
     for (let r = 0; r < 6; r++) {
         
-        let s = ""
+        let s = " "
         
         for (let c = 0; c < 50; c++) {
         
@@ -24,8 +26,6 @@ function main() {
         }
         console.log(s)
     }
-        
-    console.log("\n the code is EOARGPHYAO")
 }
 
 function createRow() {
