@@ -1,6 +1,6 @@
 "use strict"
 
-// solving the puzzle in *fixed array* style takes (my computer) 0.780s
+// solving the puzzle takes (my computer) 0.780s
 
 
 // We must optimize the data structure and the algorithms or else the computer will
