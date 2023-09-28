@@ -13,7 +13,7 @@
 // For example, considering floors 0 to 3 instead of 1 to 4, because 
 // smaller numbers mean more efficiency: "23122013301"
 
-// We must memorize the already tried nodes in order to not repat them again.
+// We must memorize the already tried nodes in order to not repeat them again.
 // We can use a simple dictionary to memorize the tried nodes (node_as_string: true).
 // For a dictionary, the shorter the string, the faster it runs.
 
