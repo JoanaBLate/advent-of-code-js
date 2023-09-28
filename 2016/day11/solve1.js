@@ -1,6 +1,7 @@
 "use strict"
 
-// solving the puzzle in *decimal dictionary* style takes (my computer) 1.15s
+// solving the puzzle in *fixed array* style takes (my computer) 0.780s
+
 
 // We must optimize the data structure and the algorithms or else the computer will
 // take too much time to finish and/or crash before finish.
@@ -14,16 +15,18 @@
 // smaller numbers mean more efficiency: "23122013301"
 
 // We must memorize the already tried nodes in order to not repeat them again.
-// We can use a simple dictionary to memorize the tried nodes (node_as_string: true).
-// For a dictionary, the shorter the string, the faster it runs.
+// We can create a list where we store the the used nodes. But as this list grows,
+// comparing each of its items against some node (searching for a match) becomes
+// very slow. Also, it takes memory.
 
-// Because the node string is like a base 4 number, we can convert it to a decimal,
-// meaning a shorter string. 
-// For example:
-// const decimal = parseInt("23122013301", 4).toString() --> "2990577"
-// base 4 string -> 11 characters; decimal string -> 7 characters
+// Because the node string is like a base 4 number, we can convert it to a decimal
+// number, and use its decimal number as an index for an array of booleans: 
+//
+//   parseInt("23122013301", 4) --> 2990577
+//   if list[2990557] == true, node "23122013301" was already used 
 
-var triedNodes = { } // "2990577": true
+
+var triedNodes = [ ] // each item is a boolean which index corresponds to a node
 
 // using this fixed global array is more efficient
 // than creating and destroying local arrays
@@ -51,11 +54,15 @@ function main() {
         Deno.exit() 
     }
 
+    triedNodes = new Array(4194304) // 4 ^11 - covers all possible (good and bad) combinations
+
+    triedNodes.fill(false)
+
     const zero = createNodeZero(rawLines)
-    
+
  // show(zero, "node zero")
     
-    const decimal = parseInt(zero, 4).toString()
+    const decimal = parseInt(zero, 4)
     
     triedNodes[decimal] = true
     
@@ -210,7 +217,7 @@ function move(node, nextElevator, indexA, indexB) {
     
     const newNode = NODE.join("")
     
-    const decimal = parseInt(newNode, 4).toString()
+    const decimal = parseInt(newNode, 4)
 
     if (triedNodes[decimal]) { 
     
