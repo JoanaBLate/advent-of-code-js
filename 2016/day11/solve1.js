@@ -3,7 +3,7 @@
 // solving the puzzle in *decimal dictionary* style takes (my computer) 1.15s
 
 // We must optimize the data structure and the algorithms or else the computer will
-// take too much time to finish.
+// take too much time to finish and/or crash before finish.
 
 // Each node (possible state) will be represented by a string of 11 digits:
 // ELEVATOR G1 M1 G2 M2 G3 M3 G4 M4 G5 M5
