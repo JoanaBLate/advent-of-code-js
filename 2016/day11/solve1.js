@@ -227,7 +227,7 @@ function move(node, nextElevator, indexA, indexB) {
     
     triedNodes[decimal] = true
     
-    if (! schemIsSafe()) { 
+    if (! schemeIsSafe()) { 
     
      // show(newNode, "new node  rejected: unsafe")    
         return 
@@ -238,7 +238,7 @@ function move(node, nextElevator, indexA, indexB) {
     nextQueue.push(newNode)
 }
 
-function schemIsSafe() {
+function schemeIsSafe() {
 
     if (NODE[2] != NODE[1]) { // microchipA not connected to generatorA
     
