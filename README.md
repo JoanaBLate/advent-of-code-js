@@ -6,8 +6,12 @@ The code is written in the most basic vanilla JavaScript, without external libra
 
 For some puzzles, **more than one algorithm** is published, allowing one to compare the differences in logic and efficiency.
 
-The Advent of Code 2015 event has all solutions.
+## Advent of Code 2015 
 
-The Advent of Code 2016 event solutions are under development. 
+All days have solutions.
 
-The plan is to publish solutions for all  Advent Of Code puzzles.
+Day 3 has two alternative solutions (array vs dictionary).
+
+## Advent of Code 2016 
+
+Solutions are under development. 
