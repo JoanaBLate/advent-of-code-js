@@ -1,6 +1,6 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 4m25
+// solving the puzzle takes (my computer) 2m50
 
 // The part 2 of this puzzle is like the part 1 but much more intense.
 // Some adjusts had to be made or else the computer would run out of memory.
@@ -204,6 +204,12 @@ function move(node, nextElevator, indexA, indexB) {
     
     if (indexB != undefined) { NODE[indexB] = nextElevator }
     
+    if (! schemeIsSafe()) { // checking correctness is much faster than checking already used
+    
+     // show(newNode, "new node  rejected: unsafe")    
+        return 
+    }
+    
     const newNode = NODE.join("")
     
     const decimal = decimalFromNode(newNode, 4)
@@ -215,12 +221,6 @@ function move(node, nextElevator, indexA, indexB) {
     }
     
     setDecimalAsUsed(decimal)
-    
-    if (! schemeIsSafe()) { 
-    
-     // show(newNode, "new node  rejected: unsafe")    
-        return 
-    }
     
  // show(newNode, "new node  APROVED")
     
