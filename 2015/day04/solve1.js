@@ -1,8 +1,8 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 1.2s
+// solving the puzzle takes (my computer) 0.890s
 
-import { createHash } from "https://deno.land/std@0.91.0/hash/mod.ts"
+import md5 from "npm:md5"
 
 function main() {
 
@@ -14,13 +14,7 @@ function main() {
         
         n += 1
         
-        const hash = createHash("md5")
-    
-        const candidate = secretKey + n.toString()
-    
-        hash.update(candidate)
-    
-        const hashed = hash.toString()
+        const hashed = md5(secretKey + n)
         
         if (hashed.startsWith("00000")) { break }
     }
