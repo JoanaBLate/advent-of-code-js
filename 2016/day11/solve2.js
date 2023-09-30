@@ -1,15 +1,16 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 2m50
+// solving the puzzle takes (my computer) 33.6s 
 
 // The part 2 of this puzzle is like the part 1 but much more intense.
-// Some adjusts had to be made or else the computer would run out of memory.
+// Some adjusts had to be made or else the computer would run out of memory
+// and/or take too long to finish.
 // Also parseInt gives wrong value for the bigger (15 characters) current
 // node strings.
 
 // Main changes:
 //  triedNodes uses JS typed array
-//  queues store the nodes as integers, not strings
+//  queues became pools using JS typed arrays; storing the nodes as integers, not strings
 //  decimalFromNode instead of parseInt
 //  nodeFromDecimal instead of toString
 //  setDecimalAsUsed & decimalIsUsed
@@ -22,26 +23,79 @@ const NODE = [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
 
 var triedNodes = null  // each bit (not byte) represents a node
 
-var currentQueue = [ ]
+var currentPool = new Uint32Array(250000)
 
-var nextQueue = [ ]
+var nextPool = new Uint32Array(250000)
 
-var numberOfQueueResets = 0
+var nextPoolIndex = -1
+
+var numberOfSteps = -1
 
 var foundSolution = false
 
-const targetAsDecimal = decimalFromNode("333333333333333")
+const targetAsDecimal = decimalFromNode("333333333333333") // the final objective
+
+const subIndexTable = { "0": 128, "1": 64, "2": 32, "3": 16, "4": 8, "5": 4, "6": 2, "7": 1 }
 
 
 // STARTING ///////////////////////////////////////////////////////////////////
 
 function main() {
     
-    const allPossibleStates = Math.pow(4, 15) //  1,073,741,824 
+    const allPossibleStates = Math.pow(4, 15) //  1,073,741,824 (just the levator means 4 combinations;
+                                              //  the elevator and the generator A mean 16 combinations...)
 
-    const triedNodesLength = allPossibleStates / 32 // 33,554,432
+    const triedNodesLength = allPossibleStates / 8 // 134,217,728
     
-    triedNodes = new Uint32Array(triedNodesLength)
+    triedNodes = new Uint8Array(triedNodesLength)
+
+    //
+
+    const zero = createNodeZero() + "0000" // "0000" means the new elements
+    
+ // show(zero, "node zero")
+ 
+    const decimal = decimalFromNode(zero)
+ 
+    setDecimalAsUsed(decimal)
+    
+    nextPool[0] = decimal
+    nextPoolIndex = 0
+    
+    //
+    
+    while (true) { 
+    
+        const temp = currentPool
+        
+        currentPool = nextPool
+        const off = nextPoolIndex + 1
+        
+        nextPool = temp
+        nextPoolIndex = -1
+        
+        numberOfSteps += 1
+    
+        if (off != 1) { console.log("starting to search a queue with", off, "nodes") }
+        
+        for (let i = 0; i < off; i++) {
+
+            if (foundSolution) { break }
+
+            const decimal = currentPool[i]
+            
+            search(decimal)
+        }
+        
+        if (foundSolution) { break }
+    }
+
+    console.log("minimum number of steps is", numberOfSteps)
+}
+
+// PARSING THE INPUT //////////////////////////////////////////////////////////
+
+function createNodeZero() {
 
     const rawText = Deno.readTextFileSync("input.txt").trim()
     
@@ -52,43 +106,11 @@ function main() {
         console.log("Aborting due to input error: number of floors is not 4")
         Deno.exit() 
     }
-
-    const zero = createNodeZero(rawLines) + "0000"
     
- // show(zero, "node zero")
- 
-    const decimal = decimalFromNode(zero)
- 
-    setDecimalAsUsed(decimal)
- 
-    currentQueue.push(decimal)
-    
-    while (true) { 
-    
-        console.log("starting to search a queue with", currentQueue.length, "nodes")
-        
-        while(currentQueue.length != 0) {
-
-            if (foundSolution) { break }
-
-            const decimal = currentQueue.shift()
-            
-            search(decimal)
-        }
-        
-        if (foundSolution) { break }
-        
-        currentQueue = nextQueue 
-        nextQueue = [ ]
-        numberOfQueueResets += 1
-    }
-
-    console.log("minimum number of steps is", numberOfQueueResets)
+    return createNodeZero2(rawLines)
 }
 
-// PARSING THE INPUT //////////////////////////////////////////////////////////
-
-function createNodeZero(rawLines) {
+function createNodeZero2(rawLines) {
         
     const names = [ ]
 
@@ -224,7 +246,8 @@ function move(node, nextElevator, indexA, indexB) {
     
  // show(newNode, "new node  APROVED")
     
-    nextQueue.push(decimal)
+    nextPoolIndex += 1
+    nextPool[nextPoolIndex] = decimal
 }
 
 function schemeIsSafe() {
@@ -322,26 +345,24 @@ function nodeFromDecimal(decimal) { // for 15 characters!
     return strA + strB
 }
 
-function setDecimalAsUsed(decimal) { // for Uint32Array
+function setDecimalAsUsed(decimal) { // for Uint8Array
 
-    const index = Math.floor(decimal / 32)
+    const index = Math.floor(decimal / 8)
 
-    const subIndex = decimal % 32
+    const subIndex = decimal % 8
     
-    const pow = 31 - subIndex
-    
-    triedNodes[index] += Math.pow(2, pow)
+    triedNodes[index] += subIndexTable[subIndex]
 }
 
-function decimalIsUsed(decimal) { // for Uint32Array
+function decimalIsUsed(decimal) { // for Uint8Array
 
-    const index = Math.floor(decimal / 32)
+    const index = Math.floor(decimal / 8)
 
-    const subIndex = decimal % 32
+    const subIndex = decimal % 8
 
-    const binary = (triedNodes[index]).toString(2).padStart(32, " ")
+    const expected = subIndexTable[subIndex]
     
-    return binary[subIndex] == "1"
+    return (triedNodes[index]  &  expected) == expected
 }
 
 function show(node, label) {
