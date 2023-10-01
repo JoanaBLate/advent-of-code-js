@@ -1,7 +1,5 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 29.6s
-
 console.time("program")
 
 // JS heap size: 3.6 MB !!!!!!
