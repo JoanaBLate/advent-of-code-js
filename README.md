@@ -13,6 +13,7 @@ Completed.
 ## Advent of Code 2016 
 
 **Day 11** is the first puzzle (including 2015) that makes the computer run out of memory. 
-I have included 3 extra solutions, with different level of optimizations, just for run in the browser.
 
-Under development. 
+I have included 3 extra solutions, with different level of optimizations, just to run in the browser.
+
+-- Other days are under development. 
