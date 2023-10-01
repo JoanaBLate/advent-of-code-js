@@ -6,4 +6,4 @@ web1-array.js (JS heap size 35 MB) solves the first puzzle - more optimizations
 
 web2.js (JS heap size 3.6 MB) solves the second puzlle - heavy optimizations
 
-web2-outofmem.js (JS heap size **780 MB before crashing**) fails to solve the second puzzle - uses a dictionary to store big data
+web-outofmem.js (JS heap size **780 MB before crashing**) fails to solve the second puzzle - uses a dictionary to store big data
