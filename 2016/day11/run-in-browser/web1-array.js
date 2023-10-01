@@ -2,8 +2,6 @@
 
 console.time("program")
 
-// solving the puzzle in *fixed array* style takes (my computer) 0.670s
-
 var triedNodes = [ ] // each item is a boolean which index corresponds to a node
 
 const NODE = [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
