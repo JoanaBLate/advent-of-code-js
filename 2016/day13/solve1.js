@@ -1,6 +1,6 @@
 "use strict"
 
-// solving the puzzle in takes (my computer) 0.025s
+// solving the puzzle takes (my computer) 0.025s
 
 const targetX = 31
 const targetY = 39
