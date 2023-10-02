@@ -12,4 +12,4 @@ Completed.
 
 ## Advent of Code 2016 
 
-**Day 11** PART 2 SOLVED IN JUST 30s (you can run it in the console of your browser - the code is in the 'web' folder)
+[**Day 11 PART 2** SOLVED IN JUST **30s**](https://medium.com/javascript-in-plain-english/what-you-need-to-know-for-solving-the-advent-of-code-puzzles-blazingly-fast-with-javascript-7365be28abea) (you can run it in the console of your browser - the code is in the 'web' folder)
