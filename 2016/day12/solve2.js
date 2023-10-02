@@ -1,6 +1,6 @@
 "use strict"
 
-// solving the puzzle in takes (my computer) TODO 1m04s
+// solving the puzzle takes (my computer) TODO 1m04s
 
 function main() {
 
