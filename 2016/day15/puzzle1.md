@@ -26,3 +26,4 @@ If, however, you wait until `time=5` to push the button, then when the capsule r
 However, your situation has more than two discs; you've noted their positions in your puzzle input. What is the _first time you can press the button_ to get a capsule?
 
 To begin, [get your puzzle input](input.txt).
+
