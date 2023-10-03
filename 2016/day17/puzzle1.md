@@ -24,9 +24,9 @@ To access the vault, all you need to do is reach the bottom-right room; reaching
 
 For example, suppose the passcode is `hijkl`. Initially, you have taken no steps, and so your path is empty: you simply find the MD5 hash of `hijkl` alone. The first four characters of this hash are `ced9`, which indicate that up is open (`c`), down is open (`e`), left is open (`d`), and right is closed and locked (`9`). Because you start in the top-left corner, there are no "up" or "left" doors to be open, so your only choice is **down**.
 
-Next, having gone only one step (down, or `D`), you find the hash of `hijkl**D**`. This produces `f2bc`, which indicates that you can go back up, left (but that's a wall), or right. Going right means hashing `hijkl**DR**` to get `5745` - all doors closed and locked. However, going **up** instead is worthwhile: even though it returns you to the room you started in, your path would then be `DU`, opening a **different set of doors**.
+Next, having gone only one step (down, or `D`), you find the hash of `hijklD`. This produces `f2bc`, which indicates that you can go back up, left (but that's a wall), or right. Going right means hashing `hijklDR` to get `5745` - all doors closed and locked. However, going **up** instead is worthwhile: even though it returns you to the room you started in, your path would then be `DU`, opening a **different set of doors**.
 
-After going `DU` (and then hashing `hijkl**DU**` to get `528e`), only the right door is open; after going `DUR`, all doors lock. (Fortunately, your actual passcode is not `hijkl`).
+After going `DU` (and then hashing `hijklDU` to get `528e`), only the right door is open; after going `DUR`, all doors lock. (Fortunately, your actual passcode is not `hijkl`).
 
 Passcodes actually used by Easter Bunny Vault Security do allow access to the vault if you know the right path. For example:
 
