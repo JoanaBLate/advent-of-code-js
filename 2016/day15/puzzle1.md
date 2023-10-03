@@ -23,7 +23,7 @@ Then, at `time=2`, the capsule reaches the second disc. The second disc has tick
 
 If, however, you wait until `time=5` to push the button, then when the capsule reaches each disc, the first disc will have ticked forward `5+1 = 6` times (to position `0`), and the second disc will have ticked forward `5+2 = 7` times (also to position `0`). In this case, the capsule would fall through the discs and come out of the machine.
 
-However, your situation has more than two discs; you've noted their positions in your puzzle input. What is the _first time you can press the button_ to get a capsule?
+However, your situation has more than two discs; you've noted their positions in your puzzle input. What is the **first time you can press the button** to get a capsule?
 
 To begin, [get your puzzle input](input.txt).
 
