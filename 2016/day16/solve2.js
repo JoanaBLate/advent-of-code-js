@@ -2,7 +2,7 @@
 
 // solving the puzzle takes (my computer) 0.235s
 
-// manipulating strings like in before (part 1) stresses too much the computer
+// manipulating strings like before (part 1) stresses too much the computer
 
 const LENGTH = 35651584
     
@@ -47,7 +47,7 @@ function main() {
 
 function fillDataOnce(data, length) {
 
-    data[length] = false // data comes with at least 1 position available
+    data[length] = false // data comes with at least one position available
     
     const maxIndex = LENGTH - 1
     
