@@ -1,31 +1,53 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.023s
+// solving the puzzle takes (my computer) 0.026s
 
 
 function main() {
 
     const rawText = Deno.readTextFileSync("input.txt").trim()
     
-    let length = parseInt(rawText)
+    const dict = [ ]
     
-    let idOfFirstElf = 1
+    const rawLines = rawText.trim().split("\n")
     
-    let spaceBetweenElves = 1
-      
-    while (length > 1) {
+    for (let rawLine of rawLines) { 
+    
+        const tokens = rawLine.trim().split("-")
+    
+        const first = parseInt(tokens.shift())
+        const last  = parseInt(tokens.shift())
         
-        spaceBetweenElves *= 2
-      
-        const odd = (length % 2 == 1)
+        dict["" + first] = { first, last }
+    }
+     
+    const keys = Object.keys(dict)
+    
+    keys.sort(function (a, b) { return parseInt(a) - parseInt(b) })
+   
+    const blockeds = [ ]
+    
+    let previous = null
+    
+    for (const key of keys) {
+    
+        const current = dict["" + key]
         
-        length = Math.floor(length / 2)
+        if (previous == null) { blockeds.push(current); previous = current; continue }
+     
+        if (current.first > previous.last) { blockeds.push(current); previous = current; continue }
         
-        if (odd)  { idOfFirstElf += spaceBetweenElves } // assumes the id of the next elf in the row
-        
-    }    
-        
-    console.log("elf number is", idOfFirstElf)
+        previous.last = Math.max(previous.last, current.last) // forget current
+     }
+  
+    let lowestValued = 0
+    
+    for (const blocked of blockeds) {
+    
+        if (blocked.first <= lowestValued) { lowestValued = blocked.last + 1 }
+    }       
+
+    console.log("the lowest-valued IP is", lowestValued)
 }
 
 main()

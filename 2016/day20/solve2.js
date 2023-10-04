@@ -1,53 +1,61 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.20s
+// solving the puzzle takes (my computer) TODO
 
-/*
-// function findWinner is good but is too much expensive/slow
-// for a big number of elves
-
-function findWinner(thisAmount) {
-    const list = [ ]
-    for (let n = 1; n <= thisAmount; n++) { list.push(n) }
-    while (list.length > 1) {
-        const oppositeIndex = Math.floor(list.length / 2)
-        list.splice(oppositeIndex, 1)
-        list.push(list.shift())
-    }
-    return list[0]
-}
-// running function study we discover a mathematical pattern
-// that can be exploited, it involves powers of 3
-
-function study() {
-    const amount = 3000
-    for (let n = 1; n <= 3000; n++) { 
-        console.log("when amount is", n, "  winner is", findWinner(n))
-    }
-}
-*/
 
 function main() {
 
     const rawText = Deno.readTextFileSync("input.txt").trim()
     
-    const elves = parseInt(rawText)
-        
-    console.log("elf number is", findElfNumber(elves))
-}
-
-function findElfNumber(elves) {
-
-    let powOf3 = 1 
-
-    while (powOf3 * 3 <= elves) { powOf3 *= 3 }
-
-    if (powOf3 == elves) { return powOf3 }
+    const dict = [ ]
     
-    if (elves <= 2 * powOf3) { return elves - powOf3 }
+    const rawLines = rawText.trim().split("\n")
+    
+    for (let rawLine of rawLines) { 
+    
+        const tokens = rawLine.trim().split("-")
+    
+        const first = parseInt(tokens.shift())
+        const last  = parseInt(tokens.shift())
+        
+        dict["" + first] = { first, last }
+    }
+     
+    const keys = Object.keys(dict)
+    
+    keys.sort(function (a, b) { return parseInt(a) - parseInt(b) })
+   
+    const blockeds = [ ]
+    
+    let previous = null
+    
+    for (const key of keys) {
+    
+        const current = dict["" + key]
+        
+        if (previous == null) { blockeds.push(current); previous = current; continue }
+     
+        if (current.first > previous.last) { blockeds.push(current); previous = current; continue }
+        
+        previous.last = Math.max(previous.last, current.last) // forget current
+     }
+        
+    let count = 0 // allowed IPs    
 
-    return (2 * elves) - (3 * powOf3)
+    let lowestValued = 0
+    
+    for (const blocked of blockeds) {
+
+        if (blocked.first <= lowestValued) { lowestValued = blocked.last + 1; continue }
+        
+        count += blocked.first - lowestValued
+        
+        lowestValued = blocked.last + 1
+    }       
+
+    console.log("number of allowed IPs is", count)
 }
 
 main()
+
 

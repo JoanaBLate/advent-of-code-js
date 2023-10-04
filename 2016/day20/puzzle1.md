@@ -1,28 +1,20 @@
-## --- Day 19: An Elephant Named Joseph ---
+## --- Day 20: Firewall Rules ---
 
-The Elves contact you over a highly secure emergency channel. Back at the North Pole, the Elves are busy misunderstanding [White Elephant parties](https://en.wikipedia.org/wiki/White_elephant_gift_exchange).
+You'd like to set up a small hidden computer here so you can use it to get back into the network later. However, the corporate firewall only allows communication with certain external [IP addresses](https://en.wikipedia.org/wiki/IPv4#Addressing).
 
-Each Elf brings a present. They all sit in a circle, numbered starting with position `1`. Then, starting with the first Elf, they take turns stealing all the presents from the Elf to their left. An Elf with no presents is removed from the circle and does not take turns.
+You've retrieved the list of blocked IPs from the firewall, but the list seems to be messy and poorly maintained, and it's not clear which IPs are allowed. Also, rather than being written in [dot-decimal](https://en.wikipedia.org/wiki/Dot-decimal_notation) notation, they are written as plain [32-bit integers](https://en.wikipedia.org/wiki/32-bit), which can have any value from `0` through `4294967295`, inclusive.
 
-For example, with five Elves (numbered `1` to `5`):
+For example, suppose only the values `0` through `9` were valid, and that you retrieved the following blacklist:
 
 ```
-  1
-5   2
- 4 3
+5-8
+0-2
+4-7
 ```
 
--   Elf `1` takes Elf `2`'s present.
--   Elf `2` has no presents and is skipped.
--   Elf `3` takes Elf `4`'s present.
--   Elf `4` has no presents and is also skipped.
--   Elf `5` takes Elf `1`'s two presents.
--   Neither Elf `1` nor Elf `2` have any presents, so both are skipped.
--   Elf `3` takes Elf `5`'s three presents.
+The blacklist specifies ranges of IPs (inclusive of both the start and end value) that are **not** allowed. Then, the only IPs that this firewall allows are `3` and `9`, since those are the only numbers not in any range.
 
-So, with **five** Elves, the Elf that sits starting in position `3` gets all the presents.
-
-With the number of Elves given in your puzzle input, **which Elf gets all the presents?**
+Given the list of blocked IPs you retrieved from the firewall (your puzzle input), **what is the lowest-valued IP** that is not blocked?
 
 To begin, [get your puzzle input](input.txt).
 
