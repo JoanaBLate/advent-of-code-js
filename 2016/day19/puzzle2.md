@@ -49,8 +49,5 @@ So, with **five** Elves, the Elf that sits starting in position `2` gets all the
 
 With the number of Elves given in your puzzle input, **which Elf now gets all the presents?**
 
-
-Both parts of this puzzle are complete! They provide two gold stars: \*\*
-
 Although it hasn't changed, you can still [get your puzzle input](input.txt).
 
