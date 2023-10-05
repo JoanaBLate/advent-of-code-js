@@ -10,7 +10,7 @@ function main() {
     
     const rawLines = rawText.split("\n")
     
-    for (let rawLine of rawLines) { 
+    for (const rawLine of rawLines) { 
     
         const tokens = rawLine.trim().split(" ")
     
