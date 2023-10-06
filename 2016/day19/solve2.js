@@ -1,6 +1,6 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.080s
+// solving the puzzle takes (my computer) 0.075s
 
 function main() {
 
@@ -16,17 +16,11 @@ function findWinner(numberOfElves) {
     let array = new Uint32Array(numberOfElves) 
 
     for (let index = 0; index < numberOfElves; index++) { array[index] = index + 1 } // first elf is '1'
-
-    let startAfter = 0
     
     while (true) {
     
-        const obj = processArray(array, startAfter)
+        numberOfElves = processArray(array)
        
-        numberOfElves = obj.remain
-        
-        startAfter = obj.lastThief
-        
         if (numberOfElves == 1) { break }       
         
         array = cloneArrayWithoutBlanks(numberOfElves, array)
@@ -35,8 +29,8 @@ function findWinner(numberOfElves) {
     for (const elf of array) { if (elf != 0) { return elf } }
 }
 
-function cloneArrayWithoutBlanks(amount, arrayA) { // non-blank-cloning is *EXTREMELY* faster
-                                                   // than filtering blanks in the source
+function cloneArrayWithoutBlanks(amount, arrayA) {
+    // non-blank-cloning is *EXTREMELY* faster than filtering blanks in the source
 
     const arrayB = new Uint32Array(amount)
     
@@ -54,46 +48,32 @@ function cloneArrayWithoutBlanks(amount, arrayA) { // non-blank-cloning is *EXTR
     return arrayB
 }
 
-function processArray(array, startAfter) { // array of elves
+function processArray(array) { // array of elves
 
-    let excludedElves = 0
+    let excludedTargets = 0
     
-    let lastThief = 0 // not the index
-
+    let excludedThiefs = 0
+    
     for (let thiefIndex = 0; thiefIndex < array.length; thiefIndex++) {
     
         const thief = array[thiefIndex]
 
-        if (thief == 0) { // excluded elf
-        
-            // if function doesn't return now, the easy and fast formula for
-            // finding targetIndex fails (because the current *excluded elf*
-            // is not between the next valid thief and its target, but
-            // counts in excludedElves)
-        
-            return { "remain": array.length - excludedElves, "lastThief": lastThief }
-        } 
-        
-        if (thief <= startAfter) { continue } // MUST COME AFTER THE thief==0 TEST
+        if (thief == 0) { excludedThiefs += 1; continue }
 
-        //
-        
-        lastThief = thief
-
-        const activeElves = array.length - excludedElves
+        const activeElves = array.length - excludedTargets
         
         const distance = Math.floor(activeElves / 2)
 
-        let targetIndex = thiefIndex + distance + excludedElves
+        let targetIndex = thiefIndex + distance + excludedTargets - excludedThiefs
         
-        if (targetIndex > array.length - 1) { targetIndex -= array.length }
+        if (targetIndex >= array.length) { targetIndex -= array.length }
         
         array[targetIndex] = 0
 
-        excludedElves += 1        
+        excludedTargets += 1        
     }
     
-    return { "remain": array.length - excludedElves, "lastThief": 0 }
+    return array.length - excludedTargets
 }
 
 main()
