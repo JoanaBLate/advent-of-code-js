@@ -2,7 +2,7 @@
 
 // solving the puzzle takes (my computer) 0.030s
 
-const allNodes = [ ]
+const allCells = [ ]
 
 var numberOfRows = 0
 var numberOfCols = 0
@@ -18,7 +18,7 @@ function main() {
     rawLines.shift() // root..
     rawLines.shift() // Filesystem...
     
-    for (let rawLine of rawLines) { 
+    for (const rawLine of rawLines) { 
     
         const line = rawLine.trim().replace("/dev/grid/node-", "")
         
@@ -38,7 +38,7 @@ function main() {
     
         const avail = parseInt(tokens.shift())
         
-        allNodes.push({ id, used, size, avail })
+        allCells.push({ id, used, size, avail })
         
         if (id.startsWith("x0-")) { numberOfRows += 1 }
 
@@ -52,18 +52,18 @@ function main() {
 
 function search() {
 
-    for (const node of allNodes) { searchThis(node) }
+    for (const cell of allCells) { searchThis(cell) }
 }
    
-function searchThis(baseNode) {
+function searchThis(baseCell) {
 
-    if (baseNode.used == 0) { return }
+    if (baseCell.used == 0) { return }
 
-    for (const node of allNodes) { 
+    for (const cell of allCells) { 
 
-        if (node == baseNode) { continue }
+        if (cell == baseCell) { continue }
         
-        if (node.avail < baseNode.used) { continue }
+        if (cell.avail < baseCell.used) { continue }
         
         numberOfPairs += 1
     }
