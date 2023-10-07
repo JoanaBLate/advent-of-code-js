@@ -1,6 +1,6 @@
 "use strict"
 
-// solving the puzzle takes (my computer) TODO 0.850s
+// solving the puzzle takes (my computer) 0.070s
 
 function main() {
 
