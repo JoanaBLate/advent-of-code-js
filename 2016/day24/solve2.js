@@ -1,129 +1,213 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 2m20s
+// solving the puzzle takes (my computer) 0.092s
+
+var map = ""
+var numberOfRows = 0
+var numberOfCols = 0
 
 function main() {
 
     const rawText = Deno.readTextFileSync("input.txt").trim()
-    
+        
     const rawLines = rawText.split("\n")
+
+    numberOfRows = rawLines.length
     
-    const instructions = [ ]
+    for (const rawLine of rawLines) { map += rawLine.trim() }
     
-    for (const rawLine of rawLines) { 
+    numberOfCols = map.length / numberOfRows
     
-        const tokens = rawLine.trim().split(" ")
+    const spots = findSpots(map)
     
-        instructions.push(tokens) 
+    const allPaths = createAllPaths(spots)
+    
+    const allTravels = makeAllTravels(spots)
+    
+    let fewest = 9999999
+
+    for (const path of allPaths) {
+    
+        const steps = stepsFor(path, allTravels)
+
+        if (steps < fewest) { fewest = steps }
+    }
+
+    console.log("fewest number of steps is", fewest)
+}
+
+function findSpots(map) {
+
+    const spots = [ ]
+
+    for (const c of map) {
+    
+        if (c == ".") { continue }
+        if (c == "#") { continue }
+
+        spots.push(parseInt(c))
     }
     
-    let a = 12
-    let b = 0
-    let c = 0
-    let d = 0
+    spots.sort(function (a,b) { return a - b })
     
-    let pointer = 0
+    return spots.join("")
+}
+
+///////////////////////////////////////////////////////////
+
+function createAllPaths(spots) { 
     
-    const last = instructions.length - 1
+    const stops = spots.replace("0", "")
+
+    let paths = [ ]
+
+    for (const c of stops) { paths.push("0") } // c is just a counter
+    
+    for (const c of stops) { paths = increasedPaths(paths, stops) } // c is just a counter
+    
+    return paths
+}
+
+function increasedPaths(paths, stops) {
+
+    const newPaths = [ ]
+    
+    for (const path of paths) { 
+
+        for (const c of stops) {
         
+            if (path.includes(c)) { continue }
+
+            newPaths.push(path + c) 
+        }        
+    }
+    
+    return newPaths
+}
+
+///////////////////////////////////////////////////////////
+
+function stepsFor(path, travels) {
+
+    let steps = 0
+    
+    for (let i = 0; i < path.length - 1; i++) {
+
+        const key = path[i] + "~" + path[i + 1]        
+        
+        steps += travels[key]
+    }
+    
+    const last = path[path.length - 1] // including return to home
+    
+    const key = last + "~0"
+    
+    return steps + travels[key]
+}
+
+///////////////////////////////////////////////////////////
+
+function makeAllTravels(spots) {
+
+    const dict = { }
+    
+    for (const c of spots) {
+    
+        const travel = makeFullTravel(c)
+        
+        for (const d of spots) {
+        
+            if (! travel[d]) { continue }
+            
+            dict[c + "~" + d] = travel[d]
+        }        
+    }
+
+    return dict
+}
+
+function makeFullTravel(c) {
+
+    const travel = { }
+
+    const homeIndex = map.indexOf(c)
+    
+    const homeY = Math.floor(homeIndex / numberOfCols)
+    const homeX = homeIndex % numberOfCols
+    
+    const grid = map.split("")
+    
+    for (let i = 0; i < grid.length; i++) {
+    
+        if (grid[i] == ".") { continue }
+        if (grid[i] == "#") { continue }
+        
+        grid[i] = "@" + grid[i]    
+    }
+    
+    //
+
+    let futurePoints = [ createPoint(homeX, homeY) ]
+
+    let step = 0
+    
     while (true) {
     
-        if (pointer < 0  || pointer > last) { break }
-        
-        const inst = instructions[pointer]
-        
-        if (inst[0] == "cpy") { 
-        
-            const value = getValue(inst[1], a, b, c, d)
-            
-            if (inst[2] == "a") { a = value; pointer++; continue }
-            if (inst[2] == "b") { b = value; pointer++; continue }
-            if (inst[2] == "c") { c = value; pointer++; continue }
-            if (inst[2] == "d") { d = value; pointer++; continue }
-            
-            // instruction affected by toggling
-                        
-            pointer++
-            continue
-        }
-    
-        if (inst[0] == "dec") { 
-        
-            if (inst[1] == "a") { a -= 1; pointer++; continue }
-            if (inst[1] == "b") { b -= 1; pointer++; continue }
-            if (inst[1] == "c") { c -= 1; pointer++; continue }
-            if (inst[1] == "d") { d -= 1; pointer++; continue }
-            
-            return // should not happen
-        }
-    
-        if (inst[0] == "inc") { 
-        
-            if (inst[1] == "a") { a += 1; pointer++; continue }
-            if (inst[1] == "b") { b += 1; pointer++; continue }
-            if (inst[1] == "c") { c += 1; pointer++; continue }
-            if (inst[1] == "d") { d += 1; pointer++; continue }
-            
-            return // should not happen
-        }
-    
-        if (inst[0] == "jnz") { 
-        
-            const value = getValue(inst[1], a, b, c, d)
-            
-            if (value == 0) { pointer++; continue }
-        
-            const jumps = getValue(inst[2], a, b, c, d)
+        const pointsToWalk = futurePoints
 
-            pointer += jumps                        
-            
-            continue
-        }   
+        futurePoints = [ ]
         
-        if (inst[0] == "tgl") { 
+        if (pointsToWalk.length == 0) { return travel }
         
-            const value = getValue(inst[1], a, b, c, d)
+        for (const point of pointsToWalk) { walk(point) }
         
-            const index = pointer + value
-                        
-            if (index < 0 || index > last) {  pointer++; continue }
-            
-            const target = instructions[index]
-            
-            toggle(target)   
-            
-            pointer++
-            
-            continue     
-        }
-        
-        return // should not happen
+        step += 1
     }
+    
+    function walk(point) {
+    
+        const x = point.x
+        const y = point.y
+        
+        const index = (y * numberOfCols) + x
+        
+        const info = grid[index]
 
-    console.log("the value to be sent to the safe is", a)
+        if (info == "#") { return }
+        
+        if (info[0] == "@") { 
+            travel[info[1]] = step 
+        }
+        else if (info == ".") {
+            // pass
+        }
+        else { // step number, already walked
+            return 
+        }
+        
+        grid[index] = step
+        
+        tryWalk(x, y-1) // north
+        tryWalk(x, y+1) // south
+        tryWalk(x-1, y) // west
+        tryWalk(x+1, y) // east
+    }
+    
+    function tryWalk(x, y) {
+    
+        if (x < 0) { return }
+        if (y < 0) { return }
+        
+        if (x >= numberOfCols) { return }
+        if (y >= numberOfRows) { return }
+        
+        futurePoints.push(createPoint(x,y))
+    }
 }
 
-function getValue(thing, a, b, c, d) {
-    
-    if (thing == "a") { return a }
-    if (thing == "b") { return b }
-    if (thing == "c") { return c }
-    if (thing == "d") { return d }
-    
-    return parseInt(thing)
-}
+function createPoint(x, y) {
 
-function toggle(inst) {
-
-    if (inst[0] == "inc") { inst[0] = "dec"; return }
-    
-    if (inst[0] == "dec") { inst[0] = "inc"; return }
-    
-    if (inst[0] == "cpy") { inst[0] = "jnz"; return }
-    
-    if (inst[0] == "jnz") { inst[0] = "cpy"; return }
-    
-    if (inst[0] == "tgl") { inst[0] = "inc"; return }
+    return { "x": x, "y": y }
 }
 
 main()
