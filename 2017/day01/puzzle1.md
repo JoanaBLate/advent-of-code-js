@@ -21,3 +21,4 @@ For example:
 
 **What is the solution** to your captcha?
 
+To begin, [get your puzzle input](input.txt).
