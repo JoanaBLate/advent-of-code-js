@@ -1,7 +1,9 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.950s
+// solving the puzzle takes (my computer) 5s
 
+// the current algorithm is slow because it relies on strings
+// the fast way is working only with decimals
 
 function main() {
 
@@ -24,21 +26,24 @@ function main() {
     const max = 5 * 1000 * 1000
         
     while (true) {
-    
-        // "1".repeat(16) to integer -> 65535
-        // we can get directly the decimal value 
-        // of the last 16 bits of a number - without using strings
-        
         
         generatorA = generateNewA(generatorA)
         
-        const value16A = generatorA % 65536
+        const binaryA = generatorA.toString(2).padStart(16, 0)
         
-        generatorB = generateNewB(generatorB) 
+        const bin16A = binaryA.substr(binaryA.length - 16)
         
-        const value16B = generatorB % 65536
+        //
         
-        if (value16A == value16B) { matches += 1 }
+        generatorB = generateNewB(generatorB)  
+
+        const binaryB = generatorB.toString(2).padStart(16, 0)
+        
+        const bin16B = binaryB.substr(binaryB.length - 16) 
+        
+        //     
+        
+        if (bin16A == bin16B) { matches += 1 }
         
         counter += 1
 
