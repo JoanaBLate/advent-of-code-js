@@ -1,1 +1,2 @@
-oundnydw
+Generator A starts with 512
+Generator B starts with 191
