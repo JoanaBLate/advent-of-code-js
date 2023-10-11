@@ -7,11 +7,11 @@ const instructions = [ ]
 const programA = { "registers": { "p": 0 }, "pointer": 0, "queue": [ ], "failures": 0 }
 const programB = { "registers": { "p": 1 }, "pointer": 0, "queue": [ ], "failures": 0 }
 
-let program = programA
+var program = programA
 
-let shallStop = false
+var shallStop = false
 
-let COUNT = 0
+var COUNT = 0
 
 
 function main() {

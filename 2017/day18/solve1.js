@@ -6,9 +6,10 @@ const registers = { }
 
 const instructions = [ ]
 
-let pointer = 0
+var pointer = 0
 
-let shallStop = false
+var shallStop = false
+
 
 function main() {
 
