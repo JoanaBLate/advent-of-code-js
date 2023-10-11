@@ -13,7 +13,7 @@ Each tick, all particles are updated simultaneously. A particle's properties are
 -   Increase the `Y` position by the `Y` velocity.
 -   Increase the `Z` position by the `Z` velocity.
 
-Because of seemingly tenuous rationale involving [z-buffering](https://en.wikipedia.org/wiki/Z-buffering), the GPU would like to know which particle will stay closest to position `<0,0,0>` in the long term. Measure this using the [Manhattan distance](https://en.wikipedia.org/wiki/Taxicab**geometry), which in this situation is simply the sum of the absolute values of a particle's `X`, `Y`, and `Z` position.
+Because of seemingly tenuous rationale involving [z-buffering](https://en.wikipedia.org/wiki/Z-buffering), the GPU would like to know which particle will stay closest to position `<0,0,0>` in the long term. Measure this using the [Manhattan distance](https://en.wikipedia.org/wiki/Taxicab_geometry), which in this situation is simply the sum of the absolute values of a particle's `X`, `Y`, and `Z` position.
 
 For example, suppose you are only given two particles, both of which stay entirely on the X-axis (for simplicity). Drawing the current states of particles `0` and `1` (in that order) with an adjacent a number line and diagram of current `X` positions (marked in parentheses), the following would take place:
 
