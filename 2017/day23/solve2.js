@@ -1,6 +1,6 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.320s
+// solving the puzzle takes (my computer) 0.360s
 
 
 // THIS SOLUTION ONLY WORKS WITH THE CURRENT INPUT!!!
@@ -69,47 +69,48 @@ var H = 0
 
 function main() {
 
-    B = 109300
-    C = 126300
+    B = 109300  // lines 01 to 08
+    C = 126300  // lines 01 to 08
 
-    while (true) { // line 09
+    while (true) {  // line 09
     
-        F = 1
-        D = 2
+        F = 1  // line 09
+        D = 2  // line 10
         
-        while (true) { // line 11
+        while (true) {  // line 11
             
-            E = 2
+            E = 2  // line 11
         
-            runFirstLoop()
+            pseudoRunMostInnerLoop()  // lines 12 to 20
 
-            D += 1
-            G = D - B
+            D += 1     // line 21
+            G = D - B  // lines 22 and 23
             
-            if (G == 0) { break }
+            if (G == 0) { break }  // line 24
         }
         
-        if (F == 0) { H += 1 }
+        if (F == 0) { H += 1 }  // lines 25 and 26
         
-        G = B - C
+        G = B - C  // lines 27 and 28
         
-        if (G == 0) { break }
+        if (G == 0) { break }  // lines 29 and 30
         
-        B += 17
-    }
+        B += 17  // line 31
+
+    }  // line 32
+    
     console.log("the value left in register h is", H)
 }
 
-function runFirstLoop() {
+function pseudoRunMostInnerLoop() {
 
     tryZeroF()
     
     G = 0 // this loop ends when G is zero at line 20
-    E = B // E must equal B in order to make G zero
-    
+    E = B // E must equal B in order to make G zero    
 }
 
-function tryZeroF(){
+function tryZeroF () {
     
     if (F == 0) { return }
 
@@ -123,10 +124,10 @@ function tryZeroF(){
 
     const quotient = B / D
     
-    if (quotient < 2  ||  quotient > B) { return } // out of E's range
+    if (quotient < 2) { return } // out of E's range
+ // if (quotient > B) { return } // out of E's range; unnecessary check because B is the dividend
     
     F = 0    
 }
 
 main()
-
