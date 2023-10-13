@@ -21,12 +21,9 @@ function main() {
     
         steps += 1
         
-      //  if (steps % 100000 == 0) { console.log(steps, pointer) }
-        
         if (steps > maxNumberOfSteps) { break }
         
         nextAction()
-
     }
     
     let count = 0
