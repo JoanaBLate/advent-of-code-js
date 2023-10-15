@@ -6,7 +6,7 @@
 // are used for efficient rotation:
 // V8 is very slow, even breaks, at manipulation of big arrays
 
-var circle = null
+var circle = null // will starts as [ 0 ] 
 
 var circleLength = 1
 
@@ -21,6 +21,8 @@ var currentPlayer = -1
 var maxMarble = 0
 
 var currentMarble = 0
+
+// current marble position is always the last
 
 
 function main() {
@@ -41,20 +43,7 @@ function main() {
         
         if (currentPlayer > maxPlayer) { currentPlayer = 0 }
     
-        if (currentMarble % 23 == 0) {
-        
-            rotateRight(7)
-        
-            players[currentPlayer] += currentMarble + circlePop()
-        
-            rotateLeft(1)
-        }
-        else {
-        
-            rotateLeft(1)
-        
-            circlePush(currentMarble)
-        }
+        if (currentMarble % 23 == 0) { playSpecialMarble() } else { playStandardMarble() }
     }
 
     let greatest = 0
@@ -75,6 +64,24 @@ function processInput() {
     tokens.pop() // points
 
     maxMarble = 100 * parseInt(tokens.pop())
+}
+
+///////////////////////////////////////////////////////////
+
+function playStandardMarble() {
+        
+    rotateLeft(1)
+
+    circlePush(currentMarble)
+}
+
+function playSpecialMarble() {
+
+    rotateRight(7)
+
+    players[currentPlayer] += currentMarble + circlePop()
+
+    rotateLeft(1)
 }
 
 ///////////////////////////////////////////////////////////
