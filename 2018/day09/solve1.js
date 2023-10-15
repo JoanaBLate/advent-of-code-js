@@ -4,13 +4,13 @@
 
 // circlePad and excedent length of the circle array
 // are used for efficient rotation:
-// V8 is very slow, even breaks, at manipulation of big arrays
+// V8 is very slow, even breaks, at manipulation of big lists
 
 var circle = null // will starts as [ 0 ] 
 
 var circleLength = 1
 
-var circlePad = 100000
+var circlePad = 0
 
 const players = [ ] // the points
 
@@ -20,17 +20,17 @@ var currentPlayer = -1
 
 var maxMarble = 0
 
-var currentMarble = 0
-
-// current marble position is always the last
+var currentMarble = 0 // current marble position is always the first in the circle
 
 
 function main() {
 
     processInput()
     
-    circle = new Uint32Array(100000 + maxMarble + 100000)
-
+    circle = new Uint32Array(3 * maxMarble)
+    
+    circlePad = circle.length - maxMarble - 1000
+    
     for (let n = 0; n <= maxPlayer; n++) { players.push(0) }
     
     while (true) {
@@ -70,18 +70,18 @@ function processInput() {
 
 function playStandardMarble() {
         
-    rotateLeft(1)
+    rotateRight(1)
 
-    circlePush(currentMarble)
+    circlePushHead(currentMarble)
 }
 
 function playSpecialMarble() {
 
-    rotateRight(7)
+    rotateLeft(7)
 
-    players[currentPlayer] += currentMarble + circlePop()
+    players[currentPlayer] += currentMarble + circlePopHead()
 
-    rotateLeft(1)
+    rotateRight(1)
 }
 
 ///////////////////////////////////////////////////////////
@@ -93,7 +93,7 @@ function rotateLeft(count) {
 
 function rotateLeftOnce() {
 
-    if (circlePad > 199000) { decreaseCirclePad() }
+    if (circlePad > circle.length - 1000) { decreaseCirclePad() }
     
     const first = circle[circlePad + 0]
 
@@ -126,24 +126,24 @@ function rotateRightOnce() {
 
 ///////////////////////////////////////////////////////////
 
-function circlePop() {
+function circlePopHead() {
 
-    const indexOfLast = circlePad + circleLength - 1
+    const first = circle[circlePad]
     
-    const last = circle[indexOfLast]
+    circlePad += 1
 
     circleLength -= 1
     
-    return last
+    return first
 }
 
-function circlePush(value) {
+function circlePushHead(value) {
 
-    if (circlePad > 199000) { decreaseCirclePad() }
+    if (circlePad < 1000) { increaseCirclePad() }
 
-    const indexAfterLast = circlePad + circleLength
-    
-    circle[indexAfterLast] = value
+    circlePad -= 1
+
+    circle[circlePad] = value
 
     circleLength += 1    
 }
@@ -151,21 +151,23 @@ function circlePush(value) {
 ///////////////////////////////////////////////////////////
 
 function increaseCirclePad() {
-
+    
+    const newCirclePad = circle.length - 1000 - circleLength
+    
     for (let index = circleLength - 1; index > -1; index--) {
     
-        circle[100000 + index] = circle[circlePad + index]    
+        circle[newCirclePad + index] = circle[circlePad + index]    
     }
-    circlePad = 100000
+    circlePad = newCirclePad
 }
 
 function decreaseCirclePad() {
-
+    
     for (let index = 0; index < circleLength; index++) {
     
-        circle[100000 + index] = circle[circlePad + index]    
+        circle[1000 + index] = circle[circlePad + index]    
     }
-    circlePad = 100000
+    circlePad = 1000
 }
 
 ///////////////////////////////////////////////////////////
