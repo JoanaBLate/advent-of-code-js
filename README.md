@@ -28,4 +28,6 @@ Completed.
 
 ## Advent of Code 2018 
 
+**Day 09 PART 2** SOLVED IN JUST **0.15s** (without using any library)
+
 **Day 11 PART 2** SOLVED IN JUST **0.14s** (without using any library)
