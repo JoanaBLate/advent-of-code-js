@@ -1,6 +1,6 @@
 # advent-of-code-js
 
-## Clear, didactic and *efficient* solutions 
+## Clear, didactic and *BLAZINGLY FAST* solutions in JS
 
 The code is written in the **most basic vanilla JavaScript**, without external libraries (excepting crypto), trying to be very accessible for everybody.
 
