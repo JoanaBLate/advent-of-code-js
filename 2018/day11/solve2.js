@@ -22,7 +22,7 @@ function main() {
      
     for (let side = 3; side <= 300; side++) { tryThisSide(side) }
      
-    console.log("\nthe answer is", (COL+1) + "," + (ROW+1) + "," + SIDE)
+    console.log("the answer is", (COL+1) + "," + (ROW+1) + "," + SIDE)
 }
 
 function processInput() {
