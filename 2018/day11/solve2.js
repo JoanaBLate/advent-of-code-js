@@ -94,7 +94,7 @@ function tryThisSide(side) {
         
             if (col == 0) {
                 
-                power = calcGroupValue(layer, side, col)
+                power = calcFirstSquareValue(layer, side, col)
             }
             else {
             
@@ -112,7 +112,7 @@ function tryThisSide(side) {
     }
 }
 
-function calcGroupValue(layer, side, baseCol) {
+function calcFirstSquareValue(layer, side, baseCol) {
 
     let power = 0
     
