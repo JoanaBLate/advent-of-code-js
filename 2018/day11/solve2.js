@@ -1,6 +1,6 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 3m39s
+// solving the puzzle takes (my computer) 0.140s
 
 var gridSerialNumber = 0
 
@@ -22,7 +22,7 @@ function main() {
      
     for (let side = 3; side <= 300; side++) { tryThisSide(side) }
      
-    console.log("the answer is", (COL+1) + "," + (ROW+1) + "," + SIDE)
+    console.log("\nthe answer is", (COL+1) + "," + (ROW+1) + "," + SIDE)
 }
 
 function processInput() {
@@ -82,13 +82,25 @@ function calcCellValue(x, y) {
 
 function tryThisSide(side) {
 
-console.log("checking", side,"x", side, "squares")
-
+    const layer = makeThickLayer(side, 0)
+    
+    let power = 0
+    
     for (let row = 0; row <= 300 - side; row++) { 
-
+    
+        if (row > 0) { updateThickLayerDown(layer, side, row - 1) }
+        
         for (let col = 0; col <= 300 - side; col++) { 
         
-            const power = calcGroupValue(row, col, side)
+            if (col == 0) {
+                
+                power = calcGroupValue(layer, side, col)
+            }
+            else {
+            
+                power -= layer[col - 1]
+                power += layer[col + side - 1]
+            }
             
             if (power > BEST) {
                 ROW = row
@@ -100,18 +112,42 @@ console.log("checking", side,"x", side, "squares")
     }
 }
 
-function calcGroupValue(baseRow, baseCol, side) {
+function calcGroupValue(layer, side, baseCol) {
 
     let power = 0
     
-    for (let row = 0; row < side; row++) { 
-
-        for (let col = 0; col < side; col++) { 
-        
-            power += grid[baseRow + row][baseCol + col]
-        }
-    }
+    for (let col = baseCol; col < baseCol + side; col++) { power += layer[col] }
+    
     return power
+}
+ 
+function makeThickLayer(height, baseRow) { // width=300 (all cols)
+
+    const cols = new Int32Array(300)
+    
+    for (let col = 0; col < 300; col++) {
+    
+        let power = 0 
+    
+        for (let row = 0; row < height; row++) { 
+        
+            power += grid[baseRow + row][col]
+        }
+        
+        cols[col] = power
+    }
+    
+    return cols
+}
+
+function updateThickLayerDown(layer, height, baseRow) {
+
+    for (let col = 0; col < 300; col++) {
+    
+        layer[col] -= grid[baseRow][col] 
+    
+        layer[col] += grid[baseRow + height][col] 
+    }
 }
 
 main()
