@@ -1,6 +1,6 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 3m39s
+// solving the puzzle takes (my computer) 10.250s
 
 var gridSerialNumber = 0
 
@@ -11,6 +11,8 @@ var COL = 0
 var SIDE = 0
 var BEST = -9999999
 
+const lib30 = { }
+
 
 function main() {
 
@@ -19,6 +21,8 @@ function main() {
     initGrid()
     
     setGridValues()
+    
+    fillLib30()
      
     for (let side = 3; side <= 300; side++) { tryThisSide(side) }
      
@@ -80,9 +84,24 @@ function calcCellValue(x, y) {
 
 ///////////////////////////////////////////////////////////
 
+function fillLib30() {
+
+    const side = 30 
+    
+    for (let row = 0; row <= 300 - side; row++) { 
+
+        for (let col = 0; col <= 300 - side; col++) { 
+            
+            lib30[row + "~" + col] = calcGroupValueCore(row, col, side)
+        }
+    }
+}
+
+///////////////////////////////////////////////////////////
+
 function tryThisSide(side) {
 
-console.log("checking", side,"x", side, "squares")
+    console.log("checking", side,"x", side, "squares")
 
     for (let row = 0; row <= 300 - side; row++) { 
 
@@ -100,7 +119,41 @@ console.log("checking", side,"x", side, "squares")
     }
 }
 
+
 function calcGroupValue(baseRow, baseCol, side) {
+
+    if (side < 30) { return calcGroupValueCore(baseRow, baseCol, side) }
+    
+    return calcGroupValueCache(baseRow, baseCol, side)
+}
+ 
+///////////////////////////////////////////////////////////
+ 
+function calcGroupValueCache(baseRow, baseCol, side) {
+ 
+    let power = 0
+    
+    for (let row = 0; row < side; row += 30) { 
+
+        for (let col = 0; col < side; col += 30) { 
+    
+            power += lib30[baseRow + "~" + baseCol]
+        }
+    }    
+    
+    const missing = side % 30
+    const done = side - missing    
+    
+    for (let row = 0; row < missing; row += 1) { 
+
+        for (let col = 0; col < missing; col += 1) { 
+    
+            power += grid[done + row][done + col]
+        }
+    }    
+}
+
+function calcGroupValueCore(baseRow, baseCol, side) {
 
     let power = 0
     
