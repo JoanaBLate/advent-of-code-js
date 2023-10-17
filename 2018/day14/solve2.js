@@ -1,0 +1,97 @@
+"use strict"
+
+// solving the puzzle takes (my computer) 1.1s
+
+const scores = [ 3, 7 ]
+
+var indexA = 0
+
+var indexB = 1
+
+var targetSequence = [ ]
+
+
+function main() {
+
+    processInput()
+    
+    let delta = 0
+    
+    while (true) { 
+    
+        const previousLength = scores.length
+
+        runOneRound() 
+        
+        const gotTwoRecipes = scores.length - previousLength == 2 
+        
+        if (gotTwoRecipes) {
+            
+            delta = 1 
+            if (foundTarget(delta)) { break }
+        }
+        
+        delta = 0        
+        if (foundTarget(delta)) { break }
+    }
+ 
+    console.log("the answer is", scores.length - targetSequence.length - delta)
+}
+
+function processInput() {
+
+    const text = Deno.readTextFileSync("input.txt").trim()
+
+    targetSequence = text.split("")
+}
+
+
+function runOneRound() {
+
+    const a = scores[indexA]
+    const b = scores[indexB]
+    
+    const result = a + b
+    
+    if (result < 10) {
+        scores.push(result)
+    }
+    else {
+        const tokens = result.toString().split("")
+        scores.push(parseInt(tokens.shift()))
+        scores.push(parseInt(tokens.shift()))    
+    }
+    
+    indexA = advanceIndex(indexA)
+    indexB = advanceIndex(indexB)
+}
+
+function advanceIndex(currentIndex) {
+
+    const advance = 1 + scores[currentIndex]
+    
+    let index = currentIndex + advance
+    
+    while (index >= scores.length) { index -= scores.length } // must be 'while', not 'if'
+    
+    return index
+}
+
+function foundTarget(delta) {
+
+    let scoresIndex = scores.length - 1 - delta
+    let targetIndex = targetSequence.length - 1
+    
+    while (targetIndex > -1) {
+    
+        if (targetSequence[targetIndex] != scores[scoresIndex]) { return false }
+    
+        targetIndex -= 1
+        scoresIndex -= 1
+    }    
+
+    return true
+}
+
+main()
+
