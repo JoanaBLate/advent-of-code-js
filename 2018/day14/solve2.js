@@ -19,11 +19,7 @@ function main() {
     
     while (true) { 
     
-        const previousLength = scores.length
-
-        runOneRound() 
-        
-        const gotTwoRecipes = scores.length - previousLength == 2 
+        const gotTwoRecipes = runOneRound() 
         
         if (gotTwoRecipes) {
             
@@ -53,16 +49,22 @@ function runOneRound() {
     
     const result = a + b
     
+    let gotTwoRecipes = false
+    
     if (result < 10) {
         scores.push(result)
     }
     else {
         scores.push(1)
         scores.push(result - 10)
+
+        gotTwoRecipes = true
     }
     
     indexA = advanceIndex(indexA)
     indexB = advanceIndex(indexB)
+    
+    return gotTwoRecipes
 }
 
 function advanceIndex(currentIndex) {
