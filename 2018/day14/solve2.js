@@ -1,6 +1,6 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 1.1s
+// solving the puzzle takes (my computer) 0.800s
 
 const scores = [ 3, 7 ]
 
@@ -57,9 +57,8 @@ function runOneRound() {
         scores.push(result)
     }
     else {
-        const tokens = result.toString().split("")
-        scores.push(parseInt(tokens.shift()))
-        scores.push(parseInt(tokens.shift()))    
+        scores.push(1)
+        scores.push(result - 10)
     }
     
     indexA = advanceIndex(indexA)

@@ -45,9 +45,8 @@ function runOneRound() {
         scores.push(result)
     }
     else {
-        const tokens = result.toString().split("")
-        scores.push(parseInt(tokens.shift()))
-        scores.push(parseInt(tokens.shift()))    
+        scores.push(1)
+        scores.push(result - 10)   
     }
     
     indexA = advanceIndex(indexA)
