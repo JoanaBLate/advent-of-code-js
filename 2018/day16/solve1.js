@@ -1,6 +1,6 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.045s
+// solving the puzzle takes (my computer) 0.040s
 
 const samples = [ ]
 
