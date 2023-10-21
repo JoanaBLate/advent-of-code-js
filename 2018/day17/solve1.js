@@ -1,6 +1,6 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.50s
+// solving the puzzle takes (my computer) 0.450s
 
 
 // SET  shallDisplay=true  IF YOU WANT TO MONITORE THE STREAMS (step by step) //
