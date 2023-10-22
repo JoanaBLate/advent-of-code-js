@@ -40,7 +40,7 @@ var shallOutputHydrology = false
 var minLeft = 99999999999999
 var maxLeft = 0
 
-var preferredId = "0" // for smoother (funciton) show
+var preferredId = "0" // for smoother (function) show
 
 
 function main() {
