@@ -1,6 +1,6 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.40s
+// solving the puzzle takes (my computer) 0.400s
 
 var POINTER = 0
 
