@@ -19,9 +19,17 @@ var greatestCol = 0
 var WIDTH = 0
 var HEIGHT = 0
 
-const table = [ ]  // table of rows // (0 .)  (1 #)   (2 ~)   (3 |)  (9 +)  //
+const table = [ ] 
 
-var streams = null
+const VIRGIN = 0
+const CLAY = 1
+const WATER = 2
+const WETSAND = 3
+const SPRING = 9
+
+var currentStreams = null
+
+var futureStreams = [ newStream(0, 500) ]
 
 var round = 0
 
@@ -31,6 +39,8 @@ var shallOutputHydrology = false
 
 var minLeft = 99999999999999
 var maxLeft = 0
+
+var preferredId = "0" // for smoother (funciton) show
 
 
 function main() {
@@ -44,26 +54,23 @@ function main() {
     
     for (let n = 0; n < HEIGHT; n++) { table.push(new Uint8Array(WIDTH)) }
     
-    table[0][500] = 9 // spring
+    table[0][500] = SPRING
     
     for (const data of DATA) { markClayOnGrid(data) }
     
     //    
-    streams = [ newStream(0, 500) ]
-    
     while (true) {
         
         round += 1
 
         if (shallDisplay) { console.log("round:", round) }
         
-        deleteDeadStreams()
+        currentStreams = futureStreams
+        futureStreams = [ ]
         
-        if (streams.length == 0) { break }
+        if (currentStreams.length == 0) { break }
         
-        const off = streams.length // this kind of loop avoids added new streams "playing twice" in their first round!!!
-        
-        for (let index = 0; index < off; index++) { runStream(streams[index]) }
+        for (const stream of currentStreams) { runStream(stream) }
         
         if (shallDisplay) { show(); prompt("Press ENTER") }
     }
@@ -71,35 +78,6 @@ function main() {
     console.log("\nthe answer is", countWater())
 
     if (shallOutputHydrology) { outputHydrology() }
-}
-
-///////////////////////////////////////////////////////////
-
-function outputHydrology() {
-
-    const start = minLeft - 2
-    const end = maxLeft + 20
-    
-    console.log("output: minLeft, maxLeft =", minLeft, maxLeft)
-
-    let s = ""
-
-    for (const row of table) {
-        
-        for (let col = start; col <= end; col++) {
-        
-            const value = row[col]
-            
-            if (value == 0)  { s += " " }
-            else if (value == 1)  { s += "#" }
-            else if (value == 2)  { s += "~" }
-            else if (value == 3)  { s += "|" }
-            else if (value == 9)  { s += "+" }
-            else { s += "&" }
-        }
-        s += "\n"
-    }
-    Deno.writeTextFileSync("hydrology.txt", s)
 }
 
 ///////////////////////////////////////////////////////////
@@ -159,11 +137,11 @@ function markClayOnGrid(data) {
    
    if (data.xStart == data.xEnd) {
      
-        for (let y = data.yStart; y <= data.yEnd; y++) { table[y][data.xStart] = 1 }
+        for (let y = data.yStart; y <= data.yEnd; y++) { table[y][data.xStart] = CLAY }
    }
    else {
    
-        for (let col = data.xStart; col <= data.xEnd; col++) { table[data.yStart][col] = 1 }
+        for (let col = data.xStart; col <= data.xEnd; col++) { table[data.yStart][col] = CLAY }
    }
 }
 
@@ -175,7 +153,7 @@ function countWater() {
     
         const row = table[index]
     
-        for (const cell of row) { if (cell == 2  ||  cell == 3) { count += 1 } }
+        for (const cell of row) { if (cell == WATER  ||  cell == WETSAND) { count += 1 } }
     }    
     return count
 }
@@ -184,33 +162,22 @@ function countWater() {
 
 function newStream(row, col) {
 
-    const id = ids[0]
+    const id = ids[0] // id is only used by (function) show 
     ids.push(ids.shift())
     
     if (shallDisplay) { console.log("Creating stream", id) }
 
-    return { "id": id, "row": row, "col": col, "dead": false }
-}
-
-function deleteDeadStreams() {
-
-    for (let index = streams.length - 1; index > -1; index--) {
-    
-        if (streams[index].dead) { streams.splice(index, 1) }
-    }
+    return { "id": id, "row": row, "col": col }
 }
 
 ///////////////////////////////////////////////////////////
 
 function runStream(stream) { 
 
-    // (0 .)  (1 #)   (2 ~)   (3 |)   (9 +) //
-
     if (shallDisplay) { console.log("Playing stream ", stream.id) }
 
     if (stream.row + 1 > greatestRow) { 
     
-        stream.dead = true
         if (shallDisplay) { console.log("Killing stream ", stream.id) }    
         return 
     }
@@ -220,46 +187,63 @@ function runStream(stream) {
     
     const valueBelow = table[stream.row + 1][stream.col]
   
-    if (valueBelow == 0) { 
+    if (valueBelow == VIRGIN) { 
         
         stream.row += 1
-        table[stream.row][stream.col] = 3
+        table[stream.row][stream.col] = WETSAND
+        futureStreams.push(stream)
         return
     }
+
+    if (valueBelow == WETSAND) { // happens sometimes
     
-    if (valueBelow == 3) { 
-    
-        stream.dead = true
-        if (shallDisplay) { console.log("Killing stream ", stream.id) }    
+        if (shallDisplay) { console.log("Killing stream ", stream.id) } // cell already walked
         return 
     }
     
-    // now valueBelow is 1 or 2    
-    
-    stream.dead = true
     if (shallDisplay) { console.log("Killing stream ", stream.id) }
+ 
+    runStream2(stream)
+}
+
+function runStream2(stream) { 
     
+    // now valueBelow is CLAY or WATER
+
     tryFlood(stream)
     
-   // setting wet sand
+    // setting wet sand
     const row = stream.row
     const col = stream.col
     
     const leftStatus  = getLayerStatus(row, col, -1)
     const rightStatus = getLayerStatus(row, col, +1)
     
-    for (let col = leftStatus.col; col <= rightStatus.col; col++) { table[row][col] = 3 } 
-  
-    if (! leftStatus.blocked) {
+    const leftEnd = table[row][leftStatus.col]   // before applying wet sand to layer
+    const rightEnd = table[row][rightStatus.col] // before applying wet sand to layer
+    
+    for (let col = leftStatus.col; col <= rightStatus.col; col++) { table[row][col] = WETSAND } 
+
+    // new streams    
+    
+    let heritageOk = (preferredId == stream.id)
+    
+    if (! leftStatus.blocked  &&  leftEnd == VIRGIN) {
 
         const leftStream = newStream(row, leftStatus.col)
-        streams.push(leftStream)
+        
+        futureStreams.push(leftStream)
+        
+        if (heritageOk) { preferredId = leftStream.id; heritageOk = false }
     }
     
-    if (! rightStatus.blocked) {
+    if (! rightStatus.blocked  &&  rightEnd == VIRGIN) {
 
         const rightStream = newStream(row, rightStatus.col)
-        streams.push(rightStream)
+        
+        futureStreams.push(rightStream)
+        
+        if (heritageOk) { preferredId = rightStream.id }
     }   
 }
  
@@ -285,7 +269,7 @@ function tryFloodOneLayer(row, col) {
     if (! leftStatus.blocked) { return false } // flowing
     if (! rightStatus.blocked) { return false } // flowing
     
-    for (let col = leftStatus.col; col <= rightStatus.col; col++) { table[row][col] = 2 } 
+    for (let col = leftStatus.col; col <= rightStatus.col; col++) { table[row][col] = WATER } 
                 
     return true // flooded
 }
@@ -300,23 +284,21 @@ function getLayerStatus(row, col, delta) {
         
         const side = table[row][col]
         
-        if (side == 1  ||  side == 2) { return { "col": col - delta, "blocked": true } }
+        if (side == CLAY  ||  side == WATER) { return { "col": col - delta, "blocked": true } }
         
         const bottom = table[row + 1][col]
         
-        if (bottom == 0  ||  bottom == 3) { return { "col": col, "blocked": false } }
+        if (bottom == VIRGIN  ||  bottom == WETSAND) { return { "col": col, "blocked": false } }
     }
 }
 
 ///////////////////////////////////////////////////////////
 
-function show(index) {
+function show() {
 
-    if (index == undefined) { index = getIndexOfTheLowestStream() }
-    
-    const guide = streams[index]
+    const guide = currentStreams[indexOfPreferredStream()]
 
-    const baseRow = Math.max(0, guide.row - 20)
+    const baseRow = Math.max(0, guide.row - 10)
     const baseCol = Math.max(0, guide.col - 50)
 
     console.log("")
@@ -336,24 +318,28 @@ function show(index) {
             const value = cells[col]
             if (value == undefined) { break }
             
-            let gotStream = false 
+            let gotCurrentStream = false 
             
-            for (const stream of streams) {
+            for (const stream of currentStreams) {
             
-                if (row == stream.row  &&  col == stream.col) { 
-                
-                    if (stream.dead) { continue }
-                    
-                    s += stream.id; gotStream = true }
-            }
+                if (row == stream.row  &&  col == stream.col) { s += stream.id; gotCurrentStream = true }
+            }            
+            if (gotCurrentStream) { continue }
             
-            if (gotStream) { continue }
             
-            if (value == 0)  { s += "." }
-            else if (value == 1)  { s += "#" }
-            else if (value == 2)  { s += "~" }
-            else if (value == 3)  { s += "|" }
-            else if (value == 9)  { s += "+" }
+            let gotFutureStream = false 
+            
+            for (const stream of futureStreams) {
+            
+                if (row == stream.row  &&  col == stream.col) { s += stream.id; gotFutureStream = true }
+            }            
+            if (gotFutureStream) { continue }
+            
+            if (value == VIRGIN)       { s += "." }
+            else if (value == CLAY)    { s += "#" }
+            else if (value == WATER)   { s += "~" }
+            else if (value == WETSAND) { s += "|" }
+            else if (value == SPRING)  { s += "+" }
             else { s += "&" }
         }
         console.log(s)
@@ -361,17 +347,42 @@ function show(index) {
     console.log("")
 }
 
-function getIndexOfTheLowestStream() {
-
-    const lastIndex = streams.length - 1
-    let chosenIndex = lastIndex
-    let chosenBottom = 0
+function indexOfPreferredStream() {
     
-    for (let index = lastIndex - 1; index > -1; index--) {
+    for (let index = 0; index < futureStreams.length; index++) {
     
-        if (streams[index].row > chosenBottom) { chosenBottom = streams[index].row; chosenIndex = index }
+        if (futureStreams[index].id == preferredId) { return index }
     }
-    return chosenIndex
+    return 0
+}
+
+///////////////////////////////////////////////////////////
+
+function outputHydrology() {
+
+    const start = minLeft - 2
+    const end = maxLeft + 20
+    
+    console.log("output: minLeft, maxLeft =", minLeft, maxLeft)
+
+    let s = ""
+
+    for (const row of table) {
+        
+        for (let col = start; col <= end; col++) {
+        
+            const value = row[col]
+            
+            if (value == VIRGIN)       { s += " " }
+            else if (value == CLAY)    { s += "#" }
+            else if (value == WATER)   { s += "~" }
+            else if (value == WETSAND) { s += "|" }
+            else if (value == SPRING)  { s += "+" }
+            else { s += "&" }
+        }
+        s += "\n"
+    }
+    Deno.writeTextFileSync("hydrology.txt", s)
 }
 
 main()
