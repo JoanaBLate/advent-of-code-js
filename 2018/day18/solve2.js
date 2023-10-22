@@ -22,7 +22,7 @@ function main() {
     
     rowLength = table[0].length
     
-    while (round < 1000) { runOneRound() } // waiting the birth of the pattern
+    while (round < 1000) { runOneRound() } // waiting for the birth of the repeating pattern
     
     //
     const model = reference.join("")
