@@ -1,14 +1,14 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.040s
+// solving the puzzle takes (my computer) 0.030s
 
 var DATA = ""
 
-const steps = [ ] // step objects
+const rooms = { } // row~col: distance
 
 const endingSteps = [ ] // the step obj at the end of each segment 
 
-const rooms = { } // row~col: distance
+var greatestDistance = 0
 
 
 function main() {
@@ -17,9 +17,7 @@ function main() {
     
     processData()
     
-    fillRooms()
-    
-    console.log("the answer is", findGreatestDistance())
+    console.log("the answer is", greatestDistance)
 }
 
 ///////////////////////////////////////////////////////////
@@ -77,39 +75,22 @@ function processData() {
         
         distance += 1
 
-        steps.push(newStep(row, col, distance))
-    }
-}
- 
-///////////////////////////////////////////////////////////
-
-function fillRooms() {
-
-    for (const step of steps) {
-    
-        const key = step.row + "~" + step.col
+        const key = row + "~" + col
         
-        if (rooms[key] == undefined) { rooms[key] = step.distance; continue }
+        if (rooms[key] == undefined) { 
+            
+            rooms[key] = distance
+        }
+        else if (rooms[key] > distance) { 
+            
+            rooms[key] = distance 
+        }
         
-        if (step.distance < rooms[key]) { rooms[key] = step.distance }
+        if (rooms[key] > greatestDistance) { greatestDistance = rooms[key] }
     }
 }
 
-function findGreatestDistance() {
-
-    let best = 0
-    
-    for (const value of Object.values(rooms)) { if (value > best) { best = value } }
-    
-    return best
-}
-
 ///////////////////////////////////////////////////////////
-    
-function newPoint(row, col) { 
-
-    return { "row": row, "col": col } 
-}
 
 function newStep(row, col, distance) { 
 

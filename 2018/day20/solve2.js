@@ -1,14 +1,14 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.040s
+// solving the puzzle takes (my computer) 0.035s
 
 var DATA = ""
 
-const steps = [ ] // step objects
+const rooms = { } // row~col: distance
+
+var distantRooms = { } // row~col: true
 
 const endingSteps = [ ] // the step obj at the end of each segment 
-
-const rooms = { } // row~col: distance
 
 
 function main() {
@@ -17,9 +17,7 @@ function main() {
     
     processData()
     
-    fillRooms()
-    
-    console.log("the answer is", countThousandDoorRooms())
+    console.log("the answer is", Object.keys(distantRooms).length)
 }
 
 ///////////////////////////////////////////////////////////
@@ -77,39 +75,22 @@ function processData() {
         
         distance += 1
 
-        steps.push(newStep(row, col, distance))
-    }
-}
- 
-///////////////////////////////////////////////////////////
-
-function fillRooms() {
-
-    for (const step of steps) {
-    
-        const key = step.row + "~" + step.col
+        const key = row + "~" + col
         
-        if (rooms[key] == undefined) { rooms[key] = step.distance; continue }
+        if (rooms[key] == undefined) { 
+            
+            rooms[key] = distance
+        }
+        else if (rooms[key] > distance) { 
+            
+            rooms[key] = distance 
+        }
         
-        if (step.distance < rooms[key]) { rooms[key] = step.distance }
+        if (rooms[key] >= 1000) { distantRooms[key] = true }
     }
 }
 
-function countThousandDoorRooms() {
-
-    let count = 0
-    
-    for (const value of Object.values(rooms)) { if (value >= 1000) { count += 1 } }
-    
-    return count
-}
-
 ///////////////////////////////////////////////////////////
-    
-function newPoint(row, col) { 
-
-    return { "row": row, "col": col } 
-}
 
 function newStep(row, col, distance) { 
 
