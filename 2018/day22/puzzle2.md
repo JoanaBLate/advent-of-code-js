@@ -274,7 +274,7 @@ M=.|=.|.|=.|=|=.
 ||.|==.|.|.||=||
 ```
 
-This is tied with other routes as the **fastest way to reach the target**: `**45**` minutes. In it, `21` minutes are spent switching tools (three times, seven minutes each) and the remaining `24` minutes are spent moving.
+This is tied with other routes as the **fastest way to reach the target**: **`45`** minutes. In it, `21` minutes are spent switching tools (three times, seven minutes each) and the remaining `24` minutes are spent moving.
 
 **What is the fewest number of minutes you can take to reach the target?**
 
