@@ -1,6 +1,6 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 30s
+// solving the puzzle takes (my computer) 2m30s
 
 /*
 
