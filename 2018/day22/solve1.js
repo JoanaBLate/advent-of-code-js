@@ -19,11 +19,11 @@ function main() {
      
     makeTable()
     
-    fillTable()
+    const risk = fillTable()
     
  // show()
     
-    console.log("the answer is", calcRisk())
+    console.log("the answer is", risk)
 }
 
 ///////////////////////////////////////////////////////////
@@ -48,77 +48,54 @@ function makeTable() {
     height = targetRow + 1
     
     for (let row = 0; row < height; row++) { table.push(makeRow()) }
+}
     
-    function makeRow() {
+function makeRow() {
 
-        const cells = [ ]    
-     
-        for (let col = 0; col < width; col++) { cells.push({ "geoIndex": 0, "erosion": 0 }) }
-        return cells
-    }
+    const cells = [ ]    
+ 
+    for (let col = 0; col < width; col++) { cells.push({ "geoIndex": 0, "erosion": 0 }) }
+    return cells
 }
 
 ///////////////////////////////////////////////////////////
 
 function fillTable() {
 
-    for (let col = 0; col < width; col++) { 
-    
-        const cell = table[0][col]
-        
-        cell.geoIndex = col * 16807 
-        
-        cell.erosion = (cell.geoIndex + depth) % 20183       
-    }
-    
-    for (let row = 0; row < height; row++) { 
-    
-        const cell = table[row][0]
-
-        cell.geoIndex = row * 48271 
-        
-        cell.erosion = (cell.geoIndex + depth) % 20183
-    }
-    
-    for (let row = 1; row < height; row++) {
-
-        for (let col = 1; col < width; col++) { 
-        
-            const topCell = table[row-1][col]
-            
-            const leftCell = table[row][col-1]
-            
-            const cell = table[row][col]
-            
-            cell.geoIndex = topCell.erosion * leftCell.erosion
-            
-            cell.erosion = (cell.geoIndex + depth) % 20183
-        }
-    }
-    
-    const targetCell = table[targetRow][targetCol]
-    
-    targetCell.geoIndex = 0 
-        
-    targetCell.erosion = (targetCell.geoIndex + depth) % 20183
-}
-
-///////////////////////////////////////////////////////////
-
-function calcRisk() {
-
     let risk = 0
-    
-   for (let row = 0; row < height; row++) {
+   
+    for (let row = 0; row < height; row++) { 
 
         for (let col = 0; col < width; col++) { 
-        
+    
             const cell = table[row][col]
             
+            if (row == 0) { 
+                
+                cell.geoIndex = col * 16807 
+            }            
+            else if (col == 0) { 
+                
+                cell.geoIndex = row * 48271 
+            }            
+            else if (row == targetRow  &&  col == targetCol) { 
+                
+                cell.geoIndex = 0 
+            }            
+            else {
+        
+                const topCell = table[row-1][col]
+                
+                const leftCell = table[row][col-1]
+                
+                cell.geoIndex = topCell.erosion * leftCell.erosion
+            }
+            
+            cell.erosion = (cell.geoIndex + depth) % 20183 
+            
             risk += cell.erosion % 3
-        }
+        }      
     }
-    
     return risk
 }
 
