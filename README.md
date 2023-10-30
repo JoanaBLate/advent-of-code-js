@@ -34,4 +34,4 @@ Completed.
 
 **Day 16 PART 2** SOLVED IN JUST **0.45s** (without using any library)
 
-**Day 22 PART 2** SOLVED IN JUST **0.90s** (without using any library)
+**Day 22 PART 2** SOLVED IN JUST **0.80s** (without using any library)
