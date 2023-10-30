@@ -1,6 +1,6 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.090s
+// solving the puzzle takes (my computer) 0.080s
 
 var depth = 510 // example
 
@@ -145,9 +145,17 @@ function tryScheduleNear(row, col, tool, minutes) {
     nearFuture.push(node)
 }
 
-function scheduleDistant(row, col, newTool, minutes) {
+function tryScheduleDistant(row, col, tool, minutes) {
+
+    const cell = table[row][col]
+    
+    if (tool == TORCH  &&  cell.torch <= minutes) { return }
+    
+    if (tool == GEAR   &&  cell.gear <= minutes) { return }
+    
+    if (tool == NONE   &&  cell.none <= minutes) { return }
             
-    const node = createNode(row, col, newTool, minutes)
+    const node = createNode(row, col, tool, minutes)
     
     distantFuture.push(node)
 }        
@@ -236,7 +244,7 @@ function main() {
         
         const newTool = alternativeTool(cell.kind, tool)   
 
-        scheduleDistant(row, col, newTool, minutes + 7) // + 7: just changing tool, not changing row or col
+        tryScheduleDistant(row, col, newTool, minutes + 7) // + 7: just changing tool, not changing row or col
          
         tryScheduleNear(row-1, col, tool, minutes + 1)
         tryScheduleNear(row+1, col, tool, minutes + 1)
