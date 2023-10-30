@@ -32,6 +32,6 @@ Completed.
 
 **Day 11 PART 2** SOLVED IN JUST **0.14s** (without using any library)
 
-**Day 16 PART 2** SOLVED IN JUST **0.45s** (without using any library)
+**Day 16 PART 2** SOLVED IN JUST **0.04s** (without using any library)
 
 **Day 22 PART 2** SOLVED IN JUST **0.08s** (without using any library)
