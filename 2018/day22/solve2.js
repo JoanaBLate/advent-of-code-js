@@ -192,11 +192,11 @@ function alternativeTool(kind, tool) {
     if (kind == NARROW) { return tool == TORCH ? NONE : TORCH }
 }
 
-function isValidTool(cellKind, tool) {
+function isValidTool(kind, tool) {
 
-    if (cellKind == ROCKY)  { return tool != NONE  }
-    if (cellKind == WET)    { return tool != TORCH }
-    if (cellKind == NARROW) { return tool != GEAR  }
+    if (kind == ROCKY)  { return tool != NONE  }
+    if (kind == WET)    { return tool != TORCH }
+    if (kind == NARROW) { return tool != GEAR  }
 }
 
 ///////////////////////////////////////////////////////////
