@@ -6,7 +6,7 @@
 // are used for efficient rotation:
 // V8 is very slow, even breaks, at manipulation of big lists
 
-var circle = null // will starts as [ 0 ] 
+var circle = null // will start as [ 0 ] 
 
 var circleLength = 1
 
