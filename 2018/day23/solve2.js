@@ -109,6 +109,8 @@ function findManhattanOfBestLocation() {
 
 function mainSearch(expectedCount) {
 
+    if (memory[expectedCount] === null) { return null }
+
     if (memory[expectedCount] == undefined) {
     
         memory[expectedCount] = search(LOW_X, HIGH_X, LOW_Y, HIGH_Y, LOW_Z, HIGH_Z, DIMENSION, expectedCount)
