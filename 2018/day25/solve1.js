@@ -60,7 +60,7 @@ function createGalaxy() {
             
             galaxy.push(star) // star becomes member and will query as member
             
-            stars.splice(starIndex, 1) // removing star, keeping the same index
+            stars.splice(starIndex, 1) // removing star, keeping the same starIndex
         }        
         memberIndex += 1        
     }
