@@ -82,7 +82,7 @@ function processInput() {
 
 function createAsteroid(row, col) {
 
-    return { "row": row, "col": col, "relativeRow": 0, "relativeCol": 0, "slope": 0, "dead": false }
+    return { "row": row, "col": col, "slope": 0, "dead": false }
 }
 
 ///////////////////////////////////////////////////////////
@@ -139,29 +139,29 @@ function isVisible(asteroid, target) {
 
 function setSlopeAndFillQuadrant(target, baseRow, baseCol) {
 
-    target.relativeRow = target.row - baseRow
-    target.relativeCol = target.col - baseCol
+    const relativeRow = target.row - baseRow
+    const relativeCol = target.col - baseCol
     
-    target.slope = Math.abs(target.relativeCol / target.relativeRow)
+    target.slope = Math.abs(relativeCol / relativeRow)
     
-    //  the quadrants for target.relativeRow==zero (slope==Infinity) must be carefully chosen //
+    //  the quadrants for relativeRow==zero (slope==Infinity) must be carefully chosen //
     
-    if (target.relativeCol >= 0) { 
+    if (relativeCol >= 0) { 
     
-        if (target.relativeRow <= 0) { pushToQuadrant(target, quadrant0); return }
+        if (relativeRow <= 0) { pushIncreasing(target, quadrant0); return }
     
-        unshiftToQuadrant(target, quadrant1)
+        pushDecreasing(target, quadrant1)
         return 
     }
     
-    // target.relativeCol < 0:
+    // relativeCol < 0:
     
-    if (target.relativeRow >= 0) { pushToQuadrant(target, quadrant2); return }
+    if (relativeRow >= 0) { pushIncreasing(target, quadrant2); return }
 
-    unshiftToQuadrant(target, quadrant3) 
+    pushDecreasing(target, quadrant3) 
 }
 
-function pushToQuadrant(asteroid, quadrant) { // increasing slopes order
+function pushIncreasing(asteroid, quadrant) { // increasing slopes order
 
     for (let index = 0; index < quadrant.length; index++) {
     
@@ -173,7 +173,7 @@ function pushToQuadrant(asteroid, quadrant) { // increasing slopes order
     quadrant.push(asteroid)
 }
 
-function unshiftToQuadrant(asteroid, quadrant) { // decreasing slopes order
+function pushDecreasing(asteroid, quadrant) { // decreasing slopes order
 
     for (let index = 0; index < quadrant.length; index++) {
     
