@@ -95,14 +95,20 @@ function runProgram(singleInput) {
 
 function getAddress(mode, param, relativeBase) {
 
-    return (mode == RELATIVE_MODE ? relativeBase : 0) + Number(param)
+    if (mode == POSITION_MODE) { return Number(param) }
+    
+    return relativeBase + Number(param) // RELATIVE_MODE
 }
 
 function getValue(mode, param, relativeBase) {
     
-    const value = (mode == IMMEDIATE_MODE) ? param : DATA[getAddress(mode, param, relativeBase)]
-
-    return (typeof value == "bigint") ? value : 0n // 0n for address out of bounds
+    if (mode == IMMEDIATE_MODE) { return param }
+    
+    const address = getAddress(mode, param, relativeBase)
+    
+    if (address > DATA.length - 1) { return 0n }
+    
+    return DATA[address]
 }
 
 main()
