@@ -30,7 +30,7 @@ function main() {
     
     runProgram()
     
-    console.log("\nthe answer is", score)
+    console.log("the answer is", score)
 }
 
 function processInput() {
