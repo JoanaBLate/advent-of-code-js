@@ -34,7 +34,7 @@ function main() {
         if (value == BLOCK) { count += 1 }
     }
           
-    console.log("\nthe answer is", count)
+    console.log("the answer is", count)
 }
 
 function processInput() {
