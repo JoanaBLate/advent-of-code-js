@@ -1,35 +1,32 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.280s
+// solving the puzzle takes (my computer) 0.240s
 
 
 // this code is heavilly based on the solution by Bimperl (https://www.reddit.com/user/Bimperl)
 // at https://www.reddit.com/r/adventofcode/comments/ebai4g/comment/fb5zy78
 
+// this code expects that at least the first half of data be skipped
 
 const DATA = [ ]
+
+const repeats = 10000
+
+const maxPhases = 100
 
 
 function main() {
 
     processInput()
-    
-    const repeats = 10000
 
-    const wat = Number(DATA.slice(0, 7).join(""))
+    const skip = parseInt(DATA.slice(0, 7).join(""))
     
-    const code = repeatArray(DATA, repeats).slice(wat)
+    let state = repeatArray(DATA, repeats).slice(skip)
     
-    const totalIterations = 100
-    
-    const state = code.slice()
-    
-    const nextState = new Array(code.length)
-    
-    // the code only works for input with code which is after the 0.5 mark
-    
-    for (let iteration = 0; iteration < totalIterations; iteration++) {
-    
+    let nextState = new Array(state.length)
+            
+    for (let n = 0; n < maxPhases; n++) { 
+      
         let count = 0
         
         for (let location = state.length - 1; location >= 0; location--) {
@@ -38,12 +35,9 @@ function main() {
             nextState[location] = count
         }
         
-        for (let location = 0; location < state.length; location++) {
-        
-            state[location] = nextState[location]
-        }
+        [ state, nextState ] = [ nextState, state ]
     }
-    
+
     console.log("the answer is", state.slice(0, 8).join(""))
 }
 
