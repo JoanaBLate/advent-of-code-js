@@ -1,34 +1,18 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 5s (NOT optimized)
-
-/*   
-    you can easily get trapped forever in this maze!
-    
-    you must be very objective:
-    
-        1. forget the doors: all you want are the KEYS;
-           doors are just temporary obstacles;
-           DON'T make nodes from them
-           
-        2. any location with a key is a node ONLY WHILE
-           you don't have that key
-           
-        3. sometimes the fastest way for a short distance
-           isn't the best way for a long distance
-           
-*/
+// solving the puzzle takes (my computer) 0.900s
 
 const map = [ ]
 
 var WIDTH = 0
 var HEIGHT = 0
 
-const LOCATIONS = { }
+var homeRow = 0
+var homeCol = 0
 
 var numberOfKeys = 0
 
-var distanceTable = null 
+const NODES = new Array(128) // 'z' is 122 // has blanks!
 
 var bestDistance = 999999
 
@@ -37,16 +21,10 @@ function main() {
 
     processInput()
 
-    blockDeadEnds()
-
- // showMap()
-     
-    noteSpecialLocations()
-    
-    distanceTable = new Int16Array(WIDTH * HEIGHT)
-    
+    fillNodes() // also gets home and numberOfKeys
+                
     findBestDistance()
-    
+       
     console.log("the answer is", bestDistance)
 }
 
@@ -58,13 +36,15 @@ function processInput() {
     
     const lines = input.split("\n")
     
-    for (const line of lines) { map.push(line.trim().split("")) }
+    for (const line of lines) { map.push(line.trim()) }
     
     WIDTH = map[0].length
     HEIGHT = map.length
 }
 
-function noteSpecialLocations() {
+///////////////////////////////////////////////////////////
+
+function fillNodes() { // also gets home and numberOfKeys
 
     for (let row = 0; row < HEIGHT; row++) {
     
@@ -74,96 +54,29 @@ function noteSpecialLocations() {
             
             if (item == ".") { continue }
             if (item == "#") { continue }
-
-            LOCATIONS[item] = createPoint(row, col)
+            
+            if (item == "@") { homeRow = row; homeCol = col; continue } // '@' is not a node, just the starting position
             
             if (item >= "a"  &&  item <= "z") { numberOfKeys += 1 }
+            
+            NODES[item.charCodeAt(0)] = explore(row, col)
         }
     }
 }
 
-function resetDistanceTable() {
-
-    const off = WIDTH * HEIGHT
-    
-    for (let index = 0; index < off; index++) { distanceTable[index] = -1 }
-}
-
-function getLocationDistance(symbol) {
-
-    const point = LOCATIONS[symbol]
-    
-    const index = point.row * WIDTH + point.col
-    
-    return distanceTable[index]
-}
-
-function createPoint(row, col) {
-
-    return { "row": row, "col": col }
-}
-
-function createPath(trek, distance) {
-
-        const end = trek.at(-1)
-        
-        const sorted = trek.split("").sort().join("")
-
-        return { "trek": trek, "distance": distance, "trekEnd": end, "sortedTrek": sorted }
-}
-
-///////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////
 
-function findBestDistance() {
+function explore(row, col) {
 
-    const homePath = createPath("@", 0)
+    const myTrips = [ ]
     
-    let futurePaths = [ homePath ]
+    let futurePoints = [ createPoint(row, col) ]
+
+    const walkTable = new Uint8Array(WIDTH * HEIGHT)    
+
+    const index = row * WIDTH + col
     
-    while (futurePaths.length > 0) {
-
-        const currentPaths = futurePaths
-
-        futurePaths = [ ]
-    
-        for (const path of currentPaths) {
-        
-            if (path.trek.length == numberOfKeys + 1) {  // '+ 1' because of '@'
-            
-                if (path.distance < bestDistance) { bestDistance = path.distance }
-                
-                continue
-            }
-            
-            const foundKeys = explore(path.trek)
-            
-            for (const key of foundKeys) {
-            
-                const distance = path.distance + getLocationDistance(key)
-                
-                const trek = path.trek + key
-                
-                includeInFuturePathsOrNot(trek, distance, futurePaths)
-            }        
-        }    
-    }
-}
-
-///////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////
-
-function explore(trek) {
-
-    resetDistanceTable()
-    
-    let foundKeys = ""
-
-    const home = trek.at(-1)
-
-    const homePoint = LOCATIONS[home]
-    
-    let futurePoints = [ homePoint ]
+    walkTable[index] = 1
     
     let distance = 0
 
@@ -177,36 +90,16 @@ function explore(trek) {
             
             const row = point.row
             const col = point.col
-            
-            const index = row * WIDTH + col
-            
-            distanceTable[index] = distance
-            
-            const symbol = map[row][col]
-            
-            if (isNewKey(symbol)) { foundKeys += symbol }
-                        
+                                    
             grabNeighbor(row-1, col)
             grabNeighbor(row+1, col)
             grabNeighbor(row, col-1)
             grabNeighbor(row, col+1)            
         }
         
-        if (futurePoints.length == 0) { return foundKeys }
+        if (futurePoints.length == 0) { return myTrips }
         
         distance += 1
-    }
-    
-    function isNewKey(symbol) {
-    
-        if (symbol < "a") { return false }
-        if (symbol > "z") { return false }
-        
-        if (trek.includes(symbol)) { return false }
-        
-        if (foundKeys.includes(symbol)) { return false }
-        
-        return true
     }
     
     function grabNeighbor(row, col) {
@@ -216,31 +109,76 @@ function explore(trek) {
 
         if (row >= HEIGHT) { return }
         if (col >= WIDTH)  { return }
-        
-        if (! isAccessible(row, col)) { return }
 
         const index = row * WIDTH + col
         
-        if (distanceTable[index] != -1) { return }
+        if (walkTable[index] == 1) { return }
         
-        distanceTable[index] = -2 // reserved
-              
-        const point = createPoint(row, col)
-        
-        futurePoints.push(point)
-    }
-
-    function isAccessible(row, col) {
+        walkTable[index] = 1 // touched
         
         const symbol = map[row][col] 
         
-        if (symbol == ".") { return true }
-        if (symbol == "#") { return false }
-        if (symbol  < "A") { return true }
-        if (symbol  > "Z") { return true }
+        if (symbol == "#") { return }
         
-        return trek.includes(symbol.toLowerCase())
-    }    
+        const point = createPoint(row, col)
+        
+        if (symbol == ".") { futurePoints.push(point); return }
+        
+        if (symbol == "@") { futurePoints.push(point); return }
+        
+        myTrips.push({ "destiny": symbol, "distance": distance + 1 })
+        
+        if (symbol >= "A"  &&  symbol <= "Z") { return }
+        
+        futurePoints.push(point)        
+    }
+}
+
+///////////////////////////////////////////////////////////
+
+function findBestDistance() {
+
+    const startingTrips = explore(homeRow, homeCol)
+    
+    let futurePaths = [ ]
+    
+    for (const trip  of startingTrips) {
+    
+        if (trip.destiny < "a"  ||  trip.destiny > "z") { continue }
+        
+        const path = createPath(trip.destiny, trip.distance)
+        
+        futurePaths.push(path)    
+    }
+    //
+    
+    while (futurePaths.length > 0) {
+
+        const currentPaths = futurePaths
+
+        futurePaths = [ ]
+    
+        for (const path of currentPaths) {
+        
+            if (path.trek.length == numberOfKeys) {
+            
+                if (path.distance < bestDistance) { bestDistance = path.distance }
+                
+                continue
+            }
+            
+            const trips = walkNodes(path.trek)
+            
+            for (const trip of trips) {
+
+                const trek = path.trek + trip.location
+                
+                const distance = path.distance + trip.distance
+                
+                includeInFuturePathsOrNot(trek, distance, futurePaths)
+            }
+        }
+    }
 }
 
 ///////////////////////////////////////////////////////////
@@ -249,13 +187,15 @@ function includeInFuturePathsOrNot(trek, distance, futurePaths) {
 
     const end = trek.at(-1)
     
-    const sorted = trek.split("").sort().join("")
+    let trekCode = 0
+    
+    for (const c of trek) { trekCode += Math.pow(2, c.charCodeAt(0)) }
     
     for (const path of futurePaths) {
 
         if (path.trekEnd != end) { continue }
         
-        if (path.sortedTrek != sorted) { continue }
+        if (path.trekCode != trekCode) { continue }
         
         if (path.distance <= distance) { return } // the candidate is not better
         
@@ -266,51 +206,110 @@ function includeInFuturePathsOrNot(trek, distance, futurePaths) {
     }
 
     futurePaths.push(createPath(trek, distance))           
+}  
+
+///////////////////////////////////////////////////////////
+
+function createPoint(row, col) {
+
+    return { "row": row, "col": col }
+}
+
+function createNode(location, distance) {
+
+    return { "location": location, "distance": distance }
+}
+
+function createPath(trek, distance) {
+
+    const end = trek.at(-1)
+    
+    let code = 0
+    for (const c of trek) { code += Math.pow(2, c.charCodeAt(0)) }    
+
+    return { "trek": trek, "distance": distance, "trekEnd": end, "trekCode": code }
 }
 
 ///////////////////////////////////////////////////////////
 
-function blockDeadEnds() {
+function walkNodes(trek) { 
+
+    const home = trek.at(-1)
     
+    const distances = new Uint32Array(128) // z is 122
+    
+    for (let n = 0; n < 128; n++) { distances[n] = 999999 } 
+        
+    distances[home.charCodeAt(0)] = 0 
+    
+    let newKeys = ""
+
+    let futureNodes = [ createNode(home, 0) ]
+
     while (true) {
 
-        let changed = false
+        const currentNodes = futureNodes
         
-        for (let row = 1; row < HEIGHT - 1; row++) { // granted to be inside the map
+        futureNodes = [ ]
+        
+        if (currentNodes.length == 0) {
 
-            for (let col = 1; col < WIDTH - 1; col++) { // granted to be inside the map
+            const result = [ ]
             
-                const item = map[row][col] 
+            for (const key of newKeys) { 
+            
+                const distance = distances[key.charCodeAt(0)]
+                 
+                result.push(createNode(key, distance))
+            }
+            return result
+        }
+        
+        for (const node of currentNodes) {
+                        
+            const trips = NODES[node.location.charCodeAt(0)]
+            
+            for (const trip of trips) {
+            
+                const destiny = trip.destiny
                 
-                if (item == "#") { continue }
-                if (item == "@") { continue }            
-                if (item >= "a"  &&  item <= "z") { continue }
+                const index = destiny.charCodeAt(0)
             
-                let count = 0
+                const distance = node.distance + trip.distance
                 
-                if (map[row-1][col] == "#") { count += 1 }
-                if (map[row+1][col] == "#") { count += 1 }
-                if (map[row][col-1] == "#") { count += 1 }
-                if (map[row][col+1] == "#") { count += 1 }
+                if (distances[index] == 999999) { 
+                
+                    distances[index] = distance 
+                }
+                else if (distance < distances[index]) {
+                    
+                     distances[index] = distance
+                }
+                else {
+                
+                     continue
+                }
             
-                if (count > 2) { map[row][col] = "#"; changed = true }
+                if (destiny >= "a"  &&  destiny <= "z") {
+                
+                    if (trek.includes(destiny)) { continue }
+                    
+                    if (newKeys.includes(destiny)) { continue }
+                    
+                    newKeys += destiny; continue // not going forward
+                }
+                
+                // it is a door
+                
+                const neededKey = destiny.toLowerCase()
+                
+                if (! trek.includes(neededKey)) { continue } // locked door
+                
+                futureNodes.push(createNode(destiny, distance))
             }
         }
-        if (! changed) { return }
-    }
+    }       
 }
 
-///////////////////////////////////////////////////////////
-
-function showMap() {
-
-    console.log("")
-    
-    for (const line of map) { console.log(line.join("")) }
-    
-    console.log("")
-}
-            
-        
 main()
 
