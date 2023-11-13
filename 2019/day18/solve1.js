@@ -164,7 +164,7 @@ function findBestDistance() {
 
         const currentPaths = futurePaths
 
-        for (const c of allKeys) { GROUPS[c] = [ ] }
+        for (const key of allKeys) { GROUPS[key] = [ ] }
 
         for (const path of currentPaths) {
         
@@ -193,9 +193,9 @@ function findBestDistance() {
         
         futurePaths = [ ]
         
-        for (const c of allKeys) {
+        for (const key of allKeys) {
         
-            const group = GROUPS[c]
+            const group = GROUPS[key]
             
             for (const node of group) { futurePaths.push(node) }
         }        
