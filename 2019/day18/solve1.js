@@ -1,6 +1,6 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.900s
+// solving the puzzle takes (my computer) 0.260s
 
 const map = [ ]
 
@@ -14,6 +14,8 @@ var numberOfKeys = 0
 
 const NODES = new Array(128) // 'z' is 122 // has blanks!
 
+const GROUPS = { } // for performance
+
 var bestDistance = 999999
 
 
@@ -21,7 +23,7 @@ function main() {
 
     processInput()
 
-    fillNodes() // also gets home and numberOfKeys
+    fillNodes() // also gets home and numberOfKeys and fills GROUPS
                 
     findBestDistance()
        
@@ -57,7 +59,7 @@ function fillNodes() { // also gets home and numberOfKeys
             
             if (item == "@") { homeRow = row; homeCol = col; continue } // '@' is not a node, just the starting position
             
-            if (item >= "a"  &&  item <= "z") { numberOfKeys += 1 }
+            if (item >= "a"  &&  item <= "z") { numberOfKeys += 1; GROUPS[item] = [ ] }
             
             NODES[item.charCodeAt(0)] = explore(row, col)
         }
@@ -126,7 +128,7 @@ function explore(row, col) {
         
         if (symbol == "@") { futurePoints.push(point); return }
         
-        myTrips.push({ "destiny": symbol, "distance": distance + 1 })
+        myTrips.push(createNode(symbol, distance + 1))
         
         if (symbol >= "A"  &&  symbol <= "Z") { return }
         
@@ -138,6 +140,8 @@ function explore(row, col) {
 
 function findBestDistance() {
 
+    const allKeys = Object.keys(GROUPS)
+
     const startingTrips = explore(homeRow, homeCol)
     
     let futurePaths = [ ]
@@ -146,7 +150,11 @@ function findBestDistance() {
     
         if (trip.destiny < "a"  ||  trip.destiny > "z") { continue }
         
-        const path = createPath(trip.destiny, trip.distance)
+        const n = trip.destiny.charCodeAt(0) - "a".charCodeAt(0)
+        
+        const trekCode = Math.pow(2, n)
+        
+        const path = createPath(trip.destiny, trip.distance, trekCode)
         
         futurePaths.push(path)    
     }
@@ -156,14 +164,14 @@ function findBestDistance() {
 
         const currentPaths = futurePaths
 
-        futurePaths = [ ]
-    
+        for (const c of allKeys) { GROUPS[c] = [ ] }
+
         for (const path of currentPaths) {
         
             if (path.trek.length == numberOfKeys) {
             
                 if (path.distance < bestDistance) { bestDistance = path.distance }
-                
+
                 continue
             }
             
@@ -171,29 +179,37 @@ function findBestDistance() {
             
             for (const trip of trips) {
 
-                const trek = path.trek + trip.location
+                const trek = path.trek + trip.destiny
                 
                 const distance = path.distance + trip.distance
                 
-                includeInFuturePathsOrNot(trek, distance, futurePaths)
+                const n = trip.destiny.charCodeAt(0) - "a".charCodeAt(0)
+                
+                const trekCode = path.trekCode + Math.pow(2, n)
+                
+                includeInGroupOrNot(trek, distance, trekCode, GROUPS[trip.destiny])
             }
         }
+        
+        futurePaths = [ ]
+        
+        for (const c of allKeys) {
+        
+            const group = GROUPS[c]
+            
+            for (const node of group) { futurePaths.push(node) }
+        }        
     }
 }
 
 ///////////////////////////////////////////////////////////
 
-function includeInFuturePathsOrNot(trek, distance, futurePaths) {
+function includeInGroupOrNot(trek, distance, trekCode, group) {
 
-    const end = trek.at(-1)
-    
-    let trekCode = 0
-    
-    for (const c of trek) { trekCode += Math.pow(2, c.charCodeAt(0)) }
-    
-    for (const path of futurePaths) {
+    // checking through small groups is far more efficient than
+    // checking each candidate path against all future paths!
 
-        if (path.trekEnd != end) { continue }
+    for (const path of group) {
         
         if (path.trekCode != trekCode) { continue }
         
@@ -205,7 +221,7 @@ function includeInFuturePathsOrNot(trek, distance, futurePaths) {
         return
     }
 
-    futurePaths.push(createPath(trek, distance))           
+    group.push(createPath(trek, distance, trekCode))           
 }  
 
 ///////////////////////////////////////////////////////////
@@ -215,30 +231,27 @@ function createPoint(row, col) {
     return { "row": row, "col": col }
 }
 
-function createNode(location, distance) {
+function createNode(destiny, distance) {
 
-    return { "location": location, "distance": distance }
+    return { "destiny": destiny, "distance": distance }
 }
 
-function createPath(trek, distance) {
+function createPath(trek, distance, trekCode) {
 
-    const end = trek.at(-1)
-    
-    let code = 0
-    for (const c of trek) { code += Math.pow(2, c.charCodeAt(0)) }    
-
-    return { "trek": trek, "distance": distance, "trekEnd": end, "trekCode": code }
+    return { "trek": trek, "distance": distance, "trekCode": trekCode }
 }
 
 ///////////////////////////////////////////////////////////
 
 function walkNodes(trek) { 
 
+    const NOT_VISITED = 999999
+
     const home = trek.at(-1)
     
     const distances = new Uint32Array(128) // z is 122
     
-    for (let n = 0; n < 128; n++) { distances[n] = 999999 } 
+    for (let n = 0; n < 128; n++) { distances[n] = NOT_VISITED } 
         
     distances[home.charCodeAt(0)] = 0 
     
@@ -267,7 +280,7 @@ function walkNodes(trek) {
         
         for (const node of currentNodes) {
                         
-            const trips = NODES[node.location.charCodeAt(0)]
+            const trips = NODES[node.destiny.charCodeAt(0)]
             
             for (const trip of trips) {
             
@@ -277,7 +290,7 @@ function walkNodes(trek) {
             
                 const distance = node.distance + trip.distance
                 
-                if (distances[index] == 999999) { 
+                if (distances[index] == NOT_VISITED) { 
                 
                     distances[index] = distance 
                 }
