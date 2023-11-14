@@ -43,3 +43,5 @@ Completed.
 ## Advent of Code 2019
 
 (under construction)
+
+**Day 18 PART 1** SOLVED IN JUST **0.26s** (without using any library)
