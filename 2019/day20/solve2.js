@@ -1,6 +1,6 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.035s
+// solving the puzzle takes (my computer) 0.045s
 
 
 // this program treats the nearest walkable spot to a portal as the portal  //
@@ -167,7 +167,7 @@ function findPortalTrips() {
         
         const destiny = a + b
         
-        const levelChange = 0
+        const levelChange = (portal.endsWith("i")) ? +1 : -1
         
         data.trips.push(createTrip(destiny, 1, levelChange))
     }
