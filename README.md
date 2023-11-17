@@ -45,3 +45,6 @@ Completed.
 (under construction)
 
 **Day 18 PART 1** SOLVED IN JUST **0.26s** (without using any library)
+
+**Day 20 PART 2** SOLVED IN JUST **0.04s** (without using any library)
+
