@@ -27,9 +27,9 @@ function main() {
         
         "NOT T T", // T is true
         "AND A T", // if A is hole, T is false
-        "AND B T", // if (A or B) is hole, T is false
-        "AND C T", // if (A or B or C) is hole, T is false
-        "NOT T J", // if (A or B or C) is hole, J is true
+        "AND B T", // if A or B is hole, T is false
+        "AND C T", // if A or B or C is hole, T is false
+        "NOT T J", // if A or B or C is hole, J is true
         "AND D J", // if D is hole, J is false
         "WALK"
         
