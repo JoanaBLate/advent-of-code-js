@@ -21,7 +21,7 @@ function main() {
    // never jump when D is hole
    // always jump when A is hole (good for the last/definitive check)
    // must choose when to jump early, considering B and C
-   // simple decision -> always jump when D is ground and A, B or C is a hole
+   // simple decision -> always jump when D is ground and A, B or C is hole
    
    const code = [
         
