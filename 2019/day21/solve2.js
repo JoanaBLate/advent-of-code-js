@@ -17,7 +17,7 @@ function main() {
 
     while (ARQUIVE.length < 3000) { ARQUIVE.push(0) } // giving extra space
     
-   // any jump always end on D
+   // any jump always ends on D
    // never jump when D is hole
    // always jump when A is hole (good for the last/definitive check)
    // must choose when to jump early, considering B and C
