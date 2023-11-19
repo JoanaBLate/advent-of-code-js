@@ -93,17 +93,11 @@ function cut(amount) {
 
 function dealWithIncrement(increment) { 
     
-    let previous = -increment
-   
     for (let n = 0; n < LENGTH; n++) { 
     
-        let index = previous + increment
-    
-        if (index >= LENGTH) { index -= LENGTH }
+        let index = n * increment % LENGTH
     
         deckB[index] = deckA[n]
-
-        previous = index
     }
 
     exchangeDecks()
