@@ -91,13 +91,40 @@ function cut(amount) {
     exchangeDecks()
 }
 
-function dealWithIncrement(increment) { 
+function dealWithIncrement(increment) {
+
+    // virginity must be checked!!! - or else some slot(s) receive(s) more than one card!!
+        
+    /*  THIS FORMULA IS CRAP:        
+        
+        newIndex = previousIndex * increment % length  
+        
+        for example, with length==10 and increment==4,
+        
+        first item is 5 (but SHOULD BE 0)!!!         
+    */ 
     
+    const virgin = 65535 // 65535 matches -1 for signed arrays
+    
+    for (let n = 0; n < LENGTH; n++) { deckB[n] = virgin } 
+    
+    let previous = -increment
+   
     for (let n = 0; n < LENGTH; n++) { 
     
-        let index = n * increment % LENGTH
+        let index = previous + increment
+    
+        while (true) {
+        
+            if (index >= LENGTH) { index -= LENGTH }
+            
+            if (deckB[index] != virgin) { index += 1; continue }
+        
+            break
+        }
     
         deckB[index] = deckA[n]
+        previous = index
     }
 
     exchangeDecks()
