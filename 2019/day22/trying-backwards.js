@@ -6,7 +6,8 @@
 // THE FINAL RESULT TO REVERT (it is not 2020)
 
 // EVEN IF IT WORKED, I DON'T KNOW HOW TO "REDO" IT 10 TRILLION TIMES
-// THERE IS NO SIMPLE/REGULAR PATTERN OF REPETITION (experiments):
+// THERE IS NO SIMPLE/REGULAR PATTERN OF REPETITION
+//  experiments:
 //  when lenght is 2006, it takes 2632 turns to get back to the original state
 //  when lenght is 2007, it takes 5003 turns to get back to the original state
 //  when lenght is 2008, it takes 7539 turns to get back to the original state
