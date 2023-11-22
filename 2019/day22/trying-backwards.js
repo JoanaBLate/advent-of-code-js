@@ -1,14 +1,12 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.030s
-
 /* My best **ATTEMPT** to solve the part 2 without using heavy math */
 
 // GOING REVERSED IS NICE BUT USELESS BECAUSE I DONT HAVE 
 // THE FINAL RESULT TO REVERT (it is not 2020)
 
 // EVEN IF IT WORKED, I DON'T KNOW HOW TO "REDO" IT 10 TRILLION TIMES
-// THERE IS NO SIMPLE/REGULAR PATTERN OF REPETITION (part 1):
+// THERE IS NO SIMPLE/REGULAR PATTERN OF REPETITION (experiments):
 //  when lenght is 2006, it takes 2632 turns to get back to the original state
 //  when lenght is 2007, it takes 5003 turns to get back to the original state
 //  when lenght is 2008, it takes 7539 turns to get back to the original state
