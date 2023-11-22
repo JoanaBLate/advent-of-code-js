@@ -17,7 +17,7 @@ const instructions = [ ] // reversed order!
 
 const LENGTH = 10007 // for puzzle 1
 
-var POSITION = 5540 // -> 2019 for puzzle 1
+var POSITION = 5540 // 5540 matches the CURRENT SPECIFIC input -> 2019 for puzzle 1
 
 
 function main() {
