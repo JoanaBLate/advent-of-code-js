@@ -101,7 +101,7 @@ function main() {
     
     const index = outputMessage.indexOf("get in by typing ")
     
-    const answer = parseInt(outputMessage.substr(index). replace("get in by typing " , ""))
+    const answer = parseInt(outputMessage.substr(index).replace("get in by typing " , ""))
     
     console.log("the answer is", answer)
 }
