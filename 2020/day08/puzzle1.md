@@ -2,7 +2,7 @@
 
 Your flight to the major airline hub reaches cruising altitude without incident. While you consider checking the in-flight menu for one of those drinks that come with a little umbrella, you are interrupted by the kid sitting next to you.
 
-Their [handheld game console](https://en.wikipedia.org/wiki/Handheld**game**console) won't turn on! They ask if you can take a look.
+Their [handheld game console](https://en.wikipedia.org/wiki/Handheld_game_console) won't turn on! They ask if you can take a look.
 
 You narrow the problem down to a strange **infinite loop** in the boot code (your puzzle input) of the device. You should be able to fix it, but first you need to be able to run the code in isolation.
 
