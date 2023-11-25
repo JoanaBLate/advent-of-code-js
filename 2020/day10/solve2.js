@@ -73,7 +73,7 @@ function possibilitiesOfSegment(segment) {
     
     if (len == 5) { return 7 } // 0,1,2,3,4; 0,1,4; 0,2,4; 0,3,4; 0,1,2,4; 0,1,3,4; 0,2,3,4
     
-    console.log("ERROR: not expecting input that generates segment larger than 7")
+    console.log("ERROR: not expecting input that generates segment larger than 5")
     
     Deno.exit()
 }
