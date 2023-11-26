@@ -4,7 +4,7 @@
 
 
 // The last turn when a number was spoken is BASE *ONE* indexed,
-// becuase zero means not spoken
+// because zero means not spoken
 
 
 const target = 30 * 1000 * 1000
