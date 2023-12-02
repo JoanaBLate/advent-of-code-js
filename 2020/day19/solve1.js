@@ -1,6 +1,6 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.060s
+// solving the puzzle takes (my computer) 0.960s
 
 // this solution involves replacing, step by step, all links in all rules for literal (text)
 
