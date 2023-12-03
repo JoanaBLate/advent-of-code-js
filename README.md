@@ -54,3 +54,17 @@ Completed.
 
 **Day 19 PART 1** SOLVED IN JUST **0.04s** (without using any library)
 
+
+## Advent of Code 2021
+
+(not started)
+
+
+## Advent of Code 2022
+
+(not started)
+
+## Advent of Code 2023
+
+(under construction)
+
