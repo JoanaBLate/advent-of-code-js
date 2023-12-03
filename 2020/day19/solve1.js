@@ -1,8 +1,10 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.960s
+// solving the puzzle takes (my computer) 0.036s
 
-// this solution involves replacing, step by step, all links in all rules for literal (text)
+// excepting the ZERO rule, this program replaces
+
+// all links in all rules for literals (text)
 
 // since the beginning, using "01" instead of "ab", for performance
 
@@ -11,8 +13,6 @@ const DATA = [ ]
 
 const RULES = { }
 
-const REFERENCE = new Uint8Array(Math.pow(2, 25)) // more than 32 million items
-
 var allKeys = [ ]
 
 
@@ -20,40 +20,53 @@ function main() {
 
     processInput() 
     
+    const masterLinkA = RULES["#0"].formulas[0][0]
+    const masterLinkB = RULES["#0"].formulas[0][1]
+    
+    delete RULES["#0"]
+    
     allKeys = Object.keys(RULES)
 
     while (replaceBasicLinks()) { }
 
     while (replaceAdvancedLinks()) { }
     
-   // l(RULES)
- 
     //
-        
-    const models = RULES["#0"]
 
-    for (const model of models) { 
+    const groupA = RULES[masterLinkA].words
+    const groupB = RULES[masterLinkB].words
     
-        if (model == "|") { continue }
+    const lengthA = groupA[0].length
+    const lengthB = groupB[0].length
+
+    const referenceA = new Uint8Array(Math.pow(2, lengthA))
+    const referenceB = new Uint8Array(Math.pow(2, lengthB))
     
-        const index = parseInt(model, 2)
-        
-        REFERENCE[index] = 1 
-    }
-    
-    const length = models[0].length
-    
+    for (const word of groupA) { const index = parseInt(word, 2); referenceA[index] = 1 }
+
+    for (const word of groupB) { const index = parseInt(word, 2); referenceB[index] = 1 }
+
     //
     
     let goods = 0   
         
     for (const data of DATA) {
     
-        if (data.length != length) { continue }
+        if (data.length != lengthA + lengthB) { continue }
         
-        const index = parseInt(data, 2)
+        const stringA = data.substr(0, lengthA)
         
-        if (REFERENCE[index] == 1) { goods += 1 }        
+        const indexA = parseInt(stringA, 2)
+
+        if (referenceA[indexA] != 1) { continue }
+        
+        const stringB = data.replace(stringA, "")
+
+        const indexB = parseInt(stringB, 2)
+        
+        if (referenceB[indexB] != 1) { continue }
+        
+        goods += 1
     }
     
     console.log("the answer is", goods)
@@ -87,19 +100,20 @@ function processInput() {
         
         const key = "#" + parts.shift().trim()
                 
+        const node = { "formulas": [ ], "words": [ ] }
+        
+        RULES[key] = node
+        
         let value = parts.shift().trim()
+                
+        if (value == '"a"') { value = "0" }
+        if (value == '"b"') { value = "1" }
         
-        if (value == '"a"') { RULES[key] = [ "0" ]; continue }
-        if (value == '"b"') { RULES[key] = [ "1" ]; continue }
+        if (value == "0"  ||  value == "1") { node.formulas = null; node.words.push(value); continue }
         
-        const tokens = value.split(" ")
+        const stringFormulas = ("#" + value).split(" ").join(" #").split(" #| ")
         
-        for (let n = 0; n < tokens.length; n++) {
-        
-            if (tokens[n] != "|") { tokens[n] = "#" + tokens[n] }
-        }        
-        
-        RULES[key] = tokens
+        for (const sf of stringFormulas) { node.formulas.push(sf.split(" ")) }
     }
 }
 
@@ -112,47 +126,13 @@ function convertToBinary(source) {
     return s
 }
 
-function isLink(token) {
+function removeFormula(rule, formula) {
+
+    const index = rule.formulas.indexOf(formula)
     
-    if (token == undefined) { return false }
+    rule.formulas.splice(index, 1)
     
-    return token[0] == "#"
-}
-
-function isText(token) {
-
-    if (token == undefined) { return false }
-    
-    return token[0] == "0"  ||  token[0] == "1"
-}
-
-function isLiteralRule(rule) {
-
-    for (const token of rule) {
-    
-        if (isLink(token)) { return false }    
-    }
-    return true
-}
-
-///////////////////////////////////////////////////////////
-
-function groupsFromRule(rule) {
-
-    const groups = [ ]
-
-    let group = [ ]
-    
-    for (const token of rule) {
-    
-        if (token != "|") { group.push(token); continue }
-
-        groups.push(group); group = [ ]        
-    }
-
-    groups.push(group)
-
-    return groups
+    if (rule.formulas.length == 0) { rule.formulas = null }
 }
 
 ///////////////////////////////////////////////////////////
@@ -165,9 +145,8 @@ function replaceBasicLinks() {
     
         const rule = RULES[key]
         
-        if (rule.length > 1) { continue }
-        
-        if (isLink(rule[0])) { continue }
+        if (rule.formulas != null) { continue }
+        if (rule.words.length > 1) { continue } // not necessary
         
         links.push(key)    
     }
@@ -175,7 +154,7 @@ function replaceBasicLinks() {
     let changed = false
     
     for (const key of allKeys) {
-        
+    
         if (replaceBasicLink(key, links)) { changed = true }
     }
     
@@ -184,52 +163,53 @@ function replaceBasicLinks() {
 
 function replaceBasicLink(key, links) {
         
-    let changed = false
-    
     const rule = RULES[key]
     
-    for (let n = 0; n < rule.length; n++) {
-
-        const token = rule[n]
+    if (rule.formulas == null) { return false }
     
-        if (! links.includes(token)) { continue }
+    let changed = false
+    
+    for (const formula of rule.formulas) {
 
-        changed = true
+        for (const link of links) {
+    
+            const index = formula.indexOf(link)
+            
+            if (index == -1) { continue }            
 
-        rule[n] = RULES[token][0]
+            changed = true
+ 
+            formula[index] = RULES[link].words[0]            
+        }
     }
     
     if (! changed) { return false }
-    
+
     mergeLiterals(rule)
-        
+
     return true
 }
 
 function mergeLiterals(rule) {
 
-    let n = -1
-    
-    while (true) {
-    
-        n += 1
-    
-        const current = rule[n]
-        
-        const next = rule[n+1]
-        
-        if (next == undefined) { return }
-        
-        if (! isText(current)) { continue }
+    const formulas = [ ]
 
-        if (! isText(next)) { continue }
+    for (const formula of rule.formulas) {
+                
+        if (formula.length == 1) { 
         
-        rule[n] += next
+            if (formula[0][0] == "#") { formulas.push(formula) } else { rule.words.push(formula[0]) }
+            
+            continue
+        }
+         
+        if (formula[0][0] == "#") { formulas.push(formula); continue }
+        if (formula[1][0] == "#") { formulas.push(formula); continue }
         
-        rule.splice(n + 1, 1)
-        
-        n -= 1
+        rule.words.push(formula[0] + formula[1])
     }
+    
+    if (formulas.length == 0) { rule.formulas = null } else { rule.formulas = formulas }
 }
 
 ///////////////////////////////////////////////////////////
@@ -242,7 +222,7 @@ function replaceAdvancedLinks() {
     
         const rule = RULES[key]
         
-        if (isLiteralRule(rule)) { links.push(key) }
+        if (rule.formulas == null) { links.push(key) }
     }
     
     let changed = false
@@ -261,125 +241,81 @@ function replaceAdvancedLink(key, links) {
 
     const rule = RULES[key]
  
-    if (isLiteralRule(rule)) { return false }
+    if (rule.formulas == null) { return false }
     
-    const groups = groupsFromRule(rule)
-
-    rule.length = 0 // emptying the rule    
+    for (const formula of rule.formulas) {
     
-    for (const group of groups) {
-
-        const newWords = replaceAdvancedLink2(group, links)
-        
-        if (newWords != null) {
-
-            changed = true
-            
-            for (const word of newWords) { 
-            
-                if (rule.length != 0) { rule.push("|") }
-
-                rule.push(word) 
-            }
-        }
-        else {
-        
-            if (rule.length != 0) { rule.push("|") }
-
-            for (const token of group) { rule.push(token) }
-        }
+        if (replaceAdvancedLinkThis(rule, formula, links)) { changed = true }
     }
     
     return changed
-} 
+}
 
-function replaceAdvancedLink2(tokens, links) {
+function replaceAdvancedLinkThis(rule, formula, links) {
 
     const targets = [ ]
     
-    for (const token of tokens) {
+    for (const token of formula) {
     
-        if (! isLink(token)) { continue }
+        if (token[0] != "#") { continue } // not a link
         
-        if (! links.includes(token)) { return null } // not ready yet
+        if (! links.includes(token)) { return false } // not ready yet
         
         targets.push(token)
     }
     
-    if (targets.length == 0) { return null } // literal node
+    if (targets.length == 1)  { 
     
-    if (targets.length == 1)  { return replaceAdvancedLinkSingle(tokens, targets[0]) } 
+        replaceAdvancedLinkSingle(rule, formula, targets[0])
+    }
+    else {
     
-    return replaceAdvancedLinkDouble(tokens, targets[0], targets[1]) 
+        replaceAdvancedLinkDouble(rule, formula, targets[0], targets[1]) 
+    }
     
-    console.log ("ERROR (replaceAdvancedLink2): execessive number of targets")
-    Deno.exit()
+    return true
 }
 
 ///////////////////////////////////////////////////////////
 
-function replaceAdvancedLinkSingle(tokens, link) {
+function replaceAdvancedLinkSingle(rule, formula, link) { 
+
+    removeFormula(rule, formula)
     
-    const indexOfLink = tokens.indexOf(link)
+    const indexOfLink = formula.indexOf(link)
     
     const isHead = indexOfLink == 0
     
-    tokens.splice(indexOfLink, 1)
+    formula.splice(indexOfLink, 1)
     
-    const joker = tokens.shift() ||  "" // joker may have come undefined!!!
-    
-    if (tokens.length != 0) { 
-    
-        console.log("ERROR (replaceAdvancedLink2): got node with more than two tokens")
-        Deno.exit()
-    }
-    
-    const newWords = [ ]
-    
-    const sourceTokens = RULES[link]
-    
-    for (const sourceToken of sourceTokens) {
-    
-        if (sourceToken == "|") { continue }
+    const joker = formula.shift() ||  "" // maybe formula had only one token
 
-        const newWord = isHead ? sourceToken + joker : joker + sourceToken
+    const sourceWords = RULES[link].words
+    
+    for (const sourceWord of sourceWords) {
+    
+        const newWord = isHead ? sourceWord + joker : joker + sourceWord
         
-        newWords.push(newWord)        
+        rule.words.push(newWord)        
     }
-
-    return newWords
 }
     
 ///////////////////////////////////////////////////////////
 
-function replaceAdvancedLinkDouble(tokens, linkA, linkB) {
+function replaceAdvancedLinkDouble(rule, formula, linkA, linkB) {
+
+    removeFormula(rule, formula)
     
-    if (tokens.length != 2) { 
+    const ruleAWords = RULES[linkA].words
+    const ruleBWords = RULES[linkB].words
     
-        console.log("ERROR (replaceLinkListDouble): got group with more than two tokens")
-        Deno.exit()
-    }
+    for (const wordA of ruleAWords) {
     
-    const ruleA = RULES[linkA]
-    const ruleB = RULES[linkB]
-    
-    const newWords = [ ]
-    
-    for (const wordA of ruleA) {
-    
-        if (wordA == "|") { continue }
+        for (const wordB of ruleBWords) {
             
-        for (const wordB of ruleB) {
-            
-            if (wordB == "|") { continue }
-            
-            const newWord = wordA + wordB
-            
-            newWords.push(newWord)
+            rule.words.push(wordA + wordB)
         }
     }
-   
-    return newWords
 }
 
 main()
