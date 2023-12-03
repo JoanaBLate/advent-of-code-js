@@ -52,3 +52,5 @@ Completed.
 
 (under construction)
 
+**Day 19 PART 1** SOLVED IN JUST **0.04s** (without using any library)
+
