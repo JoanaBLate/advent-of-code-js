@@ -34,7 +34,7 @@ function main() {
 
 function processInput() {
 
-    const input =Deno.readTextFileSync("input.txt").trim()
+    const input = Deno.readTextFileSync("input.txt").trim()
         
     const lines = input.split("\n")
     
