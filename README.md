@@ -52,7 +52,9 @@ Completed.
 
 (under construction)
 
-**Day 19 PART 1** SOLVED IN JUST **0.04s** (without using any library)
+**Day 19 PART 1** SOLVED IN JUST **0.04s - NO regex** (without using any library)
+
+**Day 19 PART 2** SOLVED IN JUST **0.03s - NO regex** (without using any library)
 
 
 ## Advent of Code 2021
