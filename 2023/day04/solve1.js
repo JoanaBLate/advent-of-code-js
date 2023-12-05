@@ -19,21 +19,12 @@ function main() {
 function processInput() {
 
     const input = Deno.readTextFileSync("input.txt").trim()
-    
-    for (const c of input) {
-    
-        if (c == "\n") { continue }
-        
-        if (c < " ") { l(c.charCodeAt(0),"<<<<<<<<");Deno.exit()}
-    
-    
-    }
         
     const lines = input.split("\n")
     
     for (const line of lines) { 
     
-        const card = { "winners": [ ], "myNumbers": [ ], "value": 0 }
+        const card = { "winners": [ ], "myNumbers": [ ] }
         
         CARDS.push(card)
 
@@ -70,9 +61,7 @@ function valueOfCard(card) {
     
     if (wins == 0) { return 0 }
     
-    card.value = Math.pow(2, wins - 1)
-
-    return card.value
+    return Math.pow(2, wins - 1)
 }
 
 main()
