@@ -4,7 +4,7 @@
 
 const DATA = [ ]
 
-const STRENGTHS = "AKQJT98765432"
+const STRENGTHS = "AKQT98765432J"
 const strengths = "abcdefghijklm".split("").reverse().join("")
 
 const highcards = [ ]
@@ -37,9 +37,9 @@ function main() {
         if (kind == "threesome") { placeData(data, threesomes); continue }    
         if (kind == "fullhouse") { placeData(data, fullhouses); continue }          
         if (kind == "foursome")  { placeData(data, foursomes);  continue }          
-        if (kind == "fivesome")  { placeData(data, fivesomes);  continue }  
+        if (kind == "fivesome")  { placeData(data, fivesomes);  continue } 
     }
-
+    
     for (const list of allLists) { 
     
         for (const sublist of list) { sort(sublist) }
@@ -100,18 +100,37 @@ function convertHand(original) { // for a faster sorting
     return converted
 }
 
+///////////////////////////////////////////////////////////
+
 function getKind(data) {
 
+    let jokers = 0
+    
     const cards = { }
     
     for (const char of data.hand) {
     
+        if (char == "a") { jokers += 1; continue } // hand is already converted
+        
         if (cards[char] == undefined) { cards[char] = 0 }
         
         cards[char] += 1
     }
     
     const labels = Object.keys(cards)
+
+    if (jokers == 0) { return getKindNoJoker(cards, labels) }
+    
+    let greatest = 0
+    
+    for (const value of Object.values(cards)) { if (value > greatest) { greatest = value } }
+    
+    for (const label of labels) { if (cards[label] == greatest) { cards[label] += jokers; break } }
+    
+    return getKindNoJoker(cards, labels)
+}
+    
+function getKindNoJoker(cards, labels) {
     
     if (labels.length == 5) { return "highcard" }
 
@@ -137,7 +156,6 @@ function getKind(data) {
     }
     
     return "fivesome"
-
 }
 
 ///////////////////////////////////////////////////////////
