@@ -155,7 +155,7 @@ function getKindNoJoker(cards, labels) {
         return "fullhouse" 
     }
     
-    return "fivesome"
+    return "fivesome"  // also works for 5 jokers (empty cards, empty labels)
 }
 
 ///////////////////////////////////////////////////////////
