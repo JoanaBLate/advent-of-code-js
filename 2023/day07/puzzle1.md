@@ -14,7 +14,7 @@ After riding a bit across the sands of Desert Island, you can see what look like
 
 You've already assumed it'll be your job to figure out why the parts stopped when she asks if you can help. You agree automatically.
 
-Because the journey will take a few days, she offers to teach you the game of **Camel Cards**. Camel Cards is sort of similar to [poker](https://en.wikipedia.org/wiki/List**of**poker**hands) except it's designed to be easier to play while riding a camel.
+Because the journey will take a few days, she offers to teach you the game of **Camel Cards**. Camel Cards is sort of similar to [poker](https://en.wikipedia.org/wiki/List_of_poker_hands) except it's designed to be easier to play while riding a camel.
 
 In Camel Cards, you get a list of **hands**, and your goal is to order them based on the **strength** of each hand. A hand consists of **five cards** labeled one of `A`, `K`, `Q`, `J`, `T`, `9`, `8`, `7`, `6`, `5`, `4`, `3`, or `2`. The relative strength of each card follows this order, where `A` is the highest and `2` is the lowest.
 
