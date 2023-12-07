@@ -1,109 +1,50 @@
-## --- Day 5: If You Give A Seed A Fertilizer ---
+## --- Day 6: Wait For It ---
 
-You take the boat and find the gardener right where you were told he would be: managing a giant "garden" that looks more to you like a farm.
+The ferry quickly brings you across Island Island. After asking around, you discover that there is indeed normally a large pile of sand somewhere near here, but you don't see anything besides lots of water and the small island where the ferry has docked.
 
-"A water source? Island Island **is** the water source!" You point out that Snow Island isn't receiving any water.
+As you try to figure out what to do next, you notice a poster on a wall near the ferry dock. "Boat races! Open to the public! Grand prize is an all-expenses-paid trip to **Desert Island**!" That must be where the sand comes from! Best of all, the boat races are starting in just a few minutes.
 
-"Oh, we had to stop the water because we **ran out of sand** to [filter](https://en.wikipedia.org/wiki/Sand_filter) it with! Can't make snow with dirty water. Don't worry, I'm sure we'll get more sand soon; we only turned off the water a few days... weeks... oh no." His face sinks into a look of horrified realization.
+You manage to sign up as a competitor in the boat races just in time. The organizer explains that it's not really a traditional race - instead, you will get a fixed amount of time during which your boat has to travel as far as it can, and you win if your boat goes the farthest.
 
-"I've been so busy making sure everyone here has food that I completely forgot to check why we stopped getting more sand! There's a ferry leaving soon that is headed over in that direction - it's much faster than your boat. Could you please go check it out?"
+As part of signing up, you get a sheet of paper (your puzzle input) that lists the **time** allowed for each race and also the best **distance** ever recorded in that race. To guarantee you win the grand prize, you need to make sure you **go farther in each race** than the current record holder.
 
-You barely have time to agree to this request when he brings up another. "While you wait for the ferry, maybe you can help us with our **food production problem**. The latest Island Island [Almanac](https://en.wikipedia.org/wiki/Almanac) just arrived and we're having trouble making sense of it."
-
-The almanac (your puzzle input) lists all of the seeds that need to be planted. It also lists what type of soil to use with each kind of seed, what type of fertilizer to use with each kind of soil, what type of water to use with each kind of fertilizer, and so on. Every type of seed, soil, fertilizer and so on is identified with a number, but numbers are reused by each category - that is, soil `123` and fertilizer `123` aren't necessarily related to each other.
+The organizer brings you over to the area where the boat races are held. The boats are much smaller than you expected - they're actually **toy boats**, each with a big button on top. Holding down the button **charges the boat**, and releasing the button **allows the boat to move**. Boats move faster if their button was held longer, but time spent holding the button counts against the total race time. You can only hold the button at the start of the race, and boats don't move until the button is released.
 
 For example:
 
 ```
-seeds: 79 14 55 13
-
-seed-to-soil map:
-50 98 2
-52 50 48
-
-soil-to-fertilizer map:
-0 15 37
-37 52 2
-39 0 15
-
-fertilizer-to-water map:
-49 53 8
-0 11 42
-42 0 7
-57 7 4
-
-water-to-light map:
-88 18 7
-18 25 70
-
-light-to-temperature map:
-45 77 23
-81 45 19
-68 64 13
-
-temperature-to-humidity map:
-0 69 1
-1 0 69
-
-humidity-to-location map:
-60 56 37
-56 93 4
+Time:      7  15   30
+Distance:  9  40  200
 ```
 
-The almanac starts by listing which seeds need to be planted: seeds `79`, `14`, `55`, and `13`.
+This document describes three races:
 
-The rest of the almanac contains a list of **maps** which describe how to convert numbers from a **source category** into numbers in a **destination category**. That is, the section that starts with `seed-to-soil map:` describes how to convert a **seed number** (the source) to a **soil number** (the destination). This lets the gardener and his team know which soil to use with which seeds, which water to use with which fertilizer, and so on.
+*   The first race lasts 7 milliseconds. The record distance in this race is 9 millimeters.
+*   The second race lasts 15 milliseconds. The record distance in this race is 40 millimeters.
+*   The third race lasts 30 milliseconds. The record distance in this race is 200 millimeters.
 
-Rather than list every source number and its corresponding destination number one by one, the maps describe entire **ranges** of numbers that can be converted. Each line within a map contains three numbers: the **destination range start**, the **source range start**, and the **range length**.
+Your toy boat has a starting speed of **zero millimeters per millisecond**. For each whole millisecond you spend at the beginning of the race holding down the button, the boat's speed increases by **one millimeter per millisecond**.
 
-Consider again the example `seed-to-soil map`:
+So, because the first race lasts 7 milliseconds, you only have a few options:
 
-```
-50 98 2
-52 50 48
-```
+*   Don't hold the button at all (that is, hold it for **`0` milliseconds**) at the start of the race. The boat won't move; it will have traveled **`0` millimeters** by the end of the race.
+*   Hold the button for **`1` millisecond** at the start of the race. Then, the boat will travel at a speed of `1` millimeter per millisecond for 6 milliseconds, reaching a total distance traveled of **`6` millimeters**.
+*   Hold the button for **`2` milliseconds**, giving the boat a speed of `2` millimeters per millisecond. It will then get 5 milliseconds to move, reaching a total distance of **`10` millimeters**.
+*   Hold the button for **`3` milliseconds**. After its remaining 4 milliseconds of travel time, the boat will have gone **`12` millimeters**.
+*   Hold the button for **`4` milliseconds**. After its remaining 3 milliseconds of travel time, the boat will have gone **`12` millimeters**.
+*   Hold the button for **`5` milliseconds**, causing the boat to travel a total of **`10` millimeters**.
+*   Hold the button for **`6` milliseconds**, causing the boat to travel a total of **`6` millimeters**.
+*   Hold the button for **`7` milliseconds**. That's the entire duration of the race. You never let go of the button. The boat can't move until you let go of the button. Please make sure you let go of the button so the boat gets to move. **`0` millimeters**.
 
-The first line has a **destination range start** of `50`, a **source range start** of `98`, and a **range length** of `2`. This line means that the source range starts at `98` and contains two values: `98` and `99`. The destination range is the same length, but it starts at `50`, so its two values are `50` and `51`. With this information, you know that seed number `98` corresponds to soil number `50` and that seed number `99` corresponds to soil number `51`.
+Since the current record for this race is `9` millimeters, there are actually `**4**` different ways you could win: you could hold the button for `2`, `3`, `4`, or `5` milliseconds at the start of the race.
 
-The second line means that the source range starts at `50` and contains `48` values: `50`, `51`, ..., `96`, `97`. This corresponds to a destination range starting at `52` and also containing `48` values: `52`, `53`, ..., `98`, `99`. So, seed number `53` corresponds to soil number `55`.
+In the second race, you could hold the button for at least `4` milliseconds and at most `11` milliseconds and beat the record, a total of `**8**` different ways to win.
 
-Any source numbers that **aren't mapped** correspond to the **same** destination number. So, seed number `10` corresponds to soil number `10`.
+In the third race, you could hold the button for at least `11` milliseconds and no more than `19` milliseconds and still beat the record, a total of `**9**` ways you could win.
 
-So, the entire list of seed numbers and their corresponding soil numbers looks like this:
+To see how much margin of error you have, determine the **number of ways you can beat the record** in each race; in this example, if you multiply these values together, you get **`288`** (`4` \* `8` \* `9`).
 
-```
-seed  soil
-0     0
-1     1
-...   ...
-48    48
-49    49
-50    52
-51    53
-...   ...
-96    98
-97    99
-98    50
-99    51
-```
-
-With this map, you can look up the soil number required for each initial seed number:
-
-*   Seed number `79` corresponds to soil number `81`.
-*   Seed number `14` corresponds to soil number `14`.
-*   Seed number `55` corresponds to soil number `57`.
-*   Seed number `13` corresponds to soil number `13`.
-
-The gardener and his team want to get started as soon as possible, so they'd like to know the closest location that needs a seed. Using these maps, find **the lowest location number that corresponds to any of the initial seeds**. To do this, you'll need to convert each seed number through other categories until you can find its corresponding **location number**. In this example, the corresponding types are:
-
-*   Seed `79`, soil `81`, fertilizer `81`, water `81`, light `74`, temperature `78`, humidity `78`, **location `82`**.
-*   Seed `14`, soil `14`, fertilizer `53`, water `49`, light `42`, temperature `42`, humidity `43`, **location `43`**.
-*   Seed `55`, soil `57`, fertilizer `57`, water `53`, light `46`, temperature `82`, humidity `82`, **location `86`**.
-*   Seed `13`, soil `13`, fertilizer `52`, water `41`, light `34`, temperature `34`, humidity `35`, **location `35`**.
-
-So, the lowest location number in this example is `**35**`.
-
-**What is the lowest location number that corresponds to any of the initial seed numbers?**
+Determine the number of ways you could beat the record in each race. **What do you get if you multiply these numbers together?**
 
 To begin, [get your puzzle input](input.txt).
 
