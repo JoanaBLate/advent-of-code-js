@@ -22,9 +22,9 @@ GGG = (GGG, GGG)
 ZZZ = (ZZZ, ZZZ)
 ```
 
-Starting with `AAA`, you need to **look up the next element** based on the next left/right instruction in your input. In this example, start with `AAA` and go **right** (`R`) by choosing the right element of `AAA`, `**CCC**`. Then, `L` means to choose the **left** element of `CCC`, `**ZZZ**`. By following the left/right instructions, you reach `ZZZ` in `**2**` steps.
+Starting with `AAA`, you need to **look up the next element** based on the next left/right instruction in your input. In this example, start with `AAA` and go **right** (`R`) by choosing the right element of `AAA`, **`CCC`**. Then, `L` means to choose the **left** element of `CCC`, **`ZZZ`**. By following the left/right instructions, you reach `ZZZ` in **`2`** steps.
 
-Of course, you might not find `ZZZ` right away. If you run out of left/right instructions, repeat the whole sequence of instructions as necessary: `RL` really means `RLRLRLRLRLRLRLRL...` and so on. For example, here is a situation that takes `**6**` steps to reach `ZZZ`:
+Of course, you might not find `ZZZ` right away. If you run out of left/right instructions, repeat the whole sequence of instructions as necessary: `RL` really means `RLRLRLRLRLRLRLRL...` and so on. For example, here is a situation that takes **`6`** steps to reach `ZZZ`:
 
 ```
 LLR
