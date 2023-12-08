@@ -6,6 +6,8 @@ The code is written in the **most basic vanilla JavaScript**, without external l
 
 Solutions are made in an  optimized (when needed) **computing/programming style**, NOT by applying magical math formulas.
 
+NOTE: All the measured times INCLUDE the Deno starting up time (around 0.025s). 
+
 ## Advent of Code 2015 
 
 Completed.
