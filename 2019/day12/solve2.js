@@ -191,19 +191,19 @@ function lowestCommonMultiple2(a, b, c) {
 
 function greatestCommonDivisor(a, b, c) {
 
-    let n = 1
+    let divisor = 0
     
-    const off = 1 + Math.min(a, b, c)
+    let n = Math.min(a, b, c) + 1
     
     while (true) {
+        
+        n -= 1
     
-        n += 1
-        
-        if (n == off) { return n - 1 }
-        
-        if (a % n != 0) { return n - 1 }
-        if (b % n != 0) { return n - 1 }
-        if (c % n != 0) { return n - 1 }
+        if (a % n != 0) { if (divisor == 0) { continue } else { return divisor } }
+        if (b % n != 0) { if (divisor == 0) { continue } else { return divisor } }
+        if (c % n != 0) { if (divisor == 0) { continue } else { return divisor } }
+
+        if (divisor == 0) { divisor = n }
     }
 }
 
