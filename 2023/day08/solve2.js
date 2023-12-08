@@ -3,7 +3,7 @@
 // solving the puzzle takes (my computer) 0.033s
 
 
-// we solve this tracking how many steps are needed INDIVIDUALLY,
+// we solve this by tracking how many steps are needed INDIVIDUALLY,
 // then, the answer is the lowest common multiple among all tracks
 
 var DIRECTIONS = [ ]
