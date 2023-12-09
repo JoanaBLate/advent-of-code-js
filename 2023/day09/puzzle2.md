@@ -16,7 +16,7 @@ In particular, here is what the third example history looks like when extrapolat
 
 Adding the new values on the left side of each sequence from bottom to top eventually reveals the new left-most history value: **`5`**.
 
-Doing this for the remaining example data above results in previous values of **`-3`** for the first history and **`0`** for the second history. Adding all three new values together produces `**2**`.
+Doing this for the remaining example data above results in previous values of **`-3`** for the first history and **`0`** for the second history. Adding all three new values together produces **`2`**.
 
 Analyze your OASIS report again, this time extrapolating the **previous** value for each history. **What is the sum of these extrapolated values?**
 
