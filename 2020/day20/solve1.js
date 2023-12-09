@@ -17,6 +17,11 @@
     border (not corner) tiles have 3 neighbors
     
     middle tiles have 4 neighbors
+    
+    --
+    
+    for this *SPECIFIC* puzzle input, for all tiles: any border
+    compatible tile is a true neighbor (not just an eventual match)
 */
 
 
@@ -31,15 +36,15 @@ function main() {
     
     IMAGE_DIM = DATA[0].image.length
     
-    for (const data of DATA) { fillInfo(data) }
-    
-    for (const data of DATA) { countCompatibles(data) }
+    for (const data of DATA) { fillBorders(data) }
     
     let result = 1
-    
+
     for (const data of DATA) { 
     
-        if (data.compatibles == 2) { result *= data.id } // a corner tile!
+        const count = countCompatibles(data)
+
+        if (count == 2) { result *= data.id } // a corner tile!
     }
     
     console.log("the answer is", result)
@@ -69,44 +74,39 @@ function processInput() {
 
 function createImageObj(id, image) {
 
-    return { 
-    
-        "id": id, "image": image, "compatibles": 0,
-    
-        "top": 0, "bottom": 0, "left": 0, "right": 0, 
-        
-        "revTop": 0, "revBottom": 0, "revLeft": 0, "revRight": 0  
-    }
+    return { "id": id, "image": image, "borders": [ ] } // 'borders' also includes borders after flipping and rotating
 }
 
 ///////////////////////////////////////////////////////////
 
-function fillInfo(obj) {
+function fillBorders(obj) {
     
-    obj.top = getCode(obj.image[0])
+    const last = IMAGE_DIM - 1
     
-    obj.revTop = getCodeReversed(obj.image[0])
+    const top = obj.image[0]
     
-    obj.bottom = getCode(obj.image[IMAGE_DIM - 1])
+    const bottom = obj.image[last]
     
-    obj.revBottom = getCodeReversed(obj.image[IMAGE_DIM - 1])
-    
-    let leftBorder = ""
+    let left = ""
 
-    let rightBorder = ""
+    let right = ""
         
-    for (let n = 0; n < IMAGE_DIM; n++) {
+    for (let n = 0; n <= last; n++) {
 
-        leftBorder += obj.image[n][0]
+        left += obj.image[n][0]
 
-        rightBorder += obj.image[n][IMAGE_DIM - 1]
+        right += obj.image[n][last]
     }
     
-    obj.left = getCode(leftBorder)
-    obj.right = getCode(rightBorder)
+    obj.borders.push(getCode(top))
+    obj.borders.push(getCode(bottom))
+    obj.borders.push(getCode(left))
+    obj.borders.push(getCode(right))
 
-    obj.revLeft = getCodeReversed(leftBorder)    
-    obj.revRight = getCodeReversed(rightBorder)
+    obj.borders.push(getCodeReversed(top))
+    obj.borders.push(getCodeReversed(bottom))
+    obj.borders.push(getCodeReversed(left))
+    obj.borders.push(getCodeReversed(right))
 }
 
 function getCode(string) {
@@ -127,32 +127,18 @@ function getCodeReversed(string) {
 
 function countCompatibles(master) {
 
-    const edge = [ 
-    
-        master.top, master.bottom, master.left, master.right, 
-        master.revTop, master.revBottom, master.revLeft, master.revRight 
-    ]   
+    let compatibles = 0
 
-    for (const obj of DATA) {
+    for (const data of DATA) { 
     
-        if (obj == master) { continue }
+        if (data == master) { continue }
         
-        if (edge.includes(obj.top))    { master.compatibles += 1; continue }
+        for (const border of data.borders) { 
         
-        if (edge.includes(obj.bottom)) { master.compatibles += 1; continue }
-        
-        if (edge.includes(obj.left))   { master.compatibles += 1; continue }
-        
-        if (edge.includes(obj.right))  { master.compatibles += 1; continue }
-        
-        if (edge.includes(obj.revTop)) { master.compatibles += 1; continue }
-        
-        if (edge.includes(obj.revBottom)) { master.compatibles += 1; continue }
-        
-        if (edge.includes(obj.revLeft))   { master.compatibles += 1; continue }
-        
-        if (edge.includes(obj.revRight))  { master.compatibles += 1; continue }
+            if (master.borders.includes(border)) { compatibles += 1; break }
+        }
     }
+    return compatibles
 }
 
 main()
