@@ -58,6 +58,8 @@ Completed.
 
 **Day 19 PART 2** SOLVED IN JUST **0.03s - NO regex** (without using any library)
 
+**Day 20 PART 2** SOLVED IN JUST **0.06s** (without using any library)
+
 
 ## Advent of Code 2021
 
