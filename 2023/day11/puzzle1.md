@@ -95,13 +95,13 @@ For example, here is one of the shortest paths between galaxies `5` and `9`:
 8....9.......
 ```
 
-This path has length `**9**` because it takes a minimum of **nine steps** to get from galaxy `5` to galaxy `9` (the eight locations marked `#` plus the step onto galaxy `9` itself). Here are some other example shortest path lengths:
+This path has length **`9`** because it takes a minimum of **nine steps** to get from galaxy `5` to galaxy `9` (the eight locations marked `#` plus the step onto galaxy `9` itself). Here are some other example shortest path lengths:
 
 *   Between galaxy `1` and galaxy `7`: 15
 *   Between galaxy `3` and galaxy `6`: 17
 *   Between galaxy `8` and galaxy `9`: 5
 
-In this example, after expanding the universe, the sum of the shortest path between all 36 pairs of galaxies is `**374**`.
+In this example, after expanding the universe, the sum of the shortest path between all 36 pairs of galaxies is **`374`**.
 
 Expand the universe, then find the length of the shortest path between every pair of galaxies. **What is the sum of these lengths?**
 
