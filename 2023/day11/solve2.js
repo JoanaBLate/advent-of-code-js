@@ -1,46 +1,48 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.050s
+// solving the puzzle takes (my computer) 0.040s
 
 const DATA = [ ]
 
-var HEIGHT = 0
+const million = 1000 * 1000
 
-var WIDTH = 0
+const newRows = [ ] // the index increases by 1; the value increases by 1 or by 1 million
 
-var homeRow = 0
-var homeCol = 0
+const newCols = [ ] // the index increases by 1; the value increases by 1 or by 1 million
 
-var allInsiders = 0
-
-var recentInsiders = [ ]
+const GALAXIES = { }
 
 
 function main() {
 
     processInput()
-       
-    findHome()
 
-    DATA[homeRow][homeCol] = getHomeSymbol()
+    fillNewRows()   
     
-    const track = walkPipesMonoDirection()
+    fillNewCols()    
+        
+    noteGalaxies()
+     
+     let sum = 0
+     
+     const names = Object.keys(GALAXIES)
+     
+     for (const nameA of names) {
 
-    walkBorders()
-    
-    if (getRelativeOutside(track) == "left") {
-    
-        markInsidersAtRight(track)
+         for (const nameB of names) {
+         
+            if (nameA == nameB) { continue }
+            
+            const a = GALAXIES[nameA]
+            const b = GALAXIES[nameB]
+            
+            const distance = Math.abs(b.row - a.row) + Math.abs(b.col - a.col)
+     
+            sum += distance
+        }
     }
-    else {
-        markInsidersAtLeft(track)
-    }
-    
-    expandInsiders()
-
-  //  for (const line of DATA) { l(line.join("")) } // UNCOMMENT TO SEE THE MAP!
-
-    console.log("the answer is", allInsiders)    
+     
+    console.log("the answer is", sum / 2) // because each connection was counted twice
 }
 
 ///////////////////////////////////////////////////////////
@@ -48,348 +50,63 @@ function main() {
 function processInput() {
 
     const input = Deno.readTextFileSync("input.txt").trim()
-       
+           
     const lines = input.split("\n")
     
-    for (const line of lines) { DATA.push(line.trim().split("")) }
-    
-    HEIGHT = DATA.length
-    
-    WIDTH = DATA[0].length
-}
-
-function findHome() {
-
-    for (let row = 0; row < HEIGHT; row++) {
-    
-        for (let col = 0; col < WIDTH; col++) {
-        
-            if (DATA[row][col] == "S") { homeRow = row; homeCol = col; return }
-        }
-    }
-}
-
-function getHomeSymbol() {
-
-    const northOk = checkNeighbor(homeRow - 1, homeCol, "|7F")
-    const southOk = checkNeighbor(homeRow + 1, homeCol, "|JL")
-
-    const eastOk = checkNeighbor(homeRow, homeCol + 1, "-7J")
-    const westOk = checkNeighbor(homeRow, homeCol - 1, "-FL")
-    
-    if (northOk && southOk) { return "|" }
-    if (northOk && eastOk)  { return "L" }
-    if (northOk && westOk)  { return "J" }
-    
-    if (southOk && eastOk)  { return "F" }
-    if (southOk && westOk)  { return "7" }
-    
-    if (westOk  &&  eastOk) { return "-" }
-    
-    console.log("ERROR while getting home symbol")
-    Deno.exit()
-}
-
-function checkNeighbor(row, col, chars) {
-        
-    if (row < 0) { return false }
-    if (col < 0) { return false }
-    
-    if (row > HEIGHT - 1) { return false }
-    if (col > WIDTH -1 )  { return false }
-
-    return chars.includes(DATA[row][col])
-}
-
-function createPoint(row, col) {
-
-    return { "row": row, "col": col }
-}
-
-function createTrackNode(row, col, oldDirection) {
-
-    return { "row": row, "col": col, "oldDirection": oldDirection, "newDirection": "" }
+    for (const line of lines) { DATA.push(line.trim()) }
 }
 
 ///////////////////////////////////////////////////////////
 
-function walkPipesMonoDirection() {
+function fillNewRows() {
 
-    // walking in a single direction demands only one node in future nodes
+    const width = DATA[0].length
+    
+    const empty = ".".repeat(width)
 
-    const track = [ ]
-
-    let futureNodes = [ createTrackNode(homeRow, homeCol, "unknown") ]
-    
-    while (true) {
-    
-        if (futureNodes.length == 0) { fixTrackDirections(track); return track }
+    for (const line of DATA) {
         
-        const currentNodes = futureNodes
-                
-        futureNodes = [ ]
-    
-        for (const node of currentNodes) {
-            
-            track.push(node)
-            
-            const row = node.row
-            const col = node.col
-            
-            const symbol = DATA[row][col]
-            
-            DATA[row][col] = "@"
+        const delta = (line == empty) ? million : 1
         
-            if (symbol == "L") { addNode(row, col, "north"); addNode(row, col, "east"); continue }
-            
-            if (symbol == "|") { addNode(row, col, "north"); addNode(row, col, "south"); continue }
-            
-            if (symbol == "J") { addNode(row, col, "north"); addNode(row, col, "west"); continue }
-            
-            if (symbol == "F") { addNode(row, col, "east");  addNode(row, col, "south"); continue }
-            
-            if (symbol == "-") { addNode(row, col, "east");  addNode(row, col, "west"); continue }
-
-            if (symbol == "7") { addNode(row, col, "south"); addNode(row, col, "west"); continue }
-            
-            console.log("ERROR: unknown symbol '" + symbol + "' at  row", row, " col", col)
-            Deno.exit()
-        }
-    }
-    
-    function addNode(row, col, direction) {
-    
-        if (direction == "north") { row -= 1 }
-        if (direction == "south") { row += 1 }
-        if (direction == "west")  { col -= 1 }
-        if (direction == "east")  { col += 1 }
+        const last = (newRows.length == 0) ? -1 : newRows.at(-1)    
         
-        if (row < 0) { return }
-        if (col < 0) { return }
-        
-        if (row > HEIGHT - 1) { return }
-        if (col > WIDTH  - 1) { return }
-        
-        if (futureNodes.length != 0) { return }
-        
-        const symbol = DATA[row][col]
-    
-        if (symbol == ".") { return }
-        
-        if (symbol == "@") { return }
-        
-        futureNodes.push(createTrackNode(row, col, direction))        
+        newRows.push(last + delta)
     }
 }
 
-function fixTrackDirections(track) {
-    
-    const home = track[0]
-    const last = track.at(-1)
-    
-    home.oldDirection = findNextDirection(last, home)
-    
-    for (let n = 1; n < track.length; n++) {
-    
-        track[n - 1].newDirection = track[n].oldDirection    
-    }
-    
-    last.newDirection = home.oldDirection
-}
-    
-function findNextDirection(current, next) {
-    
-    if (next.row < current.row) { return "north" }
-    if (next.row > current.row) { return "south" }
-    if (next.col < current.col) { return "west" }
-    if (next.col > current.col) { return "east" }
-}
+function fillNewCols() {
 
-///////////////////////////////////////////////////////////
+    const width = DATA[0].length
 
-function walkBorders() {
+    for (let col = 0; col < width; col++) {
 
-    for (let row = 0; row < HEIGHT; row++) { 
-    
-        walkBorder(row, 0)
-        walkBorder(row, WIDTH - 1)
-    }
-    
-    for (let col = 0; col < WIDTH; col++) { 
-    
-        walkBorder(0, col)
-        walkBorder(HEIGHT - 1, col)
-    }
-}
+        let empty = true
 
-function walkBorder(row, col) {
-
-    if (DATA[row][col] == "@") { return }
-    if (DATA[row][col] == "#") { return }
-    
-    let futureNodes = [ createPoint(row, col) ]
-    
-    while (true) {
-    
-        if (futureNodes.length == 0) { return }
+        for (const line of DATA) { if (line[col] == "#") { empty = false; break } }
         
-        const currentNodes = futureNodes
-                
-        futureNodes = [ ]
-    
-        for (const node of currentNodes) {
+        const delta = empty ? million : 1
         
-            const row = node.row
-            const col = node.col
-            
-            DATA[row][col] = "#"
+        const last = (newCols.length == 0) ? +1 : newCols.at(-1)
         
-            addNode(row - 1, col)
-            addNode(row + 1, col)
-            addNode(row, col - 1)
-            addNode(row, col + 1)
-        }
-    }
-    
-    function addNode(row, col) {
-    
-        if (row < 0) { return }
-        if (col < 0) { return }
-        
-        if (row > HEIGHT - 1) { return }
-        if (col > WIDTH  - 1) { return }
-        
-        if (DATA[row][col] == "@") { return }
-        if (DATA[row][col] == "#") { return }
-        
-        DATA[row][col] = "#" // reserving
-        
-        futureNodes.push(createPoint(row, col))        
+        newCols.push(last + delta)
     }
 }
 
 ///////////////////////////////////////////////////////////
 
-function getRelativeOutside(track) {
+function noteGalaxies() {
 
-    for (const node of track) {
+    const height = DATA.length    
+
+    const width = DATA[0].length
+
+    for (let row = 0; row < height; row++) {
     
-        if (node.direction == "north") { 
-            
-            if (DATA[node.row][node.col - 1] == "#") { return "left" }
-            if (DATA[node.row][node.col + 1] == "#") { return "right" }
-            continue 
-        }
-        if (node.direction == "south") { 
-            
-            if (DATA[node.row][node.col + 1] == "#") { return "left" }
-            if (DATA[node.row][node.col - 1] == "#") { return "right" }
-            continue 
-        }
-        if (node.direction == "west") { 
-            
-            if (node.row + 1 < HEIGHT) {
-            
-                if (DATA[node.row + 1][node.col] == "#") { return "left" }
-            }
-            
-            if (node.row > 0) {
-            
-                if (DATA[node.row - 1][node.col] == "#") { return "right" }
-            }
-            continue 
-        }
-        if (node.direction == "east") { 
-        
-            if (node.row > 0) {
+        for (let col = 0; col < width; col++) {
 
-                if (DATA[node.row - 1][node.col] == "#") { return "left" }
-            }
-            
-            if (node.row + 1 < HEIGHT) {
-                
-                if (DATA[node.row + 1][node.col] == "#") { return "right" }
-            }
-            continue
+            if (DATA[row][col] == "#") { GALAXIES[row + "~" + col] = { "row": newRows[row], "col": newCols[col] } }
         }
     }
-}
-
-///////////////////////////////////////////////////////////
-
-function markInsidersAtLeft(track) {
-
-    for (const node of track) { 
-    
-        markInsiderAtLeft(node.oldDirection, node.row, node.col)
-        markInsiderAtLeft(node.newDirection, node.row, node.col)
-    }
-}
-
-function markInsiderAtLeft(direction, row, col) {
-
-    if (direction == "north") { markInsider(row, col - 1); return }
-    if (direction == "south") { markInsider(row, col + 1); return }
-    if (direction == "west")  { markInsider(row + 1, col); return }
-    if (direction == "east")  { markInsider(row - 1, col); return }
-}
-
-function markInsidersAtRight(track) {
-
-    for (const node of track) { 
-    
-        markInsiderAtRight(node.oldDirection, node.row, node.col)
-        markInsiderAtRight(node.newDirection, node.row, node.col)
-    }
-}
-
-function markInsiderAtRight(direction, row, col) {
-
-    if (direction == "north") { markInsider(row, col + 1); return }
-    if (direction == "south") { markInsider(row, col - 1); return }
-    if (direction == "west")  { markInsider(row - 1, col); return }
-    if (direction == "east")  { markInsider(row + 1, col); return }
-}
-
-///////////////////////////////////////////////////////////
-
-function expandInsiders() {
-
-    while (true) {
-
-        if (recentInsiders.length == 0) { return }
-    
-        const insidersToDo = recentInsiders
-        
-        recentInsiders = [ ]
-    
-        for (const point of insidersToDo) {
-        
-            markInsider(point.row - 1, point.col)
-            markInsider(point.row + 1, point.col)
-            markInsider(point.row, point.col - 1)
-            markInsider(point.row, point.col + 1)
-        }
-    }
-}
-
-function markInsider(row, col) {
-
-    if (row < 0) { return }
-    if (col < 0) { return }
-    
-    if (row > HEIGHT - 1) { return }
-    if (col > WIDTH  - 1) { return }
-    
-    if (DATA[row][col] == "@") { return }
-    if (DATA[row][col] == "#") { return }
-    if (DATA[row][col] == "*") { return }
-    
-    DATA[row][col] = "*"
-    
-    allInsiders += 1
-    
-    recentInsiders.push(createPoint(row, col))
 }
 
 main()

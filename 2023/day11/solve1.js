@@ -1,166 +1,141 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.035s
+// solving the puzzle takes (my computer) 0.040s
 
-const DATA = [ ]
+var DATA = [ ]
 
-var HEIGHT = 0
-
-var WIDTH = 0
-
-var homeRow = 0
-var homeCol = 0
+const GALAXIES = { }
 
 
 function main() {
 
     processInput()
-    
-    findHome()
 
-    const homeSymbol = getHomeSymbol()
+    insertRows()    
         
-    DATA[homeRow] = DATA[homeRow].replace("S", homeSymbol) 
-    
-    console.log("the answer is", search())
-}
-
-function processInput() {
-
-    const input = Deno.readTextFileSync("input.txt").trim()
+    insertCols()    
         
-    const lines = input.split("\n")
-    
-    for (const line of lines) { DATA.push(line.trim()) }
-    
-    HEIGHT = DATA.length
-    
-    WIDTH = DATA[0].length
-}
+    noteGalaxies()
+     
+     let sum = 0
+     
+     const names = Object.keys(GALAXIES)
+     
+     for (const nameA of names) {
 
-function findHome() {
-
-    for (let row = 0; row < HEIGHT; row++) {
-    
-        for (let col = 0; col < WIDTH; col++) {
-        
-            if (DATA[row][col] == "S") { homeRow = row; homeCol = col; return }
+         for (const nameB of names) {
+         
+            if (nameA == nameB) { continue }
+            
+            const a = GALAXIES[nameA]
+            const b = GALAXIES[nameB]
+            
+            const distance = Math.abs(b.row - a.row) + Math.abs(b.col - a.col)
+     
+            sum += distance
         }
     }
-}
-
-function getHomeSymbol() {
-
-    const northOk = checkNeighbor(homeRow - 1, homeCol, "|7F")
-    const southOk = checkNeighbor(homeRow + 1, homeCol, "|JL")
-
-    const eastOk = checkNeighbor(homeRow, homeCol + 1, "-7J")
-    const westOk = checkNeighbor(homeRow, homeCol - 1, "-FL")
-
-    if (northOk && southOk) { return "|" }
-    if (northOk && eastOk)  { return "L" }
-    if (northOk && westOk)  { return "J" }
-    
-    if (southOk && eastOk)  { return "F" }
-    if (southOk && westOk)  { return "7" }
-    
-    if (westOk  &&  eastOk) { return "-" }
-    
-    console.log("ERROR while getting home symbol")
-    Deno.exit()
-}
-
-function checkNeighbor(row, col, chars) {
-        
-    if (row < 0) { return false }
-    if (col < 0) { return false }
-    
-    if (row > HEIGHT - 1) { return false }
-    if (col > WIDTH  - 1) { return false }
-
-    return chars.includes(DATA[row][col])
-}
-
-function createPoint(row, col) {
-
-    return { "row": row, "col": col }
+     
+    console.log("the answer is", sum / 2) // because each connection was counted twice
 }
 
 ///////////////////////////////////////////////////////////
 
-function search() {
-     
-    const distanceMap = [ ]
+function processInput() {
+
+    const input = Deno.readTextFileSync("input.txt").trim()
+           
+    const lines = input.split("\n")
     
-    for (let n = 0; n < HEIGHT; n++) { 
+    for (const line of lines) { DATA.push(line.trim()) }
+}
+
+///////////////////////////////////////////////////////////
+
+function insertRows() {
+
+    const width = DATA[0].length
     
-        const line = new Int32Array(WIDTH)
+    const empty = ".".repeat(width)
+
+    const temp = DATA
+    
+    DATA = [ ]
+
+    for (const line of temp) {
+    
+        DATA.push(line)
         
-        line.fill(-1)
+        if (line == empty) { DATA.push(empty) }
+    }
+}
+
+function insertCols() {
+
+    const height = DATA.length
+
+    const width = DATA[0].length
+
+    const emptyCols = [ ]
+    
+    for (let col = 0; col < width; col++) {
         
-        distanceMap.push(line) 
+        let empty = true
+        
+        for (let row = 0; row < height; row++) {
+
+            if (DATA[row][col] != ".") { empty = false; continue }
+        }
+        
+        if (empty) { emptyCols.push(col) }
     }
 
-    let distance = -1
+    const temp = DATA
     
-    let futureNodes = [ createPoint(homeRow, homeCol) ]
+    DATA = [ ]
+
+    for (const line of temp) {
     
-    while (true) {
-    
-        if (futureNodes.length == 0) { return distance }
+        const newline = insertColsInLine(line, emptyCols.slice())
         
-        const currentNodes = futureNodes
-        
-        distance += 1   
-        
-        futureNodes = [ ]
-    
-        for (const node of currentNodes) {
-        
-            const row = node.row
-            const col = node.col
-            
-            distanceMap[row][col] = distance
-            
-            const symbol = DATA[row][col]
-        
-            if (symbol == ".") { continue }
-            
-            if (symbol == "-") { addNode(row, col, "west");  addNode(row, col, "east"); continue }
-            
-            if (symbol == "|") { addNode(row, col, "north"); addNode(row, col, "south"); continue }
-            
-            if (symbol == "L") { addNode(row, col, "north"); addNode(row, col, "east"); continue }
-            
-            if (symbol == "J") { addNode(row, col, "north"); addNode(row, col, "west"); continue }
-            
-            if (symbol == "F") { addNode(row, col, "south"); addNode(row, col, "east"); continue }
-            
-            if (symbol == "7") { addNode(row, col, "south"); addNode(row, col, "west"); continue }
-            
-            console.log("ERROR: unknown symbol '" + symbol + "' at  row", row, " col", col)
-            Deno.exit()
-        }
+        DATA.push(newline)        
     }
+}
+
+function insertColsInLine(line, emptyCols) {
+
+    let newline = ""
     
-    function addNode(row, col, direction) {
+    let n = -1
+        
+    while (line != "") {
     
-        if (direction == "north") { row -= 1 }
-        if (direction == "south") { row += 1 }
-        if (direction == "west")  { col -= 1 }
-        if (direction == "east")  { col += 1 }
+        n += 1
+    
+        newline += line[0]
         
-        if (row < 0) { return }
-        if (col < 0) { return }
+        line = line.substr(1)
         
-        if (row > HEIGHT - 1) { return }
-        if (col > WIDTH -1 )  { return }
-        
-        if (distanceMap[row][col] != -1) { return }
-        
-        distanceMap[row][col] = -2 // reserved
-        
-        futureNodes.push(createPoint(row, col))        
+        if (n == emptyCols[0]) { newline += "."; emptyCols.shift() }
+    }
+
+    return newline
+}
+
+///////////////////////////////////////////////////////////
+
+function noteGalaxies() {
+
+    const height = DATA.length    
+
+    const width = DATA[0].length
+
+    for (let row = 0; row < height; row++) {
+    
+        for (let col = 0; col < width; col++) {
+
+            if (DATA[row][col] == "#") { GALAXIES[row + "~" + col] = { "row": row, "col": col } }
+        }
     }
 }
 
