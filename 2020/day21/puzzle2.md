@@ -12,3 +12,4 @@ Arrange the ingredients **alphabetically by their allergen** and separate them b
 
 Time to stock your raft with supplies. **What is your canonical dangerous ingredient list?**
 
+To begin, [get your puzzle input](input.txt).
