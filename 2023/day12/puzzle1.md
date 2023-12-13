@@ -75,7 +75,7 @@ In this example, the number of possible arrangements for each row is:
 *   `????.######..#####. 1,6,5` - **`4`** arrangements
 *   `?###???????? 3,2,1` - **`10`** arrangements
 
-Adding all of the possible arrangement counts together produces a total of **`21**` arrangements.
+Adding all of the possible arrangement counts together produces a total of **`21`** arrangements.
 
 For each row, count all of the different arrangements of operational and broken springs that meet the given criteria. **What is the sum of those counts?**
 
