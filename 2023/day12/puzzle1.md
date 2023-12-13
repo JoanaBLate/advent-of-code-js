@@ -2,7 +2,7 @@
 
 You finally reach the hot springs! You can see steam rising from secluded areas attached to the primary, ornate building.
 
-As you turn to enter, the [researcher](11) stops you. "Wait - I thought you were looking for the hot springs, weren't you?" You indicate that this definitely looks like hot springs to you.
+As you turn to enter, the [researcher](../day11) stops you. "Wait - I thought you were looking for the hot springs, weren't you?" You indicate that this definitely looks like hot springs to you.
 
 "Oh, sorry, common mistake! This is actually the [onsen](https://en.wikipedia.org/wiki/Onsen)! The hot springs are next door."
 
@@ -68,14 +68,14 @@ The last line is actually consistent with **ten** different arrangements! Becaus
 
 In this example, the number of possible arrangements for each row is:
 
-*   `???.### 1,1,3` - `**1**` arrangement
-*   `.??..??...?##. 1,1,3` - `**4**` arrangements
-*   `?#?#?#?#?#?#?#? 1,3,1,6` - `**1**` arrangement
-*   `????.#...#... 4,1,1` - `**1**` arrangement
-*   `????.######..#####. 1,6,5` - `**4**` arrangements
-*   `?###???????? 3,2,1` - `**10**` arrangements
+*   `???.### 1,1,3` - **`1`** arrangement
+*   `.??..??...?##. 1,1,3` - **`4`** arrangements
+*   `?#?#?#?#?#?#?#? 1,3,1,6` - **`1`** arrangement
+*   `????.#...#... 4,1,1` - **`1`** arrangement
+*   `????.######..#####. 1,6,5` - **`4`** arrangements
+*   `?###???????? 3,2,1` - **`10`** arrangements
 
-Adding all of the possible arrangement counts together produces a total of `**21**` arrangements.
+Adding all of the possible arrangement counts together produces a total of **`21**` arrangements.
 
 For each row, count all of the different arrangements of operational and broken springs that meet the given criteria. **What is the sum of those counts?**
 
