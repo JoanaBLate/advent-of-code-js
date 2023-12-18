@@ -77,8 +77,6 @@ function countArrangements(string, blueprint) {
     
     const map = tokens.join(".")
     
-   // if (map.length == sharps.length) { return 1 }
-    
     const scheme =  [ ]
         
     for (const size of blueprint) { scheme.push({ "size": size, "positions": [ ], "paths": { } }) }   
