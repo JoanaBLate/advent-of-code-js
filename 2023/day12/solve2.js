@@ -1,6 +1,6 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.040s
+// solving the puzzle takes (my computer) 0.075s
 
 const DATA = [ ]
 
@@ -12,7 +12,9 @@ function main() {
     let sum = 0    
     
     for (const data of DATA) { 
-            
+    
+        enlargeData(data)
+        
         sum += countArrangements(data.string, data.blueprint)
     } 
     
@@ -39,6 +41,17 @@ function processInput() {
         
         DATA.push({ "string": string, "blueprint": blueprint })
     }
+}
+
+function enlargeData(data) {
+
+   const s = data.string
+   
+   data.string = [s, s, s, s, s].join("?")
+   
+   const blueprint = data.blueprint.slice()
+   
+   for (let n = 0; n < 4; n++) { data.blueprint = data.blueprint.concat(blueprint) }
 }
 
 function tokenize(source) { // excludes dots ('.')
