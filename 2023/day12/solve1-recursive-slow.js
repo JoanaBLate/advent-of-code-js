@@ -13,13 +13,13 @@ function main() {
     
     for (const data of DATA) { 
             
-        sum += python(data.string, data.blueprint)
+        sum += calc(data.string, data.blueprint)
     } 
     
     console.log("the answer is ", sum) 
 }
 
-function python(string, blueprint) {
+function calc(string, blueprint) {
 
     // console.log(string, blueprint.join())
 
