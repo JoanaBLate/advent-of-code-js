@@ -1,3 +1,4 @@
+
 # advent-of-code-js
 
 ## Clear, didactic and *BLAZINGLY FAST* solutions in JS
@@ -22,7 +23,7 @@ Completed.
 
 **Day 19 PART 2** SOLVED IN JUST **0.80s** (without using math formula)
 
-**Day 21 PART 2** SOLVED IN JUST **0.93s** (without using any library)
+**Day 21 PART 2** SOLVED IN JUST **0.93s** 
 
 ## Advent of Code 2017
 
@@ -32,33 +33,33 @@ Completed.
 
 Completed.
 
-**Day 09 PART 2** SOLVED IN JUST **0.15s** (without using any library)
+**Day 09 PART 2** SOLVED IN JUST **0.15s** 
 
-**Day 11 PART 2** SOLVED IN JUST **0.14s** (without using any library)
+**Day 11 PART 2** SOLVED IN JUST **0.14s** 
 
-**Day 16 PART 2** SOLVED IN JUST **0.04s** (without using any library)
+**Day 16 PART 2** SOLVED IN JUST **0.04s** 
 
-**Day 22 PART 2** SOLVED IN JUST **0.08s** (without using any library)
+**Day 22 PART 2** SOLVED IN JUST **0.08s** 
 
-**Day 23 PART 2** SOLVED IN JUST **0.17s** (without using any library)
+**Day 23 PART 2** SOLVED IN JUST **0.17s** 
 
 ## Advent of Code 2019
 
 Completed.
 
-**Day 18 PART 1** SOLVED IN JUST **0.26s** (without using any library)
+**Day 18 PART 1** SOLVED IN JUST **0.26s** 
 
-**Day 20 PART 2** SOLVED IN JUST **0.04s** (without using any library)
+**Day 20 PART 2** SOLVED IN JUST **0.04s** 
 
 ## Advent of Code 2020
 
 (under construction)
 
-**Day 19 PART 1** SOLVED IN JUST **0.04s - NO regex** (without using any library)
+**Day 19 PART 1** SOLVED IN JUST **0.04s - NO regex** 
 
-**Day 19 PART 2** SOLVED IN JUST **0.03s - NO regex** (without using any library)
+**Day 19 PART 2** SOLVED IN JUST **0.03s - NO regex** 
 
-**Day 20 PART 2** SOLVED IN JUST **0.06s** (without using any library)
+**Day 20 PART 2** SOLVED IN JUST **0.06s** 
 
 
 ## Advent of Code 2021
@@ -72,7 +73,6 @@ Completed.
 
 ## Advent of Code 2023
 
-**Day 12 PART 2** SOLVED IN JUST **0.08s** (without using any library)
+**Day 12 PART 2** SOLVED IN JUST **0.08s** 
 
 (under construction)
-
