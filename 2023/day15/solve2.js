@@ -13,7 +13,6 @@ function main() {
     
     for (let n = 0; n < 256; n++) { boxes.push([ ]) }
 
-   // l(DATA)
     for (const data of DATA) { processCommand(data) }
     
     let sum = 0
