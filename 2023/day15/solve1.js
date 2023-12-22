@@ -1,6 +1,6 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.030s
+// solving the puzzle takes (my computer) 0.027s
 
 var DATA = [ ]
 
