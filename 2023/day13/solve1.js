@@ -9,18 +9,20 @@ function main() {
 
     processInput()
     
-    let result = 0
+    let sum = 0
     
-    for (const map of maps) {
-      
-        const rows = 100 * findMirrorTopRows(map)
-        
-        const cols = findMirrorLeftCols(map) 
-        
-        result += rows + cols        
-    }
+    for (const map of maps) { sum += resultFor(map) }
      
-    console.log("the answer is", result)
+    console.log("the answer is", sum)
+}
+
+function resultFor(map) {
+      
+    const result = 100 * findMirrorTopRows(map)
+    
+    if (result != 0) { return result }
+        
+    return findMirrorLeftCols(map)         
 }
 
 ///////////////////////////////////////////////////////////
@@ -66,11 +68,11 @@ function rotate(source) {
 
 ///////////////////////////////////////////////////////////
 
-function findMirrorLeftCols(source) {
+function findMirrorLeftCols(map) {
 
-    const map = rotate(source)
+    const rotated = rotate(map)
 
-    return findMirrorTopRows(map)
+    return findMirrorTopRows(rotated)
 }
 
 ///////////////////////////////////////////////////////////
