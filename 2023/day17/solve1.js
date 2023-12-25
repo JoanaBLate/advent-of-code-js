@@ -1,6 +1,6 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.115s
+// solving the puzzle takes (my computer) 0.110s
 
 const NORTH = 1
 const SOUTH = 2
@@ -101,7 +101,7 @@ function createNode(row, col, original) {
         "fromWest1": Infinity,
         "fromWest2": Infinity,
         "fromWest3": Infinity,
-        "walkingRound": 0
+        "selectedRound": 0
     }
 }
 
