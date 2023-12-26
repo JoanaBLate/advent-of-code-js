@@ -73,6 +73,8 @@ Completed.
 
 ## Advent of Code 2023
 
-**Day 12 PART 2** SOLVED IN JUST **0.08s** 
+**Day 12 PART 2** SOLVED IN JUST **0.08s**
+
+**Day 17 PART 2** SOLVED IN JUST **0.12s** 
 
 (under construction)
