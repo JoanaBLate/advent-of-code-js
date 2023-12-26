@@ -58,16 +58,12 @@ function processInput() {
         
         const amount = parseInt(tokens.shift())
         
-        const color = tokens.shift().substr(1, 7)
-        
-        DATA.push({ "direction": direction, "amount": amount, "color": color })
+        DATA.push({ "direction": direction, "amount": amount })
     }
 }
 
 function digAll() {
 
-    dict["0~0"] = DATA[0].color
-    
     for (const data of DATA) { dig(data) }
     
     width = biggestCol - smallestCol + 1
@@ -87,7 +83,7 @@ function dig(data) {
 
         if (data.direction == "R") { col += 1 }
         
-        dict[row + "~" + col] = data.color   
+        dict[row + "~" + col] = true   
         
         if (row > biggestRow) { biggestRow = row }
         if (col > biggestCol) { biggestCol = col }
