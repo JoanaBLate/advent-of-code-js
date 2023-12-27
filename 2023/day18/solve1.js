@@ -2,6 +2,8 @@
 
 // solving the puzzle takes (my computer) 0.040s
 
+// not using any math theorem!
+
 const DATA = [ ]
 
 const dict = { }  // row~col: color
