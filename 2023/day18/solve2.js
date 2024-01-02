@@ -329,9 +329,9 @@ function floodFromBottom(bottom, baseLeft, baseRight) {  // *INCLUSIVE* coordina
     const left = leftColumn.col + 1
     const right = rightColumn.col - 1
     
-    if (left < baseLeft) { maybeGo(bottom + 1, left, baseLeft - 2, DOWN) }  // "- 2" includes column
+    if (left < baseLeft) { maybeFlood(bottom + 1, left, baseLeft - 2, DOWN) }  // "- 2" includes column
     
-    if (right > baseRight) { maybeGo(bottom + 1, baseRight + 2, right, DOWN) }  // "+ 2" includes column
+    if (right > baseRight) { maybeFlood(bottom + 1, baseRight + 2, right, DOWN) }  // "+ 2" includes column
 
     let top = Math.max(leftColumn.top, rightColumn.top)
     
@@ -356,7 +356,7 @@ function floodFromBottom(bottom, baseLeft, baseRight) {  // *INCLUSIVE* coordina
         futures.push(info)
     }    
     else {    
-        maybeGo(newBottom, left, right, UP)    
+        maybeFlood(newBottom, left, right, UP)    
     }    
 }
 
@@ -371,9 +371,9 @@ function floodFromTop(top, baseLeft, baseRight) {  // *INCLUSIVE* coordinates of
     const left = leftColumn.col + 1
     const right = rightColumn.col - 1
     
-    if (left < baseLeft) { maybeGo(top - 1, left, baseLeft - 2, UP) }  // "- 2" includes column
+    if (left < baseLeft) { maybeFlood(top - 1, left, baseLeft - 2, UP) }  // "- 2" includes column
     
-    if (right > baseRight) { maybeGo(top - 1, baseRight + 2, right, UP) }  // "+ 2" includes column
+    if (right > baseRight) { maybeFlood(top - 1, baseRight + 2, right, UP) }  // "+ 2" includes column
 
     let bottom = Math.min(leftColumn.bottom, rightColumn.bottom)
     
@@ -398,13 +398,13 @@ function floodFromTop(top, baseLeft, baseRight) {  // *INCLUSIVE* coordinates of
         futures.push(info)
     }    
     else {    
-        maybeGo(newTop, left, right, DOWN)    
+        maybeFlood(newTop, left, right, DOWN)    
     }    
 }
 
 ///////////////////////////////////////////////////////////
     
-function maybeGo(row, left, right, going) { // *INCLUSIVE* coordinates of the *NEW* area 
+function maybeFlood(row, left, right, going) { // *INCLUSIVE* coordinates of the *NEW* area 
 
     const beams = findBeams(row, left, right)
   
@@ -428,7 +428,7 @@ function maybeGo(row, left, right, going) { // *INCLUSIVE* coordinates of the *N
         left = beam.right + 2 // "+ 2" includes column
     }
     
-    if (left > right) { return } // happens when there is no more room above
+    if (left > right) { return } // happens when there is no more room above (or below)
     
     const info = createInfo(row, left, right, going)
     
