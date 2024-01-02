@@ -45,9 +45,14 @@ function processInput() {
     
         const tokens = line.trim().split(" ")
         
-        const direction = tokens.shift()
+        tokens.shift()
+        tokens.shift()
         
-        const amount = parseInt(tokens.shift())
+        const info = tokens.shift().substr(2, 6)
+
+        const amount = parseInt(info.substr(0, 5), 16)
+
+        const direction = "RDLU"[parseInt(info.substr(5, 1))]
 
         const data = createRawData(previousRow, previousCol, direction, amount)
         
