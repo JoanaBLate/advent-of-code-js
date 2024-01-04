@@ -68,15 +68,12 @@ function createCondition(varname, operator, operand, destiny) {
 
 function createRange() {
 
-    return { 
-    
-        "x": createSubrange(1, 4000), "m": createSubrange(1, 4000), "a": createSubrange(1, 4000), "s": createSubrange(1, 4000) 
-    }
+    return { "x": createSubrange(), "m": createSubrange(), "a": createSubrange(), "s": createSubrange() }
 }
 
-function createSubrange(low, high) {
+function createSubrange() {
 
-    return { "low": low, "high": high }
+    return { "low": 1, "high": 4000 }
 }
 
 function cloneRange(source) {
