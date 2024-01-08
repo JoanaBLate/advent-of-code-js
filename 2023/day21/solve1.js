@@ -1,6 +1,6 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.042s
+// solving the puzzle takes (my computer) 0.040s
 
 const input = Deno.readTextFileSync("input.txt").trim()
 
@@ -10,18 +10,21 @@ var WIDTH = 0
 
 var HEIGHT = 0
 
-var futurePlots = [ ]
+var TARGET = "T"
+
+var FUTURE = "F"
 
 
 function main() {
 
     processInput()
 
-    fillFuturePlotsWithHome()
+    adjustHomeSymbol()
     
     walk(64)
     
-    console.log("the answer is", futurePlots.length)
+ // show()
+    console.log("the answer is", countPlots())
 }
 
 ///////////////////////////////////////////////////////////
@@ -30,33 +33,42 @@ function processInput() {
         
     const lines = input.split("\n")
     
-    for (const line of lines) { MAP.push(line.trim()) }
+    for (const line of lines) { MAP.push(line.trim().split("")) }
     
     HEIGHT = MAP.length
     
     WIDTH = MAP[0].length
 }
 
-function createPoint(row, col) {
-
-    return ({ "row": row, "col": col })
-}
-
 ///////////////////////////////////////////////////////////
 
-function fillFuturePlotsWithHome() {
+function adjustHomeSymbol() {
 
     for (let row = 0; row < HEIGHT; row++) {
     
         for (let col = 0; col < WIDTH; col++) {
         
-            if (MAP[row][col] != "S") { continue }
-            
-            futurePlots.push(createPoint(row, col))
-            
-            return
+            if (MAP[row][col] == "S") { MAP[row][col] = "F"; return }
         }
     }
+}
+
+function countPlots() {
+
+    let count = 0
+
+    for (let row = 0; row < HEIGHT; row++) {
+    
+        for (let col = 0; col < WIDTH; col++) {
+        
+            if (MAP[row][col] == ".") { continue }
+            if (MAP[row][col] == "#") { continue }
+            
+            count += 1
+        }
+    }
+    
+    return count
 }
 
 ///////////////////////////////////////////////////////////
@@ -66,30 +78,31 @@ function walk(maxStep) {
     let step = 0
     
     while (true) {
-    
+
         step += 1
+
+        if (TARGET == "T") { TARGET = "F"; FUTURE = "T" } else { TARGET = "T"; FUTURE = "F" }
         
-        const currentPlots = futurePlots
+        for (let row = 0; row < HEIGHT; row++) {
         
-        futurePlots = [ ]
-    
-        const walking = new Uint8Array(WIDTH * HEIGHT)
-        
-        for (const plot of currentPlots) { walkPlot(plot, walking) }
+            for (let col = 0; col < WIDTH; col++) {
+            
+                if (MAP[row][col] != TARGET) { continue }
+                
+                MAP[row][col] = "."
+
+                tryWalk(row - 1, col)
+                tryWalk(row + 1, col)
+                tryWalk(row, col - 1)
+                tryWalk(row, col + 1)
+            }
+        }
         
         if (step == maxStep) { return }
     }
 }
 
-function walkPlot(plot, walking) {
-
-    tryWalk(plot.row - 1, plot.col, walking)
-    tryWalk(plot.row + 1, plot.col, walking)
-    tryWalk(plot.row, plot.col - 1, walking)
-    tryWalk(plot.row, plot.col + 1, walking)
-}
-
-function tryWalk(row, col, walking) {
+function tryWalk(row, col) {
 
     if (row < 0) { return }
     if (col < 0) { return }
@@ -97,14 +110,16 @@ function tryWalk(row, col, walking) {
     if (col > WIDTH  - 1) { return }
     
     if (MAP[row][col] == "#") { return }
-
-    const index = row * WIDTH + col
     
-    if (walking[index] != 0) { return }
+    MAP[row][col] = FUTURE
+}
 
-    walking[index] = 1
+///////////////////////////////////////////////////////////
 
-    futurePlots.push(createPoint(row, col))
+function show() {
+
+    console.log("")
+    for (const line of MAP) { console.log(line.join(" ")) }
 }
 
 main()
