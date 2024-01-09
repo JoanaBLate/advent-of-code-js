@@ -29,7 +29,7 @@
     
     >> to visualize some map kind do as in the example bellow (JUST ONCE each time)
     
-        const shortTriangleD = walkAndCount(130, 130, 64) // current code line
+        const smallTriangleD = walkAndCount(130, 130, 64) // current code line
         
         show(walk(130, 130, 64)) // line to be inserted for visualization
 
@@ -60,36 +60,37 @@ function main() {
     
    // drawDiamond()
     
-    // used plots for each map(131 x 131) kind:
+    // counting used plots for each map(131 x 131) kind:
+    
     const squareA = walkAndCount(homeRow, homeCol, 129)
 
     const squareB = walkAndCount(homeRow, homeCol, 130)
     
-    const shortTriangleA = walkAndCount(0, 0, 64)
+    const smallTriangleA = walkAndCount(0, 0, 64)
     
-    const shortTriangleB = walkAndCount(0, 130, 64)
+    const smallTriangleB = walkAndCount(0, 130, 64)
     
-    const shortTriangleC = walkAndCount(130, 0, 64)
+    const smallTriangleC = walkAndCount(130, 0, 64)
     
-    const shortTriangleD = walkAndCount(130, 130, 64)
+    const smallTriangleD = walkAndCount(130, 130, 64)
         
-    const largeTriangleA = walkAndCount(0, 0, 195)
+    const bigTriangleA = walkAndCount(0, 0, 195)
     
-    const largeTriangleB = walkAndCount(0, 130, 195)
+    const bigTriangleB = walkAndCount(0, 130, 195)
     
-    const largeTriangleC = walkAndCount(130, 0, 195)
+    const bigTriangleC = walkAndCount(130, 0, 195)
 
-    const largeTriangleD = walkAndCount(130, 130, 195)
+    const bigTriangleD = walkAndCount(130, 130, 195)
     
-    const extremityA = walkAndCount(0, 65, 130)
+    const tailA = walkAndCount(0, 65, 130)
     
-    const extremityB = walkAndCount(65, 0, 130)
+    const tailB = walkAndCount(65, 0, 130)
     
-    const extremityC = walkAndCount(65, 130, 130)
+    const tailC = walkAndCount(65, 130, 130)
     
-    const extremityD = walkAndCount(130, 65, 130)
+    const tailD = walkAndCount(130, 65, 130)
     
-    //
+    // summing the counts:
     
     const branche = (STEPS - 65) / 131
 
@@ -108,13 +109,13 @@ function main() {
     
     const rectangles = numberOfSquaresA * squareA + numberOfSquaresB * squareB
 
-    const largeTriangles = largeTriangleA + largeTriangleB + largeTriangleC + largeTriangleD
+    const bigTriangles = bigTriangleA + bigTriangleB + bigTriangleC + bigTriangleD
     
-    const shortTriangles = shortTriangleA + shortTriangleB + shortTriangleC + shortTriangleD
+    const smallTriangles = smallTriangleA + smallTriangleB + smallTriangleC + smallTriangleD
     
-    const extremities = extremityA + extremityB + extremityC + extremityD
+    const tails = tailA + tailB + tailC + tailD
     
-    const result = rectangles + (branche - 1) * largeTriangles + branche * shortTriangles + extremities
+    const result = rectangles + (branche - 1) * bigTriangles + branche * smallTriangles + tails
     
     console.log("the answer is", result)
 }
@@ -178,6 +179,8 @@ function walk(startRow, startCol, maxStep) {
     while (true) {
     
         step += 1
+        
+        if (step % 2 == 0) { TARGET = 3; FUTURE = 2 } else { TARGET = 2; FUTURE = 3 }
     
         for (let row = 0; row < HEIGHT; row++) {
         
@@ -197,8 +200,6 @@ function walk(startRow, startCol, maxStep) {
         }  
         
         if (step == maxStep) { return map }
-
-        if (TARGET == 2) { TARGET = 3; FUTURE = 2 } else { TARGET = 2; FUTURE = 3 }
     }      
 }
 
