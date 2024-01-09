@@ -18,7 +18,7 @@
       the occupation of the center row grows 1 position to the left and 1 position to the right        
       the occupation of the center column grows 1 position to the rop and 1 position to the bottom
         
-    till step 130 (inclusive) all map states are different,
+    till step 130 (inclusive) all *square* map states are different,
     after step 130, states of steps 129 and 130 repeat forever:
     step 131 repeats the state at step 129
     step 132 repeats the state at step 130
@@ -32,7 +32,6 @@
         const smallTriangleD = walkAndCount(130, 130, 64) // current code line
         
         show(walk(130, 130, 64)) // line to be inserted for visualization
-
 */
 
 const input = Deno.readTextFileSync("input.txt").trim()
