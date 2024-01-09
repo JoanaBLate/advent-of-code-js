@@ -7,6 +7,10 @@
       
     IMPORTANT OBSERVATIONS
     
+    this puzzle requires a *tailor made* solution, a previous knowledge
+    of its behavior; so this program directly assigns 131 to DIM (instead 
+    of reading WIDTH and HEIGHT from the input) and makes other assumptions
+    
     the plots grow in a very regular diamond shape
     
     the plots are ALWAYS distributed in a perfect regular grid,
@@ -41,9 +45,7 @@ const STEPS = 26501365 // number of steps of the puzzle
 
 var MAP = null // always virgin
 
-var WIDTH = 0
-
-var HEIGHT = 0
+var DIM = 131
 
 var homeRow = 0
 
@@ -92,7 +94,7 @@ function main() {
     
     // summing the counts:
     
-    const branche = Math.floor(STEPS / 131)
+    const branche = Math.floor(STEPS / DIM)
 
     let numberOfSquaresA = 1
     
@@ -126,17 +128,13 @@ function processInput() {
 
     const lines = input.split("\n")
     
-    HEIGHT = lines.length
-    
-    WIDTH = lines[0].trim().length
-    
-    MAP = new Uint8Array(WIDTH * HEIGHT)
+    MAP = new Uint8Array(DIM * DIM)
 
-    for (let row = 0; row < HEIGHT; row++) {
+    for (let row = 0; row < DIM; row++) {
     
-        for (let col = 0; col < WIDTH; col++) {
+        for (let col = 0; col < DIM; col++) {
             
-            const index = row * WIDTH + col
+            const index = row * DIM + col
         
             if (lines[row][col] == "#") { MAP[index] = ROCK; continue }
             
@@ -147,7 +145,7 @@ function processInput() {
 
 function cloneVirginMap() {
     
-    const map = new Uint8Array(WIDTH * HEIGHT)
+    const map = new Uint8Array(DIM * DIM)
 
     for (let n = 0; n < map.length; n++) { map[n] = MAP[n] }
     
@@ -170,7 +168,7 @@ function walk(startRow, startCol, maxStep) {
 
     const map = cloneVirginMap()
 
-    const index = startRow * WIDTH + startCol
+    const index = startRow * DIM + startCol
     
     map[index] = TARGET
     
@@ -182,11 +180,11 @@ function walk(startRow, startCol, maxStep) {
         
         if (step % 2 == 0) { TARGET = 3; FUTURE = 2 } else { TARGET = 2; FUTURE = 3 }
     
-        for (let row = 0; row < HEIGHT; row++) {
+        for (let row = 0; row < DIM; row++) {
         
-            for (let col = 0; col < WIDTH; col++) {
+            for (let col = 0; col < DIM; col++) {
             
-                const index = row * WIDTH + col
+                const index = row * DIM + col
             
                 if (map[index] != TARGET) { continue }
   
@@ -207,10 +205,10 @@ function tryWalk(map, row, col, FUTURE) {
 
     if (row < 0) { return }
     if (col < 0) { return }
-    if (row > HEIGHT - 1) { return }
-    if (col > WIDTH  - 1) { return }
+    if (row > DIM - 1)  { return }
+    if (col > DIM  - 1) { return }
     
-    const index = row * WIDTH + col
+    const index = row * DIM + col
     
     if (map[index] == ROCK) { return }
 
@@ -223,11 +221,11 @@ function countPlots(map) {
 
     let count = 0
 
-    for (let row = 0; row < HEIGHT; row++) {
+    for (let row = 0; row < DIM; row++) {
     
-        for (let col = 0; col < WIDTH; col++) {
+        for (let col = 0; col < DIM; col++) {
         
-            const index = row * WIDTH + col
+            const index = row * DIM + col
     
             if (map[index] == FREE) { continue }
             if (map[index] == ROCK) { continue }            
@@ -249,13 +247,13 @@ function drawDiamond() {
 
 function show(map) {
 
-    for (let row = 0; row < HEIGHT; row++) {
+    for (let row = 0; row < DIM; row++) {
     
         let s = ""
         
-        for (let col = 0; col < WIDTH; col++) {
+        for (let col = 0; col < DIM; col++) {
         
-            const index = row * WIDTH + col
+            const index = row * DIM + col
 
             s += ".#TF"[map[index]]
         }
