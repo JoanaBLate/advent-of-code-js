@@ -128,7 +128,7 @@ In this example, the bricks can be disintegrated as follows:
 *   Brick `F` cannot be disintegrated; the brick above it (`G`) would fall.
 *   Brick `G` **can** be disintegrated; it does not support any other bricks.
 
-So, in this example, `**5**` bricks can be safely disintegrated.
+So, in this example, **`5`** bricks can be safely disintegrated.
 
 Figure how the blocks will settle based on the snapshot. Once they've settled, consider disintegrating a single brick; **how many bricks could be safely chosen as the one to get disintegrated?**
 
