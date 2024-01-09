@@ -5,7 +5,7 @@
 /*
     (FOR MY INPUT)
       
-    FIVE IMPORTANT OBSERVATIONS
+    IMPORTANT OBSERVATIONS
     
     the plots grow in a very regular diamond shape
     
@@ -23,6 +23,15 @@
     step 131 repeats the state at step 129
     step 132 repeats the state at step 130
     step 133 repeats the state at step 129 and so on
+    
+    >> run the file BIG-DIAMOND.js to visualize the essence of the WHOLE geometry
+       (you will need to use font size 4, probably)
+    
+    >> to visualize some map kind do as in the example bellow (JUST ONCE each time)
+    
+        const shortTriangleD = walkAndCount(130, 130, 64) // current code line
+        
+        show(walk(130, 130, 64)) // line to be inserted for visualization
 
 */
 
@@ -51,7 +60,7 @@ function main() {
     
    // drawDiamond()
     
-    // counts:
+    // used plots for each map(131 x 131) kind:
     const squareA = walkAndCount(homeRow, homeCol, 129)
 
     const squareB = walkAndCount(homeRow, homeCol, 130)
@@ -82,7 +91,7 @@ function main() {
     
     //
     
-    const allSquares = (STEPS - 65) / 131
+    const branche = (STEPS - 65) / 131
 
     let numberOfSquaresA = 1
     
@@ -90,7 +99,7 @@ function main() {
 
     let amount = 0
     
-    for (let n = 0; n < allSquares; n++) { 
+    for (let n = 0; n < branche; n++) { 
 
         if (n % 2 == 0) { numberOfSquaresA += amount } else { numberOfSquaresB += amount }
 
@@ -105,7 +114,7 @@ function main() {
     
     const extremities = extremityA + extremityB + extremityC + extremityD
     
-    const result = rectangles + (allSquares - 1) * largeTriangles + allSquares * shortTriangles + extremities
+    const result = rectangles + (branche - 1) * largeTriangles + branche * shortTriangles + extremities
     
     console.log("the answer is", result)
 }
