@@ -79,4 +79,6 @@ Completed.
  
 **Day 18 PART 2** SOLVED IN JUST **0.03s - NO math theorem** 
 
+**Day 21 PART 2** SOLVED IN JUST **0.15s - NO math formula**
+
 (under construction)
