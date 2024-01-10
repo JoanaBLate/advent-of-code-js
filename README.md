@@ -9,6 +9,8 @@ Solutions are made in an  optimized (when needed) **computing/programming style*
 
 NOTE: All the measured times INCLUDE the Deno starting up time (around 0.025s). 
 
+[**hints or blazingly fast AOC solutions in JavaScript**](https://medium.com/javascript-in-plain-english/what-you-need-to-know-for-solving-the-advent-of-code-puzzles-blazingly-fast-with-javascript-7365be28abea)
+
 ## Advent of Code 2015 
 
 Completed.
@@ -19,7 +21,7 @@ Completed.
 
 Completed.
 
-[**Day 11 PART 2** SOLVED IN JUST **30s**](https://medium.com/javascript-in-plain-english/what-you-need-to-know-for-solving-the-advent-of-code-puzzles-blazingly-fast-with-javascript-7365be28abea) (you can run it in the console of your browser - the code is in the 'web' folder)
+**Day 11 PART 2** SOLVED IN JUST **30s** (see the link for hint above)
 
 **Day 19 PART 2** SOLVED IN JUST **0.80s - NO math formula**
 
