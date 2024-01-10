@@ -21,7 +21,7 @@ Completed.
 
 Completed.
 
-**Day 11 PART 2** SOLVED IN JUST **30s** (see the link for hint above)
+**Day 11 PART 2** SOLVED IN JUST **30s** (see the link for hints above)
 
 **Day 19 PART 2** SOLVED IN JUST **0.80s - NO math formula**
 
