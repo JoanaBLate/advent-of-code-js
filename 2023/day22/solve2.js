@@ -59,7 +59,7 @@ function processInput() {
         
         const brick = { 
         
-            "id": id, "x1": x1, "x2": x2, "y1": y1, "y2": y2, "z1": z1, "z2": z2, "holders": [ ], "mounteds": [ ], "accumulated": 0 
+            "id": id, "x1": x1, "x2": x2, "y1": y1, "y2": y2, "z1": z1, "z2": z2, "holders": [ ], "mounteds": [ ] 
         }
         
         BRICKS[id] = brick
