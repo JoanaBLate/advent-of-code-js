@@ -1,6 +1,6 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.900s
+// solving the puzzle takes (my computer) 0.530s
 
 const input = Deno.readTextFileSync("input.txt").trim()
 
@@ -218,6 +218,8 @@ function dfs(indexOfCurrentNode) { // depth first search algorithm
 
     let best = -Infinity
     
+    if (shallAbortPath()) { return -Infinity }
+    
     WALKED[indexOfCurrentNode] = 1
     
     const node = NODES[indexOfCurrentNode]
@@ -236,6 +238,20 @@ function dfs(indexOfCurrentNode) { // depth first search algorithm
     WALKED[indexOfCurrentNode] = 0
 
     return best
+}
+
+function shallAbortPath() { // not called after target was reached in current path
+
+    const targetNode = NODES[indexOfTargetNode]
+        
+    for (const trip of targetNode.trips) {
+    
+        const indexOfNextNode = trip.indexOfEndNode 
+        
+        if(! WALKED[indexOfNextNode]) { return false }
+    }
+    
+    return true // all neighbors were walked but target was not reached
 }
 
 ///////////////////////////////////////////////////////////
