@@ -1,6 +1,6 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 4.5s
+// solving the puzzle takes (my computer) 3.5s
 
 const input = Deno.readTextFileSync("input.txt").trim()
 
@@ -10,11 +10,7 @@ var WIDTH = 0
 
 var HEIGHT = 0
 
-const NODES = { }
-
-var availableIds = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
-
-const coordinatesToId = { }
+const NODES = [ ]
 
 
 function main() {
@@ -99,28 +95,11 @@ function isFree(row, col) {
 
 function createAndRegisterNode(row, col) {
 
-    const id = idForNode(row, col)
+    const node = { "row": row, "col": col, "trips": [ ] }
 
-    NODES[id] = { "row": row, "col": col, "trips": [ ] }
+    NODES.push(node)
     
-    MAP[row][col] = id
-    
-    coordinatesToId[row + "~" + col] = id
-}
-
-function idForNode(row, col) {
-
-    if (row == 0  &&  col == 1) { return "+" }
-    
-    if (row == HEIGHT - 1  &&  col == WIDTH - 2) { return "-" }
-    
-    const id = availableIds[0]
-    
-    if (id == "") { console.log("ERROR: to many nodes to be named"); Deno.exit() }
-    
-    availableIds = availableIds.substr(1)
-    
-    return id
+    MAP[row][col] = "" + NODES.length - 1
 }
 
 ///////////////////////////////////////////////////////////
@@ -154,7 +133,7 @@ function walkFromNode2(node, row, col) {
     walkFromNode3(node, row, col)
 }
 
-function walkFromNode3(beginNode, r, c) {
+function walkFromNode3(beginNode, row1, col1) {
 
     const walked = new Uint8Array(WIDTH * HEIGHT)
     
@@ -162,11 +141,11 @@ function walkFromNode3(beginNode, r, c) {
     
     walked[index] = 1 // avoid step on begin node
         
-    const index2 = r * WIDTH + c
+    const index2 = row1 * WIDTH + col1
         
     walked[index2] = 1 // avoid step twice on first position
     
-    let futurePoints = [ createPoint(r, c) ]
+    let futurePoints = [ createPoint(row1, col1) ]
     
     let distance = 0
     
@@ -183,20 +162,20 @@ function walkFromNode3(beginNode, r, c) {
         
         if (MAP[row][col] != ".") {
                 
-            const endNodeId = coordinatesToId[row + "~" + col]
+            const indexOfEndNode = parseInt(MAP[row][col])
         
-            beginNode.trips.push({ "endNodeId": endNodeId, "distance": distance })
+            beginNode.trips.push(createTrip(indexOfEndNode, distance))
             return 
         }
     
-        walkPoint(row - 1, col, walked, futurePoints)
-        walkPoint(row + 1, col, walked, futurePoints)
-        walkPoint(row, col - 1, walked, futurePoints)
-        walkPoint(row, col + 1, walked, futurePoints)
+        walkFromNode4(row - 1, col, walked, futurePoints)
+        walkFromNode4(row + 1, col, walked, futurePoints)
+        walkFromNode4(row, col - 1, walked, futurePoints)
+        walkFromNode4(row, col + 1, walked, futurePoints)
     }
 }
 
-function walkPoint(row, col, walked, futurePoints) {
+function walkFromNode4(row, col, walked, futurePoints) {
 
     if (row < 0) { return }
     if (col < 0) { return }
@@ -215,40 +194,66 @@ function walkPoint(row, col, walked, futurePoints) {
     futurePoints.push(createPoint(row, col))
 }
 
+function createTrip(indexOfEndNode, distance) {
+
+    const codedIndexOfEndNode = String.fromCharCode(indexOfEndNode)
+        
+    return { "indexOfEndNode": indexOfEndNode, "codedIndexOfEndNode": codedIndexOfEndNode, "distance": distance }
+}
+
 ///////////////////////////////////////////////////////////
 
 function findLengthOfLongestTravel() {
 
     let best = 0
+    
+    const home = String.fromCharCode(0)
 
-    const exit = "-"
+    const exit = String.fromCharCode(NODES.length - 1)
 
-    const currentTravels = [ createTravel("+", 0) ]
+    const currentTravels = [ createTravel(home, 0) ]
 
     while (true) {    
     
-        const currentTravel = currentTravels.pop()
+        const currentTravel = currentTravels.at(-1)
         
         if (currentTravel == undefined) { break }
         
-        const lastNode = NODES[currentTravel.path.at(-1)]
+        const currentPath = currentTravel.path
+        const currentDistance = currentTravel.distance
+        
+        const index = currentPath.charCodeAt(currentPath.length - 1)
+        
+        const lastNode = NODES[index]
+        
+        let overwritten = false
         
         for (const trip of lastNode.trips) {
+        
+            if (currentPath.includes(trip.codedIndexOfEndNode)) { continue }
             
-            if (currentTravel.path.includes(trip.endNodeId)) { continue }
-            
-            const path = currentTravel.path + trip.endNodeId
+            const path = currentPath + trip.codedIndexOfEndNode
 
-            const distance = currentTravel.distance + trip.distance
-    
-            const travel = createTravel(path, distance)
-                        
-            if (trip.endNodeId != exit) { currentTravels.push(travel); continue } 
+            const distance = currentDistance + trip.distance            
+            
+            if (trip.codedIndexOfEndNode == exit) { 
                
-            if (travel.distance > best) { best = travel.distance }
+                if (distance > best) { best = distance }
+                continue
+            }
+    
+            if (! overwritten) {
+            
+                overwritten = true
+                currentTravel.path = path
+                currentTravel.distance = distance
+            }
+            else {   
+                currentTravels.push(createTravel(path, distance))
+            }
         }
+        if (! overwritten) { currentTravels.pop() }
     }
-
     return best    
 }
 
