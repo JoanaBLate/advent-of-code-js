@@ -160,7 +160,7 @@ function walkFromNode3(beginNode, r, c) {
     
     const index = beginNode.row * WIDTH + beginNode.col
     
-    walked[index] = 2 // avoid step on begin node; using '2' for the map
+    walked[index] = 1 // avoid step on begin node
         
     const index2 = r * WIDTH + c
         
