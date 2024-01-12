@@ -1,6 +1,6 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 3.5s
+// solving the puzzle takes (my computer) 0.900s
 
 const input = Deno.readTextFileSync("input.txt").trim()
 
@@ -12,14 +12,16 @@ var HEIGHT = 0
 
 const NODES = [ ]
 
+var indexOfTargetNode = 0
+
+var WALKED = null
+
 
 function main() {
 
     processInput()
 
     createAllNodes()
-
- // showMap()
 
     walkBetweenNodes()
       
@@ -196,72 +198,46 @@ function walkFromNode4(row, col, walked, futurePoints) {
 
 function createTrip(indexOfEndNode, distance) {
 
-    const codedIndexOfEndNode = String.fromCharCode(indexOfEndNode)
-        
-    return { "indexOfEndNode": indexOfEndNode, "codedIndexOfEndNode": codedIndexOfEndNode, "distance": distance }
+    return { "indexOfEndNode": indexOfEndNode, "distance": distance }
 }
 
 ///////////////////////////////////////////////////////////
 
 function findLengthOfLongestTravel() {
-
-    let best = 0
     
-    const home = String.fromCharCode(0)
-
-    const exit = String.fromCharCode(NODES.length - 1)
-
-    const currentTravels = [ createTravel(home, 0) ]
-
-    while (true) {    
+    indexOfTargetNode = NODES.length - 1
     
-        const currentTravel = currentTravels.at(-1)
-        
-        if (currentTravel == undefined) { break }
-        
-        const currentPath = currentTravel.path
-        const currentDistance = currentTravel.distance
-        
-        const index = currentPath.charCodeAt(currentPath.length - 1)
-        
-        const lastNode = NODES[index]
-        
-        let overwritten = false
-        
-        for (const trip of lastNode.trips) {
-        
-            if (currentPath.includes(trip.codedIndexOfEndNode)) { continue }
-            
-            const path = currentPath + trip.codedIndexOfEndNode
+    WALKED = new Uint8Array(NODES.length)
 
-            const distance = currentDistance + trip.distance            
-            
-            if (trip.codedIndexOfEndNode == exit) { 
-               
-                if (distance > best) { best = distance }
-                continue
-            }
+    return dfs(0)
+}
+
+function dfs(indexOfCurrentNode) { // depth first search algorithm
+
+    if (indexOfCurrentNode == indexOfTargetNode) { return 0 }
+
+    let best = -Infinity
     
-            if (! overwritten) {
-            
-                overwritten = true
-                currentTravel.path = path
-                currentTravel.distance = distance
-            }
-            else {   
-                currentTravels.push(createTravel(path, distance))
-            }
-        }
-        if (! overwritten) { currentTravels.pop() }
+    WALKED[indexOfCurrentNode] = 1
+    
+    const node = NODES[indexOfCurrentNode]
+    
+    for (const trip of node.trips) {
+    
+        const indexOfNextNode = trip.indexOfEndNode
+        
+        if (WALKED[indexOfNextNode] ==  1) { continue }
+        
+        const distance = trip.distance + dfs(indexOfNextNode)
+        
+        best = Math.max(best, distance)
     }
-    return best    
+
+    WALKED[indexOfCurrentNode] = 0
+
+    return best
 }
 
-function createTravel(path, distance) {
-
-    return { "path": path, "distance": distance }
-}
-        
 ///////////////////////////////////////////////////////////
 
 function showMap() {
