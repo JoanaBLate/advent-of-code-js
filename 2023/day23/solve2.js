@@ -101,7 +101,7 @@ function createAndRegisterNode(row, col) {
 
     NODES.push(node)
     
-    MAP[row][col] = "" + NODES.length - 1
+    MAP[row][col] = "" + (NODES.length - 1)
 }
 
 ///////////////////////////////////////////////////////////
