@@ -83,4 +83,6 @@ Completed.
 
 **Day 21 PART 2** SOLVED IN JUST **0.15s - NO math formula**
 
+**Day 23 PART 2** SOLVED IN JUST **3.5s - using brute force**
+
 (under construction)
