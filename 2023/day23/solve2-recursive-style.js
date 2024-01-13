@@ -1,6 +1,6 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.415s
+// solving the puzzle takes (my computer) 0.530s
 
 const input = Deno.readTextFileSync("input.txt").trim()
 
@@ -10,11 +10,11 @@ var WIDTH = 0
 
 var HEIGHT = 0
 
-const NODES = [ ] // expecting the target to be the last node
+const NODES = [ ]
 
-const PATH = [ ]
+var indexOfTargetNode = 0
 
-var GUARDIAN = null
+var WALKED = null
 
 
 function main() {
@@ -24,10 +24,8 @@ function main() {
     createAllNodes()
 
     walkBetweenNodes()
-    
-    const length = findLengthOfLongestTravel()
       
-    console.log("the answer is", length)
+    console.log("the answer is", findLengthOfLongestTravel())
 }
 
 ///////////////////////////////////////////////////////////
@@ -99,7 +97,7 @@ function isFree(row, col) {
 
 function createAndRegisterNode(row, col) {
 
-    const node = { "row": row, "col": col, "trips": [ ], "isInPath": false, "tripIndex": -1, "totalDistance": 0 }
+    const node = { "row": row, "col": col, "trips": [ ] }
 
     NODES.push(node)
     
@@ -139,15 +137,15 @@ function walkFromNode2(node, row, col) {
 
 function walkFromNode3(beginNode, row1, col1) {
 
-    const WALKED = new Uint8Array(WIDTH * HEIGHT)
+    const walked = new Uint8Array(WIDTH * HEIGHT)
     
     const index = beginNode.row * WIDTH + beginNode.col
     
-    WALKED[index] = 1 // avoid step on begin node
+    walked[index] = 1 // avoid step on begin node
         
     const index2 = row1 * WIDTH + col1
         
-    WALKED[index2] = 1 // avoid step twice on first position
+    walked[index2] = 1 // avoid step twice on first position
     
     let futurePoints = [ createPoint(row1, col1) ]
     
@@ -167,21 +165,19 @@ function walkFromNode3(beginNode, row1, col1) {
         if (MAP[row][col] != ".") {
                 
             const indexOfEndNode = parseInt(MAP[row][col])
-            
-            const endNode = NODES[indexOfEndNode]
         
-            beginNode.trips.push(createTrip(endNode, distance))
+            beginNode.trips.push(createTrip(indexOfEndNode, distance))
             return 
         }
     
-        walkFromNode4(row - 1, col, WALKED, futurePoints)
-        walkFromNode4(row + 1, col, WALKED, futurePoints)
-        walkFromNode4(row, col - 1, WALKED, futurePoints)
-        walkFromNode4(row, col + 1, WALKED, futurePoints)
+        walkFromNode4(row - 1, col, walked, futurePoints)
+        walkFromNode4(row + 1, col, walked, futurePoints)
+        walkFromNode4(row, col - 1, walked, futurePoints)
+        walkFromNode4(row, col + 1, walked, futurePoints)
     }
 }
 
-function walkFromNode4(row, col, WALKED, futurePoints) {
+function walkFromNode4(row, col, walked, futurePoints) {
 
     if (row < 0) { return }
     if (col < 0) { return }
@@ -191,81 +187,71 @@ function walkFromNode4(row, col, WALKED, futurePoints) {
     
     const index = row * WIDTH + col
     
-    if (WALKED[index] != 0) { return }
+    if (walked[index] != 0) { return }
     
     if (MAP[row][col] == "#") { return }
     
-    WALKED[index] = 1
+    walked[index] = 1
     
     futurePoints.push(createPoint(row, col))
 }
 
-function createTrip(endNode, distance) {
+function createTrip(indexOfEndNode, distance) {
 
-    return { "endNode": endNode, "distance": distance }
+    return { "indexOfEndNode": indexOfEndNode, "distance": distance }
 }
 
 ///////////////////////////////////////////////////////////
 
 function findLengthOfLongestTravel() {
+    
+    indexOfTargetNode = NODES.length - 1
+    
+    WALKED = new Uint8Array(NODES.length)
 
-    const targetNode = NODES.at(-1)
-    
-    if (targetNode.trips.length == 1) { GUARDIAN = targetNode.trips[0].endNode }
-    
-    PATH.push(NODES[0])
-    
-    PATH[0].isInPath = true
-    
-    return search()
+    return dfs(0)
 }
 
-///////////////////////////////////////////////////////////
+function dfs(indexOfCurrentNode) { // depth first search algorithm
 
-function search() { // depth first search algorithm
-
-    const targetNode = NODES.at(-1)
-
-    let best = 0
+    if (indexOfCurrentNode == indexOfTargetNode) { return 0 }
     
-    while (true) { 
-        
-        if (PATH.length == 0) { return best }
+    if (shallAbortPath()) { return -Infinity }
 
-        const node = PATH.at(-1)
+    let best = -Infinity
+    
+    WALKED[indexOfCurrentNode] = 1
+    
+    const node = NODES[indexOfCurrentNode]
+    
+    for (const trip of node.trips) {
+    
+        const indexOfNextNode = trip.indexOfEndNode
         
-        if (node == targetNode) { 
-           
-            if (node.totalDistance > best) { best = node.totalDistance }
-            
-            PATH.pop().isInPath = false
-            PATH.pop().isInPath = false
-            continue
-        }
+        if (WALKED[indexOfNextNode] == 1) { continue }
         
-        if (GUARDIAN != null) {
+        const distance = trip.distance + dfs(indexOfNextNode)
         
-            if (node != GUARDIAN  &&  GUARDIAN.isInPath) { PATH.pop(); continue } // not going to target
-        }
-        
-        node.tripIndex += 1
-        
-        const trip = node.trips[node.tripIndex]
-        
-        if (trip == undefined) { PATH.pop().isInPath = false; continue }
-        
-        const nextNode = trip.endNode
-        
-        if (nextNode.isInPath) { continue }
-        
-        nextNode.tripIndex = -1
-        
-        nextNode.isInPath = true
-        
-        nextNode.totalDistance = node.totalDistance + trip.distance
-        
-        PATH.push(nextNode)
+        best = Math.max(best, distance)
     }
+
+    WALKED[indexOfCurrentNode] = 0
+
+    return best
+}
+
+function shallAbortPath() { // not called after target was reached in current path
+
+    const targetNode = NODES[indexOfTargetNode]
+        
+    for (const trip of targetNode.trips) {
+    
+        const indexOfNextNode = trip.indexOfEndNode 
+        
+        if (! WALKED[indexOfNextNode]) { return false }
+    }
+    
+    return true // all neighbors were walked but target was not reached
 }
 
 ///////////////////////////////////////////////////////////
