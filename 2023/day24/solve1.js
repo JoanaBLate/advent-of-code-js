@@ -1,6 +1,6 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.030s
+// solving the puzzle takes (my computer) 0.031s
 
 const input = Deno.readTextFileSync("input.txt").trim()
 
@@ -46,13 +46,13 @@ function processInput() {
     }
 }
 
-function createDataObject(pX, vX, pY, vY) {
+function createDataObject(xPosition, xSpeed, yPosition, ySpeed) {
 
-    const yRelativeSpeed = vY / vX
+    const xTimeFromZero = xPosition / xSpeed // time for going from zero X to current X
     
-    const yAtXZero = pY - (pX * yRelativeSpeed)
-
-    return { "yPosition": pY, "ySpeed": vY, "yRelativeSpeed": yRelativeSpeed, "yAtXZero": yAtXZero }
+    const yBase = yPosition - (xTimeFromZero * ySpeed) // value of Y when X is zero
+    
+    return { "xSpeed": xSpeed, "ySpeed": ySpeed, "yBase": yBase, "yPosition": yPosition }
 }
 
 ///////////////////////////////////////////////////////////
@@ -75,27 +75,30 @@ function compareAll() {
 
 function match(a, b) {
 
-    if (b.yRelativeSpeed - a.yRelativeSpeed == 0) { return false }
+    // using yBase means xPosition is zero 
     
-    const x = (a.yAtXZero - b.yAtXZero) / (b.yRelativeSpeed - a.yRelativeSpeed)
-  
-    const y = x * a.yRelativeSpeed + a.yAtXZero
+    const aRelativeSpeedOfY = a.ySpeed / a.xSpeed
+    const bRelativeSpeedOfY = b.ySpeed / b.xSpeed
+    
+    const deltaY = a.yBase - b.yBase
 
+    const crossedRelativeSpeed = bRelativeSpeedOfY - aRelativeSpeedOfY
+    
+    const x = deltaY / crossedRelativeSpeed
+  
+    const y = x * aRelativeSpeedOfY + a.yBase
+    
     if (x < lowerLimit) { return false }
     if (y < lowerLimit) { return false }
 
     if (x > upperLimit) { return false }
     if (y > upperLimit) { return false }
-
-    const aOk1 = (a.ySpeed > 0)  &&  (y > a.yPosition)
-    const aOk2 = (a.ySpeed < 0)  &&  (y < a.yPosition)
     
-    if (! aOk1  &&  ! aOk2) { return false }
+    if (a.ySpeed > 0  &&  y < a.yPosition) { return false }
+    if (a.ySpeed < 0  &&  y > a.yPosition) { return false }
     
-    const bOk1 = (b.ySpeed > 0)  &&  (y > b.yPosition)
-    const bOk2 = (b.ySpeed < 0)  &&  (y < b.yPosition)
-    
-    if (! bOk1  &&  ! bOk2) { return false }
+    if (b.ySpeed > 0  &&  y < b.yPosition) { return false }
+    if (b.ySpeed < 0  &&  y > b.yPosition) { return false }
 
     return true
 }
