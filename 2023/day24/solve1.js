@@ -84,7 +84,9 @@ function match(a, b) {
 
     const crossedRelativeSpeedOfY = bRelativeSpeedOfY - aRelativeSpeedOfY
     
-    const x = deltaY / crossedRelativeSpeedOfY
+    const deltaX = deltaY / crossedRelativeSpeedOfY
+    
+    const x = deltaX // because inital X is zero (we are using yBase)
   
     const y = x * aRelativeSpeedOfY + a.yBase
     
