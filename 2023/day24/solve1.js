@@ -52,7 +52,7 @@ function createDataObject(xPosition, xSpeed, yPosition, ySpeed) {
     
     const yBase = yPosition - (xTimeFromZero * ySpeed) // value of Y when X is zero
     
-    return { "xSpeed": xSpeed, "ySpeed": ySpeed, "yBase": yBase, "yPosition": yPosition }
+    return { "xPosition": xPosition, "xSpeed": xSpeed, "yPosition": yPosition, "ySpeed": ySpeed, "yBase": yBase }
 }
 
 ///////////////////////////////////////////////////////////
@@ -75,20 +75,18 @@ function compareAll() {
 
 function match(a, b) {
 
-    // using yBase means xPosition is zero 
-    
-    const aRelativeSpeedOfY = a.ySpeed / a.xSpeed
-    const bRelativeSpeedOfY = b.ySpeed / b.xSpeed
-    
-    const deltaY = a.yBase - b.yBase
+    const aDeltaYPerXUnit = (a.yPosition - a.yBase) / (a.xPosition - 0) // using yBase means xBase is zero
+    const bDeltaYPerXUnit = (b.yPosition - b.yBase) / (b.xPosition - 0) // using yBase means xBase is zero
 
-    const crossedRelativeSpeedOfY = bRelativeSpeedOfY - aRelativeSpeedOfY
+    const crossedDeltaYPerXUnit = bDeltaYPerXUnit - aDeltaYPerXUnit
     
-    const deltaX = deltaY / crossedRelativeSpeedOfY
+    const crossedDeltaY = a.yBase - b.yBase
     
-    const x = deltaX // because inital X is zero (we are using yBase)
+    const crossedDeltaX = crossedDeltaY / crossedDeltaYPerXUnit
+    
+    const x = crossedDeltaX - 0 // using yBase means xBase is zero
   
-    const y = x * aRelativeSpeedOfY + a.yBase
+    const y = x * aDeltaYPerXUnit + a.yBase
     
     if (x < lowerLimit) { return false }
     if (y < lowerLimit) { return false }
