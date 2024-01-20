@@ -75,6 +75,8 @@ Completed.
 
 ## Advent of Code 2023
 
+Completed.
+
 **Day 12 PART 2** SOLVED IN JUST **0.08s**
 
 **Day 17 PART 2** SOLVED IN JUST **0.12s** 
@@ -85,4 +87,4 @@ Completed.
 
 **Day 23 PART 2** SOLVED IN JUST **0.41s - NO recursion**
 
-(under construction)
+**Day 25 PART 1** SOLVED IN JUST **0.77s**
