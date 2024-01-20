@@ -99,7 +99,6 @@ function playGame(deckA, deckB) {
 function createResult(name, deck) {
 
     return { "name": name, "deck": deck }
-
 }
 
 main()
