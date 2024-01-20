@@ -1,6 +1,6 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.810s
+// solving the puzzle takes (my computer) 0.770s
 
 const input = Deno.readTextFileSync("input.txt").trim()
 
@@ -75,9 +75,7 @@ function fillNodes(rawData) {
     
     const keys = Object.keys(rawData)
     
-    const length = keys.length
-    
-    for (let n = 0; n < length; n++) { NODES.push(createNodeObject(n)) }
+    for (let n = 0; n < keys.length; n++) { NODES.push(createNodeObject()) }
     
     let index = -1
     
@@ -98,9 +96,9 @@ function fillNodes(rawData) {
     }
 }        
 
-function createNodeObject(n) {
+function createNodeObject() {
 
-    return { "id": n.toString(), "children": [ ], "used": false, "visited": false }
+    return { "children": [ ], "used": false, "visited": false }
 }
 
 ///////////////////////////////////////////////////////////
@@ -120,7 +118,6 @@ function resetVisit() {
 function searchThis(target, master) {
 
     resetUse()
-    resetVisit()
 
     master.used = true
 
