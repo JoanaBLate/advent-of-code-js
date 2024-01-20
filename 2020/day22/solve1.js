@@ -52,7 +52,7 @@ function playRound() {
     const a = deckA.shift()
     const b = deckB.shift()
     
-    if (a > b) { deckA.push(a), deckA.push(b) } else { deckB.push(b), deckB.push(a) }
+    if (a > b) { deckA.push(a); deckA.push(b) } else { deckB.push(b); deckB.push(a) }
 }
 
 ///////////////////////////////////////////////////////////
