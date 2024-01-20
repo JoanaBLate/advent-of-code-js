@@ -72,7 +72,7 @@ cups:  5 (8) 3  7  4  1  9  2  6
 
 In the above example, the cups' values are the labels as they appear moving clockwise around the circle; the **current cup** is marked with `( )`.
 
-After the crab is done, what order will the cups be in? Starting **after the cup labeled **`1`**, collect the other cups' labels clockwise into a single string with no extra characters; each number except `1` should appear exactly once. In the above example, after 10 moves, the cups clockwise from `1` are labeled `9`, `2`, `6`, `5`, and so on, producing **`92658374`**. If the crab were to complete all 100 moves, the order after cup `1` would be **`67384529`**.
+After the crab is done, what order will the cups be in? Starting **after the cup labeled `1`**, collect the other cups' labels clockwise into a single string with no extra characters; each number except `1` should appear exactly once. In the above example, after 10 moves, the cups clockwise from `1` are labeled `9`, `2`, `6`, `5`, and so on, producing **`92658374`**. If the crab were to complete all 100 moves, the order after cup `1` would be **`67384529`**.
 
 Using your labeling, simulate 100 moves. **What are the labels on the cups after cup `1`**?
 
