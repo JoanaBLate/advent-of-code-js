@@ -4,9 +4,7 @@
 
 const input = Deno.readTextFileSync("input.txt").trim()
 
-const LENGTH = input.length + 1 // for the unused zero
-
-const LINKS = new Array(LENGTH) // linked list
+var LINKS = null
 
 var LOWEST = 1
 
@@ -26,9 +24,18 @@ function main() {
 
 function processInput() {
 
+    while (! input.includes(LOWEST))  { LOWEST += 1 }
+    while (! input.includes(HIGHEST)) { HIGHEST -= 1 }
+
     current = parseInt(input[0])
     
-    for (let n = 0; n < LENGTH; n++) { LINKS[n] = createLinkObject(n) }
+    const length = input.length + 1 // for the unused zeroth space
+
+    LINKS = new Array(length) // linked list    
+    
+    for (let n = 0; n < length; n++) { LINKS[n] = createLinkObject(n) }
+    
+    //
     
     for (let n = 0; n < input.length; n++) {
     
