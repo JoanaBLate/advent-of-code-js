@@ -1,20 +1,14 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.026s
-
-/*
-
-    WARNING: NOT EXPECTING REPEATED CHARACTERS IN INPUT
-
-*/
+// solving the puzzle takes (my computer) 0.025s
 
 const input = Deno.readTextFileSync("input.txt").trim()
 
-var CUPS = [ ]
+const LENGTH = input.length + 1 // for the unused zero
 
-var LENGTH = 0
+const LINKS = new Array(LENGTH) // linked list
 
-var LOWEST = 0
+var LOWEST = 1
 
 var HIGHEST = 9
 
@@ -24,43 +18,99 @@ var current = 0
 function main() {
 
     processInput()
-
-    current = CUPS[0]
-
+    
     for (let n = 0; n < 100; n++) { change() }
     
-    spinTillThisOnFirstPos(1)
-    
-    console.log("the answer is", CUPS.join("").substr(1))
+    console.log("the answer is", findAnswer())
 }
 
 function processInput() {
 
-    LENGTH = input.length
+    current = parseInt(input[0])
+    
+    for (let n = 0; n < LENGTH; n++) { LINKS[n] = createLinkObject(n) }
+    
+    for (let n = 0; n < input.length; n++) {
+    
+        const item = parseInt(input[n])
         
-    CUPS = new Uint8Array(LENGTH)
+        let previousIndex = n - 1
+        
+        if (previousIndex < 0) { previousIndex = input.length - 1 }
+        
+        const previous = parseInt(input[previousIndex])
+        
+        let nextIndex = n + 1
+        
+        if (nextIndex > input.length - 1) { nextIndex = 0 }
+        
+        const next = parseInt(input[nextIndex])
+                
+        const currentObj = LINKS[item]
     
-    for (let n = 0; n < input.length; n++) { CUPS[n] = parseInt(input[n]) }
-    
-    while (! CUPS.includes(LOWEST))  { LOWEST += 1 }
-    while (! CUPS.includes(HIGHEST)) { HIGHEST -= 1 }
+        currentObj.previous = previous
+        currentObj.next = next    
+    }    
+}
+
+function createLinkObject(n) {
+
+    return { "index": n, "previous": 0, "next": 0 }
 }
 
 ///////////////////////////////////////////////////////////
 
 function change() {
 
-    spinTillThisOnLastPos(current)
+    const currentObj = LINKS[current]
+    
+    // extracting the segment (a, b and c)
 
-    const a = CUPS[0]
-    const b = CUPS[1]
-    const c = CUPS[2]
-
+    const a = currentObj.next
+    
+    const aObj = LINKS[a]
+    
+    const b = aObj.next
+    
+    const bObj = LINKS[b]
+    
+    const c = bObj.next
+    
+    const cObj = LINKS[c]
+    
+    const d = cObj.next
+    
+    const dObj = LINKS[d]
+    
+    dObj.previous = current
+    
+    currentObj.next = d
+    
+    //
+    // now the segment is extracted (and the circle is closed)
+    //
+    
     const destination = findDestinationCup(a, b, c)
-
-    halfSpinTillThisOnLastPos(destination) 
-
-    updateCurrent()
+    
+    const destinationObj = LINKS[destination]  
+    
+    const end = destinationObj.next  
+    
+    const endObj = LINKS[end]
+    
+    // inserting
+    
+    destinationObj.next = a
+    
+    aObj.previous = destination
+    
+    cObj.next = end
+    
+    endObj.previous = c
+    
+    //
+    
+    current = currentObj.next
 }
 
 ///////////////////////////////////////////////////////////
@@ -84,51 +134,25 @@ function findDestinationCup(a, b, c) {
     return destination
 }
 
-function updateCurrent() {
+///////////////////////////////////////////////////////////
 
-    let index = CUPS.indexOf(current) + 1
+function findAnswer() {
+
+    let s = ""
     
-    if (index == CUPS.length) { index = 0 }
+    let index = 1
+    
+    while (true) {
+
+        const obj = LINKS[index]
         
-    current = CUPS[index]
+        index = obj.next
+        
+        if (index == 1) { return s }
+        
+        s += index
+    }
 }
-
-///////////////////////////////////////////////////////////
-
-function spinTillThisOnFirstPos(target) {
-    
-    while (CUPS[0] != target) { spinLeft() }
-}
-
-function spinTillThisOnLastPos(target) {
-    
-    while (CUPS[LENGTH - 1] != target) { spinLeft() }
-}
-
-function halfSpinTillThisOnLastPos(target) {
-    
-    while (CUPS[LENGTH - 1] != target) { halfSpinLeft() }
-}
-
-function spinLeft() {
-
-    const first = CUPS[0]
-    
-    for (let n = 1; n < LENGTH; n++) { CUPS[n - 1] = CUPS[n] }
-    
-    CUPS[LENGTH - 1] = first
-}
-
-function halfSpinLeft() {
-
-    const first = CUPS[3]
-    
-    for (let n = 4; n < LENGTH; n++) { CUPS[n - 1] = CUPS[n] }
-    
-    CUPS[LENGTH - 1] = first
-}
-
-///////////////////////////////////////////////////////////
 
 main()
 
