@@ -39,7 +39,7 @@ function processInput() {
     
     for (let n = 0; n < LENGTH; n++) { CUPS[n] = n + 1 }
 
-    current = parseInt(numbers[0])
+    current = numbers[0]
     
     CUPS[LAST] = current
     
