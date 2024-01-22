@@ -2,6 +2,8 @@
 
 // solving the puzzle takes (my computer) 0.31s
 
+// *WARNING*: MAYBE YOU NEED TO USE A GREATER DIMENSION FOR YOUR INPUT!!!
+
 /*
 
     HEXAGONAL COORDINATES (for this puzzle)
@@ -29,9 +31,9 @@ const DIM = 50 + 1
 
 const BOARD = new Uint8Array(DIM * DIM)
 
-const baseRow = 25
+const baseRow = Math.floor(DIM / 2)
 
-const baseCol = 25
+const baseCol = Math.floor(DIM / 2)
 
 const WHITE = 0
 
