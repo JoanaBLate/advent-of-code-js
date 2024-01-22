@@ -63,6 +63,8 @@ Completed.
 
 **Day 20 PART 2** SOLVED IN JUST **0.06s** 
 
+**Day 23 PART 2** SOLVED IN JUST **0.22s** 
+
 
 ## Advent of Code 2021
 
