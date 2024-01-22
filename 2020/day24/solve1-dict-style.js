@@ -1,6 +1,6 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.31s
+// solving the puzzle takes (my computer) 0.035s
 
 /*
 
@@ -25,17 +25,7 @@ const input = Deno.readTextFileSync("input.txt").trim()
 
 const PATHS = [ ]
 
-const DIM = 50 + 1
-
-const BOARD = new Uint8Array(DIM * DIM)
-
-const baseRow = 25
-
-const baseCol = 25
-
-const WHITE = 0
-
-const BLACK = 1
+const TILES = { }
 
 
 function main() {
@@ -78,8 +68,8 @@ function parsePath(line) {
 
 function walk(path) {
 
-    let row = baseRow
-    let col = baseCol
+    let row = 0
+    let col = 0
 
     for (const step of path) {
     
@@ -87,31 +77,33 @@ function walk(path) {
         if (step == "w") { col -= 1; continue }
         
         if (step[0] == "n") { row -= 1 } else { row += 1 }
-        
-        const evenRow = (row % 2 == 0)
 
-        const oddRow = ! evenRow
+        const oddRow = (row % 2 != 0)
+        
+        const evenRow = ! oddRow
         
         if (step[1] == "w"  && evenRow) { col -= 1 }        
         
         if (step[1] == "e"  && oddRow)  { col += 1 }
     }
-        
-    const index = row * DIM + col
     
-    BOARD[index] = (BOARD[index] == WHITE) ? BLACK : WHITE
+    const id = row + "~" + col
+    
+    if (TILES[id] == undefined) { TILES[id] = 1; return }
+    
+    TILES[id] += 1
 }
 
 function countBlackTiles() {
 
     let count = 0
     
-    const off = BOARD.length
-    
-    for (let n = 0; n < off; n++) { count += BOARD[n] }
+    const values = Object.values(TILES)
+        
+    for (const val of values) { if (val % 2 != 0) { count += 1 } }
     
     return count
 }
-
+    
 main()
 
