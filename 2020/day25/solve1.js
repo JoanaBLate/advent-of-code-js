@@ -1,6 +1,6 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.290s
+// solving the puzzle takes (my computer) 0.230s
 
 const input = Deno.readTextFileSync("input.txt").trim()
 
@@ -14,11 +14,11 @@ var publicKeyDoor = 0
 function main() {
 
     processInput()
-        
+
     const loopSizeCard = findLoopSize(publicKeyCard)
-        
+
     const encryptionKeyByCard = transform(publicKeyDoor, loopSizeCard)   
-    
+
     console.log("the answer is", encryptionKeyByCard)
 }
 
@@ -33,19 +33,21 @@ function processInput() {
 
 function findLoopSize(publicKey) {
 
-    const subjectNumber = 7
+ // const subjectNumber = 7
 
-    let loopSize = 0
+    let x = 1
     
-    let value = 1
+    let loopSize = 0
     
     while (true) {
     
         loopSize += 1
     
-        value = value * subjectNumber % divisor
+    //  x = (x * subjectNumber) % divisor // correct but slow
         
-        if (value == publicKey) { return loopSize }
+        x = (x * 7) % 20201227 // more than two times faster
+        
+        if (x == publicKey) { return loopSize }
     }
 }
 
@@ -55,9 +57,7 @@ function transform(subjectNumber, loopSize) {
     
     for (let n = 0; n < loopSize; n++) { 
     
-        x *= subjectNumber
-        
-        x %= divisor    
+        x = (x * subjectNumber) % divisor    
     }
     
     return x
