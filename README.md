@@ -65,6 +65,8 @@ Completed.
 
 **Day 23 PART 2** SOLVED IN JUST **0.22s** 
 
+**Day 24 PART 2** SOLVED IN JUST **0.50s** 
+
 
 ## Advent of Code 2021
 
