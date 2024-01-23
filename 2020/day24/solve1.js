@@ -2,25 +2,7 @@
 
 // solving the puzzle takes (my computer) 0.31s
 
-// *WARNING*: MAYBE YOU NEED TO USE A GREATER DIMENSION FOR YOUR INPUT!!!
-
-/*
-
-    HEXAGONAL COORDINATES (for this puzzle)
-
-    even = row zero
-    odd = its neighbor 
-
-    e -> col += 1
-    w -> col -= 1
-    
-    ne -> row -= 1; (odd)  col += 1
-    nw -> row -= 1; (even) col -= 1
-
-    se -> row += 1; (odd)  col += 1
-    sw -> row += 1; (even) col -= 1
-
-*/
+// *WARNING*: MAYBE YOU NEED TO USE A GREATER DIMENSION FOR YOUR INPUT!
 
 
 const input = Deno.readTextFileSync("input.txt").trim()
@@ -85,20 +67,13 @@ function walk(path) {
 
     for (const step of path) {
     
-        if (step == "e") { col += 1; continue }
-        if (step == "w") { col -= 1; continue }
-        
-        if (step[0] == "n") { row -= 1 } else { row += 1 }
-        
-        const evenRow = (row % 2 == 0)
-
-        const oddRow = ! evenRow
-        
-        if (step[1] == "w"  && evenRow) { col -= 1 }        
-        
-        if (step[1] == "e"  && oddRow)  { col += 1 }
+        if (step == "e")  { col += 1; continue }
+        if (step == "w")  { col -= 1; continue }
+        if (step == "ne") { row -= 1; continue }
+        if (step == "sw") { row += 1; continue }
+        if (step == "nw") { row -= 1; col -= 1; continue }
+        if (step == "se") { row += 1; col += 1; continue }
     }
-        
     const index = row * DIM + col
     
     BOARD[index] = (BOARD[index] == WHITE) ? BLACK : WHITE
