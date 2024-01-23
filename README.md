@@ -55,7 +55,7 @@ Completed.
 
 ## Advent of Code 2020
 
-(under construction)
+Completed.
 
 **Day 19 PART 1** SOLVED IN JUST **0.04s - NO regex** 
 
@@ -70,7 +70,7 @@ Completed.
 
 ## Advent of Code 2021
 
-(not started)
+(under construction)
 
 
 ## Advent of Code 2022
