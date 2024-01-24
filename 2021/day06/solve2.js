@@ -34,7 +34,7 @@ function processInput() {
 
 function finishDay() {
 
-    let babies = FISH[0]
+    const babies = FISH[0]
     
     FISH[0] = FISH[1]
     FISH[1] = FISH[2]
