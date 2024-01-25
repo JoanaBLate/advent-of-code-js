@@ -46,7 +46,7 @@ The bottom-right basin, size `9`:
 9899965678
 ```
 
-Find the three largest basins and multiply their sizes together. In the above example, this is `9 * 14 * 9 = **1134**`.
+Find the three largest basins and multiply their sizes together. In the above example, this is `9 * 14 * 9 =`**`1134`**.
 
 **What do you get if you multiply together the sizes of the three largest basins?**
 
