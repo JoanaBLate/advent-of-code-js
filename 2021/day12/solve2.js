@@ -1,6 +1,6 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.500s
+// solving the puzzle takes (my computer) 0.090s
 
 const input = Deno.readTextFileSync("input.txt").trim()
 
@@ -43,13 +43,15 @@ function processInput() {
 
 function walk() {
 
-    const paths = [ [ "start" ] ]
-    
-    while (paths.length != 0) {
+    const home = createPathObj([ "start" ], [ ], false)
 
-        const path = paths.pop()
+    const objs = [ home ]
+    
+    while (objs.length != 0) {
+
+        const obj = objs.pop()
         
-        const last = path.at(-1)
+        const last = obj.path.at(-1)
         
         for (const cave of CAVES[last]) {
         
@@ -57,37 +59,38 @@ function walk() {
             
             if (cave == "end") { numberOfPaths += 1; continue }
         
-            if (! okToEnterCave(path, cave)) { continue }
+            if (cave[0] <= "Z") { includeNewPathBig(objs, obj, cave); continue } // big cave
+    
+            if (obj.hasDoubleSmall  &&  obj.smalls.includes(cave)) { continue }
         
-            const newPath = path.slice()
-            
-            newPath.push(cave)
-            
-            paths.push(newPath)        
+            includeNewPathSmall(objs, obj, cave)       
         }
     }
 }
 
-function okToEnterCave(path, cave) {
+function createPathObj(path, smalls, hasDoubleSmall) {
 
-    if (cave[0] <= "Z") { return true } // big cave
+    return { "path": path, "smalls": smalls, "hasDoubleSmall": hasDoubleSmall }
+}
+
+function includeNewPathBig(objs, obj, cave) {
     
-    if (! path.includes(cave)) { return true }
-   
-    const smalls = { }
+    const newObj = createPathObj(obj.path.slice(), obj.smalls.slice(), obj.hasDoubleSmall)
+
+    newObj.path.push(cave)
+
+    objs.push(newObj)
+}
+
+function includeNewPathSmall(objs, obj, cave) {
     
-    for (const _cave of path) {
+    const newObj = createPathObj(obj.path.slice(), obj.smalls.slice(), obj.hasDoubleSmall)
+
+    newObj.path.push(cave)
     
-        if (_cave[0] <= "Z") { continue }
-        
-        if (smalls[_cave] == undefined) { smalls[_cave] = 0 }
-        
-        smalls[_cave] += 1
-    }
-    
-    if (Object.values(smalls).includes(2))  { return false }
-    
-    return true
+    if (newObj.smalls.includes(cave)) { newObj.hasDoubleSmall = true } else { newObj.smalls.push(cave) }
+
+    objs.push(newObj)
 }
 
 main()
