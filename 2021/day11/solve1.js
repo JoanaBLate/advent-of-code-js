@@ -48,7 +48,7 @@ function playRound() {
 
     increaseEnergyLevel()
     
-    while (flash()) { }
+    flash()
 }
 
 function resetFlashed() {
