@@ -37,7 +37,7 @@ The five lines' completion strings have total scores as follows:
 *   `]]}}]}]}>` - `995444` total points.
 *   `])}>` - `294` total points.
 
-Autocomplete tools are an odd bunch: the winner is found by **sorting** all of the scores and then taking the **middle** score. (There will always be an odd number of scores to consider.) In this example, the middle score is `**288957**` because there are the same number of scores smaller and larger than it.
+Autocomplete tools are an odd bunch: the winner is found by **sorting** all of the scores and then taking the **middle** score. (There will always be an odd number of scores to consider.) In this example, the middle score is **`288957`** because there are the same number of scores smaller and larger than it.
 
 Find the completion string for each incomplete line, score the completion strings, and sort the scores. **What is the middle score?**
 
