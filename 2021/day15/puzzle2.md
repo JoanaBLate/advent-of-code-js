@@ -124,7 +124,7 @@ Equipped with the full map, you can now find a path from the top left corner to 
 67554889357866599146897761125791887223681299833479
 ```
 
-The total risk of this path is `**315**` (the starting position is still never entered, so its risk is not counted).
+The total risk of this path is **`315`** (the starting position is still never entered, so its risk is not counted).
 
 Using the full map, **what is the lowest total risk of any path from the top left to the bottom right?**
 
