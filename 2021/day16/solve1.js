@@ -51,9 +51,9 @@ function extractPacket() {
 
     const typeId = parseInt(eatData(3), 2)
     
-    if (typeId != 4) { extractOperatorSection(); return }
+    if (typeId == 4) { extractLiteralNumber(); return }
 
-    extractLiteralNumber()
+    extractOperatorSection()
 }
 
 function extractLiteralNumber() {
