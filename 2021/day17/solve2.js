@@ -79,15 +79,13 @@ function tryXSpeed(speedAtStart) {
 
 function fillYSpeeds() {
 
-    const minimumSpeed = Yb // negative speed
-    
-    for (let speed = minimumSpeed; speed < 0; speed++) { tryYSpeed(speed) } // negative speed
-    
-    // for positive ySpeed, may exist a gap in the middle of the range of good speeds //
+    // may exist a gap in the middle of the range of positive good speeds //
 
-    const arbitraryMaxSpeed = 3 * Math.abs(Yb) // lacking some nice Math formula
+    const minSpeed = Yb // negative speed
+
+    const maxSpeed = 3 * Math.abs(Yb) // arbitrary (lacking some nice math formula)
     
-    for (let speed = 0; speed <= arbitraryMaxSpeed; speed++) { tryYSpeed(speed) } // positive speed
+    for (let speed = minSpeed; speed <= maxSpeed; speed++) { tryYSpeed(speed) }
 }
 
 function tryYSpeed(speedAtStart) {
