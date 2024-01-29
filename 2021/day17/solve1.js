@@ -90,9 +90,9 @@ GOING UPWARDS (example):
     level 3 speed -3 (after step 6)
     level 0 speed -4 (after step 7)
 
-    1) always comes back ot level zero
+    1) always comes back to level zero
     2) speed at level zero: -(original_speed + 1)
-    3) if speed at level zero is less than the bottom of the target area: 
+    3) if speed at level zero is smaller than the bottom of the target area: 
        this speed fails
        all speeds greater than this will fail
 */
