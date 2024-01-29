@@ -77,13 +77,33 @@ function tryXSpeed(speedAtStart) {
 
 ///////////////////////////////////////////////////////////
 
+/*
+
+GOING UPWARDS (example):
+
+    level 0 speed 3  (standing)
+    level 3 speed 2  (after step 1)
+    level 5 speed 1  (after step 2)
+    level 6 speed 0  (after step 3)
+    level 6 speed -1 (after step 4)
+    level 5 speed -2 (after step 5)
+    level 3 speed -3 (after step 6)
+    level 0 speed -4 (after step 7)
+
+    1) always comes back ot level zero
+    2) speed at level zero: -(original_speed + 1)
+    3) if speed at level zero is less than the bottom of the target area: 
+       this speed fails
+       all speeds greater than this will fail
+*/
+
 function fillYSpeeds() {
 
     // may exist a gap in the middle of the range of positive good speeds //
 
     const minSpeed = Yb // negative speed
 
-    const maxSpeed = 3 * Math.abs(Yb) // arbitrary (lacking some nice math formula)
+    const maxSpeed = Math.abs(Yb)
     
     for (let speed = minSpeed; speed <= maxSpeed; speed++) { tryYSpeed(speed) }
 }
