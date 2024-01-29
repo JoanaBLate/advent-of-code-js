@@ -1,6 +1,10 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.026s
+// solving the puzzle takes (my computer) 0.025s
+
+//                                                                     //
+// *WARNING* not expecting input with negative X or positive Y values  //
+//                                                                     //
 
 const input = Deno.readTextFileSync("input.txt").trim()
 
@@ -9,13 +13,21 @@ var Xb = 0
 var Ya = 0
 var Yb = 0
 
+const XSpeeds = [ ] 
+const YSpeeds = [ ]
+
 
 function main() {
 
     processInput()
     
-    console.log("the answer is", findMaxHeight())
+    fillXSpeeds()    
+    fillYSpeeds()
+    
+    console.log("the answer is", findHighestY())
 }
+
+///////////////////////////////////////////////////////////
 
 function processInput() {
         
@@ -30,45 +42,125 @@ function processInput() {
     Yb = parseInt(tokensY.shift())
     
     if (Xa > Xb) { const temp = Xa; Xa = Xb; Xb = temp }
-    if (Ya > Yb) { const temp = Ya; Ya = Yb; Yb = temp }
+    if (Ya < Yb) { const temp = Ya; Ya = Yb; Yb = temp } // for negative values
 }
 
 ///////////////////////////////////////////////////////////
 
-function findMaxHeight() {
+function fillXSpeeds() {
 
-    let maxHeight = 0
-
-    for (let y = Ya; y <= Yb; y++) {
-    
-        const height = findMaxHeightThis(y)
-        
-        if (height > maxHeight) { maxHeight = height } 
-    }
-    return maxHeight
+    for (let speed = 1; speed <= Xb; speed++) { tryXSpeed(speed) }
 }
 
-function findMaxHeightThis(y) {
+function tryXSpeed(speedAtStart) {
 
-    let maxHeight = 0
+    let speed = speedAtStart
     
-    let steps = 0
+    let x = 0
 
     while (true) {
     
-        steps += 1
-
-        const vy = y / steps + ((steps - 1) / 2)
-
-        if (steps > 2 * Math.abs(y)) { break } 
-
-        const height = vy / 2 * (vy + 1) // arithmetic progression
-
-        if (height > maxHeight) { maxHeight = height }
+        x += speed
+        
+        if (x < Xa) { 
+        
+            speed -= 1 
+            
+            if (speed == 0) { return } else { continue }
+        }
+        
+        if (x <= Xb) { XSpeeds.push(speedAtStart) }
+        
+        return
     }
-    
-    return maxHeight
 }
 
+///////////////////////////////////////////////////////////
+
+function fillYSpeeds() {
+
+    const minimumSpeed = Yb // negative speed
+    
+    for (let speed = minimumSpeed; speed < 0; speed++) { tryYSpeed(speed) } // negative speed
+    
+    // for positive ySpeed, may exist a gap in the middle of the range of good speeds //
+
+    const arbitraryMaxSpeed = 3 * Math.abs(Yb) // lacking some nice Math formula
+    
+    for (let speed = 0; speed <= arbitraryMaxSpeed; speed++) { tryYSpeed(speed) } // positive speed
+}
+
+function tryYSpeed(speedAtStart) {
+
+    let speed = speedAtStart
+    
+    let y = 0
+
+    while (true) {
+    
+        y += speed
+        
+        if (y > Ya) { speed -= 1 ; continue } // negative ys
+
+        if (y >= Yb) { YSpeeds.push(speedAtStart) }
+        
+        return 
+    }
+}
+
+///////////////////////////////////////////////////////////
+
+function findHighestY() {
+
+    let speed = findGreatestSpeedY()
+
+    let y = 0
+    
+    let best = 0
+
+    while (true) {
+        
+        y += speed
+        speed -= 1 
+        
+        if (y > best) { best = y; continue }
+        
+        if (y < best) { return best }
+    }
+}
+
+function findGreatestSpeedY() {
+
+    for (let n = YSpeeds.length - 1; n > -1; n++) { 
+    
+        const speedY = YSpeeds[n]
+    
+        for (const speedX of XSpeeds) { if (gotMatch(speedX, speedY)) { return speedY } }
+    }
+}
+    
+function gotMatch(speedX, speedY) {
+
+    let x = 0
+    let y = 0
+
+    while (true) {
+
+        x += speedX
+        if (speedX > 0) { speedX -= 1 }
+        
+        y += speedY
+        speedY -= 1 
+        
+        if (x < Xa) { continue }
+        if (y > Ya) { continue }     // negative ys
+        
+        if (x > Xb) { return false }
+        if (y < Yb) { return false } // negative ys
+
+        return true
+    }
+}
+ 
 main()
 
