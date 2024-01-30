@@ -4,7 +4,7 @@ You notice a second question on the back of the homework assignment:
 
 What is the largest magnitude you can get from adding only two of the snailfish numbers?
 
-Note that snailfish addition is not [commutative](https://en.wikipedia.org/wiki/Commutative**property) - that is, `x + y` and `y + x` can produce different results.
+Note that snailfish addition is not [commutative](https://en.wikipedia.org/wiki/Commutative_property) - that is, `x + y` and `y + x` can produce different results.
 
 Again considering the last example homework assignment above:
 
