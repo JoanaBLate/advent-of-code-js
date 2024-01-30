@@ -1,6 +1,6 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.49s
+// solving the puzzle takes (my computer) 0.042s
 
 /*
     some notes:
@@ -16,7 +16,7 @@
 
 const input =  Deno.readTextFileSync("input.txt").trim()
 
-const DATA = [ ] 
+const DATA = [ ] // string format
 
 
 function main() {
@@ -102,7 +102,7 @@ function tryExplode(data) { // does all possible explosions
         const a = parseInt(data[n + 1])
         const b = parseInt(data[n + 3])
         
-        data.splice(n, 5, 0) // extracts [ a , b ]
+        data.splice(n, 5, "0") // extracts [ a , b ]
 
         addToLast(data, n - 1, a) 
 
@@ -155,10 +155,12 @@ function trySplit(data) { // does just one (or none) split
         
         // number
         
-        if (c < 10)  { continue }
+        const big = parseInt(c) 
         
-        const a = Math.floor(c / 2)
-        const b = Math.ceil(c / 2)
+        if (big < 10)  { continue }
+        
+        const a = Math.floor(big / 2) + ""
+        const b = Math.ceil(big / 2) + ""
         
         data.splice(n, 1, "[", a, ",", b, "]")
                 
@@ -170,7 +172,7 @@ function trySplit(data) { // does just one (or none) split
 ///////////////////////////////////////////////////////////
 
 function calcMagnitude(data) {
-   
+
     while (data.length > 1) { calcMagnitude2(data) }
     
     return parseInt(data[0])
@@ -202,7 +204,9 @@ function calcMagnitude2(data) {
         
         const b = 2 * data[n + 3]
         
-        data.splice(n, 5, a + b) // extracts [ a , b ]
+        const value = (a + b) + ""
+        
+        data.splice(n, 5, value) // extracts [ a , b ]
     }  
 }
 
