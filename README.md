@@ -74,6 +74,8 @@ Completed.
 
 **Day 15 PART 2** SOLVED IN JUST **0.32s** 
 
+**Day 18 PART 2** SOLVED IN JUST **0.19s** 
+
 
 ## Advent of Code 2022
 
