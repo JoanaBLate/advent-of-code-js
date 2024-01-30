@@ -1,6 +1,6 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.085s
+// solving the puzzle takes (my computer) 0.49s
 
 /*
     some notes:
@@ -16,13 +16,13 @@
 
 const input =  Deno.readTextFileSync("input.txt").trim()
 
-const DATA = [ ]
+const DATA = [ ] 
 
 
 function main() {
-
-    processInput()
   
+    processInput()
+    
     let data = DATA.shift()
     
     while (DATA.length != 0) {
@@ -37,7 +37,7 @@ function main() {
         
         data.push("]")
 
-        data = processData(data)
+        processData(data)
     }
     
     console.log("the answer is", calcMagnitude(data))
@@ -63,35 +63,27 @@ function processData(data) {
 
     while (true) {
 
-        const resultExplode = tryExplode(data)
+        tryExplode(data)
         
-        data = resultExplode.data
-        
-        if (resultExplode.changed) { continue }
-        
-        const resultSplit = trySplit(data)
-        
-        data = resultSplit.data
-        
-        if (resultSplit.changed) { continue }
-        
-        return data
+        if (! trySplit(data)) { return } // not changed
     }
 }
 
 ///////////////////////////////////////////////////////////
 
-function tryExplode(data) {
+function tryExplode(data) { // does all possible explosions
+
+    let changed = false
 
     let depth = 0
     
-    let left = [ ]
+    let n = -1
     
-    while (data.length != 0) {
-    
-        const c = data.shift()
+    while (n < data.length) {
         
-        left.push(c)
+        n += 1
+    
+        const c = data[n]
                 
         if (c == ",") { continue }
         
@@ -103,54 +95,43 @@ function tryExplode(data) {
         
         // maybe explode 
         
-        if (data[1] != ",") { continue }
-        if (data[3] != "]") { continue }
+        if (data[n + 2] != ",") { continue }
+        if (data[n + 4] != "]") { continue }
         
         // exploding  
+        const a = parseInt(data[n + 1])
+        const b = parseInt(data[n + 3])
         
-        left.pop() // removing last [
-    
-        const a = parseInt(data.shift())
-        
-        data.shift() // ,
-        
-        const b = parseInt(data.shift())
-        
-        data.shift() // ]
-        
-        addToLast(left, a) 
-        
-        left.push(0)
+        data.splice(n, 5, 0) // extracts [ a , b ]
 
-        addToFirst(data, b)
+        addToLast(data, n - 1, a) 
+
+        addToFirst(data, n + 1, b)             
         
-        for (const item of data) { left.push(item) }
-        
-        return { "data": left, "changed": true }
-                
+        changed = true
     }
-    return { "data": left, "changed": false }
+    return changed
 }
 
-function addToFirst(segment, x) {
+function addToFirst(data, index, x) {
 
-    for (let n = 0; n < segment.length; n++) {
+    for (let n = index; n < data.length; n++) {
     
-        if ("[],".includes(segment[n])) { continue }
+        if ("[],".includes(data[n])) { continue }
         
-        segment[n] = "" + (parseInt(segment[n]) + x)
+        data[n] = "" + (parseInt(data[n]) + x)
         
         return
     }
 }
 
-function addToLast(segment, x) {
+function addToLast(data, index, x) {
 
-    for (let n = segment.length - 1; n >= 0; n--) {
+    for (let n = index; n >= 0; n--) {
     
-        if ("[],".includes(segment[n])) { continue }
+        if ("[],".includes(data[n])) { continue }
         
-        segment[n] = "" + (parseInt(segment[n]) + x)
+        data[n] = "" + (parseInt(data[n]) + x)
         
         return
     }
@@ -158,15 +139,13 @@ function addToLast(segment, x) {
 
 ///////////////////////////////////////////////////////////
 
-function trySplit(data) {
-    
-    let left = [ ]
-    
-    while (data.length != 0) {
-    
-        const c = data.shift()
+function trySplit(data) { // does just one (or none) split
+
+    const off = data.length
         
-        left.push(c)
+    for (let n = 0; n < off; n++) {
+    
+        const c = data[n]
                 
         if (c == ",") { continue }
         
@@ -178,68 +157,53 @@ function trySplit(data) {
         
         if (c < 10)  { continue }
         
-        const big = left.pop()
+        const a = Math.floor(c / 2)
+        const b = Math.ceil(c / 2)
         
-        left.push("[")
-        
-        left.push(Math.floor(big / 2))
-        
-        left.push(",")
-        
-        left.push(Math.ceil(big / 2))
-        
-        left.push("]")
-        
-        for (const item of data) { left.push(item) }        
-        
-        return { "data": left, "changed": true }
+        data.splice(n, 1, "[", a, ",", b, "]")
+                
+        return true
     }
-    return { "data": left, "changed": false }
+    return false
 }
 
 ///////////////////////////////////////////////////////////
 
 function calcMagnitude(data) {
-
-    if (data.length == 1) { return parseInt(data[0]) }
+   
+    while (data.length > 1) { calcMagnitude2(data) }
     
-    const left = [ ]
-    
-    while (data.length != 0) {
-    
-        if (! startsWithAtomicPair(data)) { left.push(data.shift()); continue }
-        
-        data.shift() // [
-        
-        const a = 3 * data.shift()
-        
-        data.shift() // ,
-        
-        const b = 2 * data.shift()
-        
-        data.shift() // ]
-        
-        left.push(a + b + "")
-        
-        for (const item of data) { left.push(item) } 
-
-        return calcMagnitude(left)
-    }  
+    return parseInt(data[0])
 }
 
-function startsWithAtomicPair(data) {
-
-    if (data[0] != "[") { return false }
-
-    if ("[],".includes(data[1])) { return false }
+function calcMagnitude2(data) {
     
-    if (data[2] != ",") { return false }
-
-    if ("[],".includes(data[3])) { return false }
+    let n = -1
     
-    if (data[4] != "]") { return false }
+    while (true) {
+    
+        n += 1
+        
+        if (data[n + 4] == undefined) { return }
 
-    return true
+        if (data[n] != "[") { continue }
+
+        if ("[],".includes(data[n + 1])) { continue }
+        
+        if (data[n + 2] != ",") { continue }
+
+        if ("[],".includes(data[n + 3])) { continue }
+        
+        if (data[n + 4] != "]") { continue }
+        
+        // spliting
+        
+        const a = 3 * data[n + 1]
+        
+        const b = 2 * data[n + 3]
+        
+        data.splice(n, 5, a + b) // extracts [ a , b ]
+    }  
 }
 
 main()
