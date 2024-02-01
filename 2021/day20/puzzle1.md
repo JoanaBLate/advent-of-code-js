@@ -112,7 +112,7 @@ Through further advances in imaging technology, the above output image can also 
 ...............
 ```
 
-Truly incredible - now the small details are really starting to come through. After enhancing the original input image twice, `**35**` pixels are lit.
+Truly incredible - now the small details are really starting to come through. After enhancing the original input image twice, **`35`** pixels are lit.
 
 Start with the original input image and apply the image enhancement algorithm twice, being careful to account for the infinite size of the images. **How many pixels are lit in the resulting image?**
 
