@@ -13,4 +13,3 @@ Using the same starting positions as in the example above, player 1 wins in **44
 Using your given starting positions, determine every possible outcome. **Find the player that wins in more universes; in how many universes does that player win?**
 
 Although it hasn't changed, you can still [get your puzzle input](input.txt).
-

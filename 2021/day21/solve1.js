@@ -43,15 +43,15 @@ function processInput() {
 
 function play() {
     
-    positionA = (positionA + tripleRoll()) % 10
+    positionA = ((positionA + tripleRoll()) % 10)  ||  10
 
-    scoreA += positionA || 10
+    scoreA += positionA
     
     if (scoreA >= 1000) { return }
     
-    positionB = (positionB + tripleRoll()) % 10
+    positionB = ((positionB + tripleRoll()) % 10)  ||  10
 
-    scoreB += positionB || 10
+    scoreB += positionB
 }
 
 function tripleRoll() {
