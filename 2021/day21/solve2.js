@@ -1,6 +1,6 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.220s
+// solving the puzzle takes (my computer) 0.130s
 
 /* 
     27 possible rolls:
@@ -32,14 +32,29 @@
     [ 3, 3, 1 ]
     [ 3, 3, 2 ]
     [ 3, 3, 3 ]
+
+    results of 27 the possible rolls:
+    
+    [ 3, 4, 5, 4, 5, 6, 5, 6, 7, 4, 5, 6, 5, 6, 7, 6, 7, 8, 5, 6, 7, 6, 7, 8, 7, 8, 9 ]
+ 
 */
 
 
 const input = Deno.readTextFileSync("input.txt").trim()
 
-const possibleRolls = [ 3, 4, 5, 4, 5, 6, 5, 6, 7,  // results of 27 possible rolls
-                        4, 5, 6, 5, 6, 7, 6, 7, 8,
-                        5, 6, 7, 6, 7, 8, 7, 8, 9 ]
+                        
+const condensedRolls = [ 3, 4, 5, 6, 7, 8, 9 ]
+
+const condensedFactors = {
+
+    "3": 1,
+    "4": 3,
+    "5": 6,
+    "6": 7,
+    "7": 6,
+    "8": 3,
+    "9": 1
+}
 
 var positionA = 0
 var positionB = 0
@@ -92,7 +107,9 @@ function countWinsCore(player, posA, scoreA, posB, scoreB) { // max recursion le
     let winsA = 0
     let winsB = 0
     
-    for (const roll of possibleRolls) {
+    for (const roll of condensedRolls) {
+    
+        const factor = condensedFactors[roll]
     
         if (player == 0) {
         
@@ -100,8 +117,8 @@ function countWinsCore(player, posA, scoreA, posB, scoreB) { // max recursion le
             
             const list = countWins(1, result[0], result[1], posB, scoreB)
             
-            winsA += list[0]
-            winsB += list[1]
+            winsA += list[0] * factor
+            winsB += list[1] * factor
         }
         else {
         
@@ -109,8 +126,8 @@ function countWinsCore(player, posA, scoreA, posB, scoreB) { // max recursion le
             
             const list = countWins(0, posA, scoreA, result[0], result[1])
             
-            winsA += list[0]
-            winsB += list[1]
+            winsA += list[0] * factor
+            winsB += list[1] * factor
         }
     }
     return [ winsA, winsB ]
