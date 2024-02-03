@@ -1,6 +1,6 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.130s
+// solving the puzzle takes (my computer) 0.103s
 
 /* 
     27 possible rolls:
@@ -59,16 +59,37 @@ const condensedFactors = {
 var positionA = 0
 var positionB = 0
 
-const memory = { }
+var winsA = 0
+var winsB = 0
+
+var STATES = { }
 
 
 function main() {
 
     processInput()
     
-    const wins = countWins(0, positionA, 0, positionB, 0)
+    const key = String.fromCharCode(positionA) + String.fromCharCode(0) +
+                String.fromCharCode(positionB) + String.fromCharCode(0)
+                
+    STATES[key] = 1
     
-    console.log("the answer is", Math.max(wins[0], wins[1]))
+    let turnForA = false
+    
+    while (true) {
+        
+        turnForA = ! turnForA
+        
+        const keys = Object.keys(STATES)
+        
+        //console.log(STATES)
+    
+        if (keys.length == 0) { break }
+    
+        STATES = playAllGames(keys, turnForA)    
+    }
+        
+    console.log("the answer is", Math.max(winsA, winsB))
 }
 
 ///////////////////////////////////////////////////////////
@@ -83,63 +104,63 @@ function processInput() {
 
 ///////////////////////////////////////////////////////////
 
-function countWins(player, posA, scoreA, posB, scoreB) {
+function playAllGames(keys, turnForA) {
 
-    const key = player + "~" + posA + "~" + scoreA + "~" + posB + "~" + scoreB
-    
-    let result = memory[key]
-    
-    if (result != undefined) { return result }
-    
-    result = countWinsCore(player, posA, scoreA, posB, scoreB)
-    
-    memory[key] = result
-    
-    return result
-}
+    const newStates = { }
 
-function countWinsCore(player, posA, scoreA, posB, scoreB) { // max recursion level is 21
+    for (const key of keys) {
     
-    if (scoreA >= 21) { return [ 1, 0 ] }
-    
-    if (scoreB >= 21) { return [ 0, 1 ] }
+        const count = STATES[key]
 
-    let winsA = 0
-    let winsB = 0
-    
-    for (const roll of condensedRolls) {
-    
-        const factor = condensedFactors[roll]
-    
-        if (player == 0) {
+        const posA = key.charCodeAt(0)
         
-            const result = play(posA, scoreA, roll)
-            
-            const list = countWins(1, result[0], result[1], posB, scoreB)
-            
-            winsA += list[0] * factor
-            winsB += list[1] * factor
-        }
-        else {
+        const scoreA = key.charCodeAt(1)
         
-            const result = play(posB, scoreB, roll)
+        const posB = key.charCodeAt(2)
+        
+        const scoreB = key.charCodeAt(3)
+        
+        //
+        
+        for (const roll of condensedRolls) {
+        
+            const factor = condensedFactors[roll]
             
-            const list = countWins(0, posA, scoreA, result[0], result[1])
+            const amount = factor * count
+        
+            if (turnForA) {
             
-            winsA += list[0] * factor
-            winsB += list[1] * factor
+                const newPosA = ((posA + roll) % 10) || 10
+
+                const newScoreA = scoreA + newPosA
+                
+                if (newScoreA >= 21) { winsA += amount; continue }
+            
+                const newKey = String.fromCharCode(newPosA) + String.fromCharCode(newScoreA) +
+                               String.fromCharCode(posB) + String.fromCharCode(scoreB)
+                
+                if (newStates[newKey] == undefined) { newStates[newKey] = 0 }
+                
+                newStates[newKey] += amount
+            }
+            else {
+            
+                const newPosB = ((posB + roll) % 10) || 10
+
+                const newScoreB = scoreB + newPosB
+                
+                if (newScoreB >= 21) { winsB += amount; continue }
+            
+                const newKey = String.fromCharCode(posA) + String.fromCharCode(scoreA) +
+                               String.fromCharCode(newPosB) + String.fromCharCode(newScoreB)
+                
+                if (newStates[newKey] == undefined) { newStates[newKey] = 0 }
+                
+                newStates[newKey] += amount
+            }
         }
     }
-    return [ winsA, winsB ]
-}
-
-function play(position, score, roll) {
-
-    position = ((position + roll) % 10) || 10
-
-    score += position
-
-    return [ position, score ]
+    return newStates
 }
 
 ///////////////////////////////////////////////////////////
