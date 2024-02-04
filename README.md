@@ -80,6 +80,8 @@ Completed.
 
 **Day 21 PART 2** SOLVED IN JUST **0.10s** 
 
+**Day 22 PART 2** SOLVED IN JUST **0.17s** 
+
 
 ## Advent of Code 2022
 
