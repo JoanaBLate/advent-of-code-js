@@ -4,7 +4,7 @@ The preparations are finally complete; you and the Elves leave camp on foot and 
 
 As you move through the dense undergrowth, one of the Elves gives you a handheld **device**. He says that it has many fancy features, but the most important one to set up right now is the **communication system**.
 
-However, because he's heard you have [significant](/2016/day/6) [experience](/2016/day/25) [dealing](/2019/day/7) [with](../../2019/day9) [signal-based](../../2019/day16) [systems](../../2021/day25), he convinced the other Elves that it would be okay to give you their one malfunctioning device - surely you'll have no problem fixing it.
+However, because he's heard you have [significant](../../2016/day06) [experience](../../2016/day25) [dealing](../../2019/day07) [with](../../2019/day09) [signal-based](../../2019/day16) [systems](../../2021/day25), he convinced the other Elves that it would be okay to give you their one malfunctioning device - surely you'll have no problem fixing it.
 
 As if inspired by comedic timing, the device emits a few colorful sparks.
 
