@@ -29,8 +29,7 @@ function main() {
 
 function processInput() {
         
-    DATA = input
-    
+    DATA = input    
 }
 
 function indexOfRepeated(token) {
