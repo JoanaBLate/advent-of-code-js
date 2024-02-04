@@ -85,7 +85,7 @@ Completed.
 
 ## Advent of Code 2022
 
-(not started)
+(under construction)
 
 ## Advent of Code 2023
 
