@@ -13,20 +13,7 @@ function main() {
 
     processInput()
     
-    for (const data of DATA) {
-    
-        const last = registerValues.at(-1)
-    
-        if (data.kind == "noop") { registerValues.push(last); continue }
-        
-        if (data.kind == "addx") { 
-        
-            registerValues.push(last)
-            registerValues.push(last + data.value)            
-            continue 
-        }
-        console.log("ERROR: unknown command")
-    }
+    processInstructions()
         
     let result = 0
     
@@ -34,6 +21,8 @@ function main() {
     
     console.log("the answer is", result)
 }
+
+///////////////////////////////////////////////////////////
 
 function processInput() {
         
@@ -54,6 +43,26 @@ function processInput() {
         }
         
         DATA.push({ "kind": kind, "value": value })
+    }
+}
+
+///////////////////////////////////////////////////////////
+
+function processInstructions() {
+
+    for (const data of DATA) {
+    
+        const last = registerValues.at(-1)
+    
+        if (data.kind == "noop") { registerValues.push(last); continue }
+        
+        if (data.kind == "addx") { 
+        
+            registerValues.push(last)
+            registerValues.push(last + data.value)            
+            continue 
+        }
+        console.log("ERROR: unknown command")
     }
 }
 

@@ -15,32 +15,11 @@ function main() {
 
     processInput()
     
-    for (const data of DATA) {
-    
-        const last = registerValues.at(-1)
-    
-        if (data.kind == "noop") { registerValues.push(last); continue }
-        
-        if (data.kind == "addx") { 
-        
-            registerValues.push(last)
-            registerValues.push(last + data.value)            
-            continue 
-        }
-        console.log("ERROR: unknown command")
-    }
+    processInstructions()
     
     createCrt()
     
-    for (let cycle = 1; cycle <= 240; cycle++) {
-        
-        const spriteStart = registerValues[cycle]
-        
-        const row = Math.floor((cycle - 1) / 40)
-        const col = Math.floor((cycle - 1) % 40)
-        
-        if (Math.abs(col - spriteStart) <= 1) { CRT[row][col] = "#" }
-    }
+    fillCrt()
     
     console.log("the answer is:\n")
     
@@ -73,6 +52,26 @@ function processInput() {
 
 ///////////////////////////////////////////////////////////
 
+function processInstructions() {
+
+    for (const data of DATA) {
+    
+        const last = registerValues.at(-1)
+    
+        if (data.kind == "noop") { registerValues.push(last); continue }
+        
+        if (data.kind == "addx") { 
+        
+            registerValues.push(last)
+            registerValues.push(last + data.value)            
+            continue 
+        }
+        console.log("ERROR: unknown command")
+    }
+}
+
+///////////////////////////////////////////////////////////
+
 function createCrt() {
     
     for (let n = 0; n < 6; n++) {
@@ -82,6 +81,19 @@ function createCrt() {
         line.fill(" ")
         
         CRT.push(line)    
+    }
+}
+
+function fillCrt() {
+
+    for (let cycle = 1; cycle <= 240; cycle++) {
+        
+        const spriteStart = registerValues[cycle]
+        
+        const row = Math.floor((cycle - 1) / 40)
+        const col = Math.floor((cycle - 1) % 40)
+        
+        if (Math.abs(col - spriteStart) <= 1) { CRT[row][col] = "#" }
     }
 }
 
