@@ -8,7 +8,7 @@ const DATA = [ ]
 
 const CRT = [ ]
 
-const registerValues = [ 1, 1 ]
+const registerValues = [ 1 ]
 
 
 function main() {
@@ -87,11 +87,13 @@ function createCrt() {
 function fillCrt() {
 
     for (let cycle = 1; cycle <= 240; cycle++) {
+    
+        const index = cycle - 1
         
-        const spriteStart = registerValues[cycle]
+        const spriteStart = registerValues[index]
         
-        const row = Math.floor((cycle - 1) / 40)
-        const col = Math.floor((cycle - 1) % 40)
+        const row = Math.floor(index / 40)
+        const col = Math.floor(index % 40)
         
         if (Math.abs(col - spriteStart) <= 1) { CRT[row][col] = "#" }
     }

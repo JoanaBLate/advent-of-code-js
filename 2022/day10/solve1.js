@@ -6,7 +6,7 @@ const input = Deno.readTextFileSync("input.txt").trim()
 
 const DATA = [ ]
 
-const registerValues = [ 1, 1 ]
+const registerValues = [ 1 ]
 
 
 function main() {
@@ -17,7 +17,7 @@ function main() {
         
     let result = 0
     
-    for (const n of [ 20, 60, 100, 140, 180, 220 ]) { result += n * registerValues[n] }
+    for (const n of [ 20, 60, 100, 140, 180, 220 ]) { result += n * registerValues[n - 1] }
     
     console.log("the answer is", result)
 }
