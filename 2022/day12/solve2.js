@@ -157,7 +157,7 @@ function trySpot(height, distance, row, col, futureSpots) {
 
 ///////////////////////////////////////////////////////////
 
-function show() {
+function show() { // for the sample (small map)
 
     console.log("")
     
