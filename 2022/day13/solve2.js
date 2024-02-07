@@ -29,7 +29,7 @@ function main() {
     }
     
     const indexA = beforeA + 1 // +1 for base one
-    const indexB = beforeB + 2 // +1 for base one, +1 for dateA (not inserted before)
+    const indexB = beforeB + 2 // +1 for base one, +1 for dataA (not inserted before)
     
     console.log("the answer is", indexA * indexB)
 }
