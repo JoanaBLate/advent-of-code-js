@@ -1,42 +1,35 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.027s
+// solving the puzzle takes (my computer) 0.045s
 
 /*
-    HINTS:     
+    HINTS: 
     
     the range area of any sensor has a diamond shape 
-        
-    a diamond shape has two kinds of border: ascending and descending
-    
-    two borders are non-parallel if they are of different kinds
-    
+           
     there is *only one* spot in the target area that is not
-    covered by any sensor - it MUST be an *outside neighbor* of 
-    the borders of some sensors
-    
-    this solution considers *extended* borders (the lines of spots
-    that are immediately outside the borders)
-    
-    each time *non-parallel extended* borders overlap, there is 
-    a good chance we got the hidden beacon spot
-    
+    covered by any sensor - it MUST be *surrounded* by the 
+    borders of the nearby sensors
+
+    so the hidden beacon spot matches the 
+    nearby sensor ranges *PLUS ONE*
+    (because it is slightly out of range)
 */
 
 const input = Deno.readTextFileSync("input.txt").trim()
 
-const MAXDIM = 4000 * 1000
-
 const SENSORS = [ ]
+
+const MAXDIM = 4000 * 1000
 
 
 function main() {
 
     processInput()
     
-    const beacon = findHiddenBeacon()
-    
-    console.log("the answer is", beacon.col * MAXDIM + beacon.row)
+    const hiddenBeacon = findHiddenBeacon()
+        
+    console.log("the answer is", hiddenBeacon.col * MAXDIM + hiddenBeacon.row)
 }
 
 ///////////////////////////////////////////////////////////
@@ -49,24 +42,20 @@ function processInput() {
     
         const parts = line.trim().split(": closest beacon is at ")
         
-        const position = createPointFromToken(parts.shift().replace("Sensor at ", ""))
+        const tokensA = parts.shift().replace("Sensor at ", "").split(", ")
         
-        const beacon = createPointFromToken(parts.shift())
+        const sensorCol = parseInt(tokensA.shift().substr(2))
+        const sensorRow = parseInt(tokensA.shift().substr(2))
         
-        const range = calcManhattan(position, beacon)
+        const tokensB = parts.shift().split(", ")
         
-        SENSORS.push({ "position": position, "beacon": beacon, "range": range })
+        const beaconCol = parseInt(tokensB.shift().substr(2))
+        const beaconRow = parseInt(tokensB.shift().substr(2))
+        
+        const range = calcManhattan(sensorRow, sensorCol, beaconRow, beaconCol)
+        
+        SENSORS.push({ "row": sensorRow, "col": sensorCol, "range": range })
     }
-}
-
-function createPointFromToken(source) {
-
-    const tokens = source.split(", ")
-    
-    const row = parseInt(tokens.pop().substr(2))
-    const col = parseInt(tokens.pop().substr(2))
-    
-    return createPoint(row, col)
 }
 
 ///////////////////////////////////////////////////////////
@@ -76,84 +65,116 @@ function createPoint(row, col) {
     return { "row": row, "col": col }
 }
 
-function calcManhattan(pointA, pointB) {
+function calcManhattan(rowA, colA, rowB, colB) {
 
-    return Math.abs(pointB.row - pointA.row) + Math.abs(pointB.col - pointA.col)
+    return Math.abs(rowB - rowA) + Math.abs(colB - colA)
 }
 
-function isHiddenSpot(spot) {
-
+function isHiddenSpot(row, col) {
+    
     for (const sensor of SENSORS) {
     
-        const distance = calcManhattan(sensor.position, spot)
+        const distance = calcManhattan(sensor.row, sensor.col, row, col)
         
         if (distance <= sensor.range) { return false }
     }
+    
     return true
+}
+
+function remainingRange(row, col, sensor) {
+
+    const a = sensor.range + 1 // extended range!
+    
+    const b = calcManhattan(row, col, sensor.row, sensor.col)
+    
+    return a - b
 }
 
 ///////////////////////////////////////////////////////////
 
 function findHiddenBeacon() {
 
-    const ascendingLines = [ ] 
+    for (let a = 0; a < SENSORS.length - 1; a++) {
     
-    const descendingLines = [ ]
-
-    for (const sensor of SENSORS) {
+        const sensorA = SENSORS[a]
     
-        const top = sensor.position.row - sensor.range - 1 
-
-        const bottom = sensor.position.row + sensor.range + 1
-        
-        //
-
-        const topUp = top - sensor.position.col
-
-        const topDown = top + sensor.position.col
-
-        const bottomUp = bottom - sensor.position.col
-        
-        const bottomDown = bottom + sensor.position.col
-        
-        //
-        
-        if (! ascendingLines.includes(topUp)) { ascendingLines.push(topUp) }
-        
-        if (! ascendingLines.includes(bottomUp)) { ascendingLines.push(bottomUp) }
-        
-        if (! descendingLines.includes(topDown)) { descendingLines.push(topDown) }
-        
-        if (! descendingLines.includes(bottomDown)) { descendingLines.push(bottomDown) }
-    }
-
-    return findHiddenBeacon2(ascendingLines, descendingLines)  
-}
-
-function findHiddenBeacon2(ascendingLines, descendingLines)  {
-
-    for (const asc of ascendingLines) {
+        for (let b = a + 1; b < SENSORS.length; b++) {
     
-        for (const des of descendingLines) { 
-        
-            const col = Math.floor((des - asc) / 2)
+            const sensorB = SENSORS[b]
+            
+            const distance = calcManhattan(sensorA.row, sensorA.col, sensorB.row, sensorB.col)
+            
+            const extendedRangeA = sensorA.range + 1
+            const extendedRangeB = sensorB.range + 1
+            
+            if (distance != extendedRangeA + extendedRangeB) { continue }
+            
+            const beacon = findHiddenBeacon2(sensorA, sensorB)
 
-            const row = col + asc
-            
-            if (row < 0) { continue }
-            if (col < 0) { continue }
-            
-            if (row > MAXDIM) { continue }
-            if (col > MAXDIM) { continue }
-            
-            const spot = createPoint(row, col)
-
-            if ( isHiddenSpot(spot)) { return spot }
+            if (beacon != null) { return beacon }
         }
     }
 }
 
+function findHiddenBeacon2(sensorA, sensorB) {
+
+    const extendedRangeA = sensorA.range + 1
+    const extendedRangeB = sensorB.range + 1
+
+    const topA = sensorA.row - extendedRangeA
+    const leftA = sensorA.col - extendedRangeA
+    const rightA = sensorA.col + extendedRangeA
+    const bottomA = sensorA.row + extendedRangeA
+
+    const topB = sensorB.row - extendedRangeB
+    const leftB = sensorB.col - extendedRangeB
+    const rightB = sensorB.col + extendedRangeB
+    const bottomB = sensorB.row + extendedRangeB
+    
+    const top = Math.max(0, topA, topB)
+    const left = Math.max(0, leftA, leftB)
+    const right = Math.min(MAXDIM, rightA, rightB)
+    const bottom = Math.min(MAXDIM, bottomA, bottomB)
+    
+    return findHiddenBeacon3(sensorA, sensorB, top, left, bottom, right)
+}
+    
+function findHiddenBeacon3(sensorA, sensorB, top, left, bottom, right) {
+
+    // setting deepest point for sensorA
+    
+    let row = bottom
+    
+    let col = sensorA.col + remainingRange(row, sensorA.col, sensorA)
+    
+    if (col > right) { col = right; row -= remainingRange(row, col, sensorA) }
+    
+    if (remainingRange(row, col, sensorB) != 0) { return null }
+    
+    if (isHiddenSpot(row, col)) { return createPoint(row, col) }
+    
+    return findHiddenBeaconBottomUp(sensorA, sensorB, top, left, row, right)
+}
+
+function findHiddenBeaconBottomUp(sensorA, sensorB, top, left, bottom, right) {
+
+    for (let row = bottom; row >= top; row--) {
+    
+        let col = sensorA.col + remainingRange(row, sensorA.col, sensorA)
+        
+        if (col < left || col > right) { continue }
+        
+        if (remainingRange(row, col, sensorB) != 0) { continue }
+        
+        if (isHiddenSpot(row, col)) { return createPoint(row, col) }
+    }
+    
+    return null
+}
+
 ///////////////////////////////////////////////////////////
+
 
 main()
 
