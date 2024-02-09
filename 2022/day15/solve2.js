@@ -150,10 +150,6 @@ function findHiddenBeacon3(sensorA, sensorB, top, left, bottom, right) {
     
     if (col > right) { col = right; row -= remainingRange(row, col, sensorA) }
     
-    if (remainingRange(row, col, sensorB) != 0) { return null }
-    
-    if (isHiddenSpot(row, col)) { return createPoint(row, col) }
-    
     return findHiddenBeaconBottomUp(sensorA, sensorB, top, left, row, right)
 }
 
