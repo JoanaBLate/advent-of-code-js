@@ -17,7 +17,7 @@ function main() {
         
     fillAllTrips()
 
-    search("AA", "AA", 30, 0, 0)
+    search()
     
     console.log("the answer is", BEST)
 }
@@ -103,43 +103,59 @@ function fillAllTripsOf(id) {
 
 /////////////////////////////////////////////////////////// 
 
-function search(id, path, minutes, score, dairyScore) { // recursive
+function createNode(id, path, minutes, score, dairyScore) {
 
-    const destinies = Object.keys(TRIPS[id])
-
-    let gotATravel = false
-    
-    for (const destiny of destinies) {
-    
-        if (path.includes(destiny)) { continue }
-
-        const time = TRIPS[id][destiny] + 1 // +1 for the opening
-        
-        if (time >= minutes) { continue }
-        
-        gotATravel = true
-        
-        //
-        
-        const newId = destiny
-        
-        const newPath = path + destiny
-        
-        const newMinutes = minutes - time
-        
-        const newScore = score + time * dairyScore
-
-        const newDailyScore = dairyScore + VALVES[destiny].rate
-        
-        search(newId, newPath, newMinutes, newScore, newDailyScore) 
-    }
-    
-    if (gotATravel) { return }
-    
-    const result = score + minutes * dairyScore
-
-    if (result > BEST) { BEST = result }
+    return { "id": id, "path": path, "minutes": minutes, "score": score, "dairyScore": dairyScore }
 }
+
+///////////////////////////////////////////////////////////  
+
+function search() { 
+
+    const todo = [ createNode("AA", "AA", 30, 0, 0) ]
+    
+    while (todo.length != 0) {
+            
+        const node = todo.pop()
+    
+        const destinies = Object.keys(TRIPS[node.id])
+
+        let gotATravel = false
+        
+        for (const destiny of destinies) {
+        
+            if (node.path.includes(destiny)) { continue }
+
+            const time = TRIPS[node.id][destiny] + 1 // +1 for the opening
+            
+            if (time >= node.minutes) { continue }
+            
+            gotATravel = true
+            
+            //
+            
+            const newId = destiny
+            
+            const newPath = node.path + destiny
+            
+            const newMinutes = node.minutes - time
+            
+            const newScore = node.score + time * node.dairyScore
+
+            const newDailyScore = node.dairyScore + VALVES[destiny].rate
+            
+            const newNode = createNode(newId, newPath, newMinutes, newScore, newDailyScore)  
+            
+            todo.push(newNode)              
+        }
+        
+        if (gotATravel) { continue }
+        
+        const result = node.score + node.minutes * node.dairyScore
+
+        if (result > BEST) { BEST = result }
+    }
+}                
 
 ///////////////////////////////////////////////////////////
 
