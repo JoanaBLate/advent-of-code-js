@@ -1,12 +1,12 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.245s
+// solving the puzzle takes (my computer) 0.220s
 
 const input = Deno.readTextFileSync("input.txt").trim()
 
 const VALVES = [ ]
 
-const TRIPS = { } // ignores rate zero rooms (but includes AA) <--
+const TRIPS = { } // ignores rate zero valves (but includes AA) <--
 
 var BEST = 0
 
@@ -54,7 +54,7 @@ function processInput() {
 
 function fillAllTrips() {
 
-    for (const id of Object.keys(VALVES)) { fillAllTripsOf(id) }
+    for (const id of Object.keys(VALVES)) { TRIPS[id] = fillAllTripsOf(id) }
 }
 
 function fillAllTripsOf(id) {
@@ -63,49 +63,52 @@ function fillAllTripsOf(id) {
     
     if (valve.rate == 0  &&  id != "AA") { return }
     
-    TRIPS[id] = { }
+    const myTrips = { }
     
-    const path = { }
+    const visiteds = { }
     
-    let futureRooms = valve.neighbors.slice()
+    let futureNeighbors = valve.neighbors.slice()
         
     let distance = 0
     
-    while (futureRooms.length != 0) {
+    while (futureNeighbors.length != 0) {
     
         distance += 1
         
-        const currentRooms = futureRooms
+        const currentNeighbors = futureNeighbors
         
-        futureRooms = [ ]
+        futureNeighbors = [ ]
         
-        for (const room of currentRooms) {        
+        for (const neighbor of currentNeighbors) {        
         
-            if (path[room]) { continue }
+            if (visiteds[neighbor]) { continue }
             
-            path[room] = true
+            visiteds[neighbor] = true
             
-            const newValve = VALVES[room]
+            const newValve = VALVES[neighbor]
             
-            if (newValve.rate != 0) { TRIPS[id][room] = distance }
+            if (newValve.rate != 0) { myTrips[neighbor] = distance }
             
-            for (const newRoom of newValve.neighbors) {
+            for (const newNeighbor of newValve.neighbors) {
             
-                if (path[newRoom]) { continue }
+                if (visiteds[newNeighbor]) { continue }
 
-                if (futureRooms.includes(newRoom)) { continue }
+                if (futureNeighbors.includes(newNeighbor)) { continue }
 
-                futureRooms.push(newRoom)                            
+                futureNeighbors.push(newNeighbor)                            
             }        
         }
     }
+        
+    return myTrips
 }
+
 
 /////////////////////////////////////////////////////////// 
 
-function createNode(id, path, minutes, score, dairyScore) {
+function createNode(id, path, minutes, score, dailyScore) {
 
-    return { "id": id, "path": path, "minutes": minutes, "score": score, "dairyScore": dairyScore }
+    return { "id": id, "path": path, "minutes": minutes, "score": score, "dailyScore": dailyScore }
 }
 
 ///////////////////////////////////////////////////////////  
@@ -146,9 +149,9 @@ function search() {
                 
                 const newMinutes = node.minutes - time
                 
-                const newScore = node.score + time * node.dairyScore
+                const newScore = node.score + time * node.dailyScore
 
-                const newDailyScore = node.dairyScore + VALVES[destiny].rate
+                const newDailyScore = node.dailyScore + VALVES[destiny].rate
                 
                 const newNode = createNode(newId, newPath, newMinutes, newScore, newDailyScore)  
                 
@@ -157,7 +160,7 @@ function search() {
             
             if (gotATravel) { continue }
             
-            const result = node.score + node.minutes * node.dairyScore
+            const result = node.score + node.minutes * node.dailyScore
                         
             if (result > BEST) { BEST = result }
         }
