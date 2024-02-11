@@ -103,9 +103,9 @@ function fillAllTripsOf(id) {
 
 /////////////////////////////////////////////////////////// 
 
-function createNode(id, path, minutes, score, DS) {
+function createNode(id, path, minutes, score, dairyScore) {
 
-    return { "id": id, "path": path, "minutes": minutes, "score": score, "DS": DS }
+    return { "id": id, "path": path, "minutes": minutes, "score": score, "dairyScore": dairyScore }
 }
 
 ///////////////////////////////////////////////////////////  
@@ -146,9 +146,9 @@ function search() {
                 
                 const newMinutes = node.minutes - time
                 
-                const newScore = node.score + time * node.DS
+                const newScore = node.score + time * node.dairyScore
 
-                const newDailyScore = node.DS + VALVES[destiny].rate
+                const newDailyScore = node.dairyScore + VALVES[destiny].rate
                 
                 const newNode = createNode(newId, newPath, newMinutes, newScore, newDailyScore)  
                 
@@ -157,7 +157,7 @@ function search() {
             
             if (gotATravel) { continue }
             
-            const result = node.score + node.minutes * node.DS
+            const result = node.score + node.minutes * node.dairyScore
                         
             if (result > BEST) { BEST = result }
         }
