@@ -136,9 +136,9 @@ function search(id, path, minutes, score, dailyScore) { // recursive
     
     if (gotATravel) { return }
     
-    const result = score + minutes * dailyScore
+    score += minutes * dailyScore
 
-    if (result > BEST) { BEST = result }
+    if (score > BEST) { BEST = score }
 }
 
 ///////////////////////////////////////////////////////////
