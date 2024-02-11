@@ -103,7 +103,7 @@ function fillAllTripsOf(id) {
 
 /////////////////////////////////////////////////////////// 
 
-function search(id, path, minutes, score, dairyScore) { // recursive
+function search(id, path, minutes, score, dailyScore) { // recursive
 
     const destinies = Object.keys(TRIPS[id])
 
@@ -127,16 +127,16 @@ function search(id, path, minutes, score, dairyScore) { // recursive
         
         const newMinutes = minutes - time
         
-        const newScore = score + time * dairyScore
+        const newScore = score + time * dailyScore
 
-        const newDailyScore = dairyScore + VALVES[destiny].rate
+        const newDailyScore = dailyScore + VALVES[destiny].rate
         
         search(newId, newPath, newMinutes, newScore, newDailyScore) 
     }
     
     if (gotATravel) { return }
     
-    const result = score + minutes * dairyScore
+    const result = score + minutes * dailyScore
 
     if (result > BEST) { BEST = result }
 }
