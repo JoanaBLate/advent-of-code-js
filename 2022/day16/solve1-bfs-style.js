@@ -1,6 +1,6 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.205s
+// solving the puzzle takes (my computer) 0.245s
 
 const input = Deno.readTextFileSync("input.txt").trim()
 
@@ -112,48 +112,55 @@ function createNode(id, path, minutes, score, dairyScore) {
 
 function search() { 
 
-    const todo = [ createNode("AA", "AA", 30, 0, 0) ]
+    let futureNodes = [ createNode("AA", "AA", 30, 0, 0) ]
     
-    while (todo.length != 0) {
-            
-        const node = todo.pop()
+    while (true) {
     
-        const destinies = Object.keys(TRIPS[node.id])
-
-        let gotATravel = false
+        if (futureNodes.length == 0) { return }
         
-        for (const destiny of destinies) {
+        const currentNodes = futureNodes
         
-            if (node.path.includes(destiny)) { continue }
+        futureNodes = [ ]
+        
+        for (const node of currentNodes) {
+        
+            const destinies = Object.keys(TRIPS[node.id])
+    
+            let gotATravel = false
+            
+            for (const destiny of destinies) {
+            
+                if (node.path.includes(destiny)) { continue }
 
-            const time = TRIPS[node.id][destiny] + 1 // +1 for the opening
-            
-            if (time >= node.minutes) { continue }
-            
-            gotATravel = true
-            
-            //
-            
-            const newId = destiny
-            
-            const newPath = node.path + destiny
-            
-            const newMinutes = node.minutes - time
-            
-            const newScore = node.score + time * node.dairyScore
+                const time = TRIPS[node.id][destiny] + 1 // +1 for the opening
+                
+                if (time >= node.minutes) { continue }
+                
+                gotATravel = true
+                
+                //
+                
+                const newId = destiny
+                
+                const newPath = node.path + destiny
+                
+                const newMinutes = node.minutes - time
+                
+                const newScore = node.score + time * node.dairyScore
 
-            const newDailyScore = node.dairyScore + VALVES[destiny].rate
+                const newDailyScore = node.dairyScore + VALVES[destiny].rate
+                
+                const newNode = createNode(newId, newPath, newMinutes, newScore, newDailyScore)  
+                
+                futureNodes.push(newNode)              
+            }
             
-            const newNode = createNode(newId, newPath, newMinutes, newScore, newDailyScore)  
+            if (gotATravel) { continue }
             
-            todo.push(newNode)              
+            const result = node.score + node.minutes * node.dairyScore
+                        
+            if (result > BEST) { BEST = result }
         }
-        
-        if (gotATravel) { continue }
-        
-        const result = node.score + node.minutes * node.dairyScore
-
-        if (result > BEST) { BEST = result }
     }
 }                
 
