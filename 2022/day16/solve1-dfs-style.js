@@ -1,6 +1,6 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.185s
+// solving the puzzle takes (my computer) 0.180s
 
 const input = Deno.readTextFileSync("input.txt").trim()
 
@@ -66,6 +66,8 @@ function fillAllTripsOf(id) {
     const myTrips = { }
     
     const visiteds = { }
+    
+    visiteds[id] = true
     
     let futureNeighbors = valve.neighbors.slice()
         
