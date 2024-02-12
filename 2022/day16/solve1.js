@@ -4,7 +4,7 @@
 
 const input = Deno.readTextFileSync("input.txt").trim()
 
-const VALVES = [ ]
+const VALVES = { }
 
 const TRIPS = { } // ignores rate zero valves (but includes AA) <--
 
