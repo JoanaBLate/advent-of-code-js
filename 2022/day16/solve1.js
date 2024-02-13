@@ -1,12 +1,14 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.175s
+// solving the puzzle takes (my computer) 0.095s
 
 const input = Deno.readTextFileSync("input.txt").trim()
 
-const VALVES = { }
+const FLOWS = { }
 
-const TRIPS = { } // ignores rate zero valves (but includes AA) <--
+const NEIGHBORS = { }
+
+const TRIPS = { } // includes valve opening time 
 
 var BEST = 0
 
@@ -14,10 +16,11 @@ var BEST = 0
 function main() {
 
     processInput()
-        
-    fillAllTrips()
-
-    search("AA", "AA", 30, 0, 0)
+    
+    fillTrips()
+    
+    // path, time, minutes, score, dailyScore   
+    search("!", 0, 30, 0, 0)
     
     console.log("the answer is", BEST)
 }
@@ -25,14 +28,20 @@ function main() {
 ///////////////////////////////////////////////////////////
 
 function processInput() {
-        
+    
+    const conversion = { "AA": "!" }
+
+    let availableCode = "!".charCodeAt(0) + 1
+    
+    //
+
     const lines = input.split("\n")
     
     for (const line of lines) { 
     
         let s = line.replace("Valve ", "")
         
-        const id = s.substr(0, 2)
+        const id = converted(s.substr(0, 2))
         
         s = s.substr(2).replace(" has flow rate=", "")
         
@@ -46,36 +55,52 @@ function processInput() {
         
         const neighbors = s.split(", ")
         
-        VALVES[id] = { "rate": rate, "neighbors": neighbors }
-    }
+        for (let n = 0; n < neighbors.length; n++) { neighbors[n] = converted(neighbors[n]) }
+        
+        //    
+    
+        FLOWS[id] = rate
+        
+        NEIGHBORS[id] = neighbors
+    } 
+    
+    function converted(name) { // reducing size of names to 1 character only
+    
+        if (conversion[name] == undefined) {
+        
+            conversion[name] = String.fromCharCode(availableCode)
+            
+            availableCode += 1
+        }
+    
+        return conversion[name]
+    }   
 }
 
 ///////////////////////////////////////////////////////////
 
-function fillAllTrips() {
+function fillTrips() {
 
-    for (const id of Object.keys(VALVES)) { TRIPS[id] = fillAllTripsOf(id) }
+    for (const name of Object.keys(FLOWS)) { fillTripsThis(name) }
 }
 
-function fillAllTripsOf(id) {
-
-    const valve = VALVES[id]
+function fillTripsThis(name) {
     
-    if (valve.rate == 0  &&  id != "AA") { return }
+    if (FLOWS[name] == 0  &&  name != "!") { return }
     
-    const myTrips = { }
+    const myTrips = [ ] // [ { name: time } ]
     
-    const visiteds = { }
+    const visiteds = { } // { name: true }
     
-    visiteds[id] = true
+    visiteds[name] = true
     
-    let futureNeighbors = valve.neighbors.slice()
+    let futureNeighbors = NEIGHBORS[name]
         
-    let distance = 0
+    let time = 0
     
     while (futureNeighbors.length != 0) {
     
-        distance += 1
+        time += 1
         
         const currentNeighbors = futureNeighbors
         
@@ -87,11 +112,9 @@ function fillAllTripsOf(id) {
             
             visiteds[neighbor] = true
             
-            const newValve = VALVES[neighbor]
+            if (FLOWS[neighbor] != 0) { myTrips.push(createTrip(neighbor, time + 1)) } // includes valve opening time
             
-            if (newValve.rate != 0) { myTrips[neighbor] = distance }
-            
-            for (const newNeighbor of newValve.neighbors) {
+            for (const newNeighbor of NEIGHBORS[neighbor]) {
             
                 if (visiteds[newNeighbor]) { continue }
 
@@ -102,40 +125,45 @@ function fillAllTripsOf(id) {
         }
     }
         
-    return myTrips
+    TRIPS[name] = myTrips
+}
+
+function createTrip(destiny, time) {  // includes valve opening time
+
+    return { "destiny": destiny, "time": time }
 }
 
 /////////////////////////////////////////////////////////// 
 
-function search(id, path, minutes, score, dailyScore) { // recursive
+function search(path, time, minutes, score, dailyScore) {
 
-    const destinies = Object.keys(TRIPS[id])
+    score += time * dailyScore
+    
+    minutes -= time
+    
+    const room = path.at(-1)
+    
+    dailyScore += FLOWS[room]
+    
+    //
 
     let gotATravel = false
+
+    const trips = TRIPS[room]
     
-    for (const destiny of destinies) {
+    for (const trip of trips) {
+    
+        const destiny = trip.destiny
+        
+        const time = trip.time
     
         if (path.includes(destiny)) { continue }
-
-        const time = TRIPS[id][destiny] + 1 // +1 for the opening
         
         if (time >= minutes) { continue }
         
         gotATravel = true
         
-        //
-        
-        const newId = destiny
-        
-        const newPath = path + destiny
-        
-        const newMinutes = minutes - time
-        
-        const newScore = score + time * dailyScore
-
-        const newDailyScore = dailyScore + VALVES[destiny].rate
-        
-        search(newId, newPath, newMinutes, newScore, newDailyScore) 
+        search(path + destiny, time, minutes, score, dailyScore) 
     }
     
     if (gotATravel) { return }
