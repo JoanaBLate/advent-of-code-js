@@ -1,6 +1,6 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.095s
+// solving the puzzle takes (my computer) 0.087s
 
 const input = Deno.readTextFileSync("input.txt").trim()
 
@@ -9,6 +9,10 @@ const FLOWS = { }
 const NEIGHBORS = { }
 
 const TRIPS = { } // includes valve opening time 
+
+const INDICES = { }
+
+const BENCHMARK = { }
 
 var BEST = 0
 
@@ -19,8 +23,10 @@ function main() {
     
     fillTrips()
     
-    // path, time, minutes, score, dailyScore   
-    search("!", 0, 30, 0, 0)
+    fillIndices()
+    
+    // minutes, path, score, dailyScore   
+    search(30, "!", 0, 0)
     
     console.log("the answer is", BEST)
 }
@@ -135,18 +141,44 @@ function createTrip(destiny, time) {  // includes valve opening time
 
 /////////////////////////////////////////////////////////// 
 
-function search(path, time, minutes, score, dailyScore) {
+function fillIndices() {
 
-    score += time * dailyScore
+    let n = -1
     
-    minutes -= time
-    
+    for (const name of Object.keys(TRIPS)) { n += 1; INDICES[name] = Math.pow(2, n) }
+}
+
+/////////////////////////////////////////////////////////// 
+
+function search(minutes, path, score, dailyScore) {
+
     const room = path.at(-1)
     
-    dailyScore += FLOWS[room]
+    let code = 0
     
-    //
+    for (const c of path) { 
+    
+        if (c == room) { break }
+        
+        code += INDICES[c] 
+    }
+    
+    const key = room + code
+    
+    if (BENCHMARK[key] == undefined) {
 
+        BENCHMARK[key] = score
+    }
+    else if (score < BENCHMARK[key]) { 
+    
+        BENCHMARK[key] = score
+    }
+    else {
+        return
+    }
+
+    //
+    
     let gotATravel = false
 
     const trips = TRIPS[room]
@@ -162,8 +194,12 @@ function search(path, time, minutes, score, dailyScore) {
         if (time >= minutes) { continue }
         
         gotATravel = true
+    
+        const newScore = score + time * dailyScore
+    
+        const newDailyScore = dailyScore + FLOWS[destiny]
         
-        search(path + destiny, time, minutes, score, dailyScore) 
+        search(minutes - time, path + destiny, newScore, newDailyScore) 
     }
     
     if (gotATravel) { return }
