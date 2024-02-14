@@ -1,6 +1,6 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.210s
+// solving the puzzle takes (my computer) 0.049s
 
 const input = Deno.readTextFileSync("input.txt").trim()
 
@@ -22,9 +22,8 @@ function main() {
     fillTrips()
     
     fillIndices()
-    
-    // room, visited, minutes, score
-    visit("!", "!", 26, 0)
+
+    visit("!", "!", 26, 0) // filling the board
     
     console.log("the answer is", findBestScore())    
 }
@@ -178,7 +177,12 @@ function fillBoard(visited, score) {
 
     let code = 0
     
-    for (const c of visited) { code += INDICES[c] }
+    for (const c of visited) { 
+    
+        if (c == "!") { continue }
+        
+        code += INDICES[c] 
+    }
     
     if (BOARD[code] == undefined) { BOARD[code] = score; return }
     
@@ -187,42 +191,60 @@ function fillBoard(visited, score) {
 
 ///////////////////////////////////////////////////////////
 
-// the board has the best score for each group visited individually
+// the BOARD has the best score for each group visited individually
 // there are two heroes; their paths must be EXCLUDENT to each other
+// this program starts matching the highest scores
 
 function findBestScore() {
 
-    let best = 0
-    
-    const excess = INDICES["!"]
+    const scores = Object.values(BOARD).sort(function (a, b) { return b - a })
+        
+    const scoreBoard = { }
 
     const keys = Object.keys(BOARD)
 
-    for (let a = 0; a < keys.length - 1; a++) {
+    for (const key of keys) {
     
-        const keyA = keys[a]
-
-        const scoreA = BOARD[keyA]
+        const score = BOARD[key]
         
-        const bitmaskA = parseInt(keyA) - excess
+        if (scoreBoard[score] == undefined) { scoreBoard[score] = [ ] } 
+         
+        scoreBoard[score].push(parseInt(key))
+    }
 
-        for (let b = a; b < keys.length; b++) {
+    //
+
+    for (let a = 0; a < scores.length - 1; a++) {
+    
+        const scoreA = scores[a]
+
+        const visitedsA = scoreBoard[scoreA]            
+
+        for (let b = a; b < scores.length; b++) {
         
-            const keyB = keys[b]
-            
-            const scoreB = BOARD[keyB]
-            
-            const bitmaskB = parseInt(keyB) - excess
+            const scoreB = scores[b]
 
-            if ((bitmaskA & bitmaskB) != 0) { continue } // the paths are not excludent
+            const visitedsB = scoreBoard[scoreB]
             
-            const score = scoreA + scoreB
-
-            if (score > best) { best = score }
+            if (areExcludents(visitedsA, visitedsB)) { return scoreA + scoreB }
         }
     }
-    return best
-} 
+}
+        
+function areExcludents(visitedsA, visitedsB) { 
+
+    for (const visitedA of visitedsA) {
+    
+        for (const visitedB of visitedsB) {
+        
+            if ((visitedA & visitedB) == 0) { return true }
+        }
+    }
+    
+    return false
+}
+
+///////////////////////////////////////////////////////////
 
 main()
 
