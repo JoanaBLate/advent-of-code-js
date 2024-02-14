@@ -1,6 +1,6 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.095s
+// solving the puzzle takes (my computer) 0.060s
 
 const input = Deno.readTextFileSync("input.txt").trim()
 
@@ -19,8 +19,8 @@ function main() {
     
     fillTrips()
     
-    // path, time, minutes, score, dailyScore   
-    search("!", 0, 30, 0, 0)
+    // room, visited, minutes, score
+    visit("!", "!", 30, 0)
     
     console.log("the answer is", BEST)
 }
@@ -135,43 +135,29 @@ function createTrip(destiny, time) {  // includes valve opening time
 
 /////////////////////////////////////////////////////////// 
 
-function search(path, time, minutes, score, dailyScore) {
-
-    score += time * dailyScore
-    
-    minutes -= time
-    
-    const room = path.at(-1)
-    
-    dailyScore += FLOWS[room]
-    
-    //
-
-    let gotATravel = false
-
-    const trips = TRIPS[room]
-    
-    for (const trip of trips) {
-    
-        const destiny = trip.destiny
-        
-        const time = trip.time
-    
-        if (path.includes(destiny)) { continue }
-        
-        if (time >= minutes) { continue }
-        
-        gotATravel = true
-        
-        search(path + destiny, time, minutes, score, dailyScore) 
-    }
-    
-    if (gotATravel) { return }
-    
-    score += minutes * dailyScore
-
+function visit(room, visited, minutes, score) {
+  
     if (score > BEST) { BEST = score }
-}
+
+    for (const trip of TRIPS[room]) {
+      
+        const newMinutes = minutes - trip.time
+
+        if (newMinutes <= 0) { continue }
+        
+        const newRoom = trip.destiny
+        
+        if (visited.includes(newRoom)) { continue }
+        
+        const flow = FLOWS[newRoom]
+                
+        const newScore = score + flow * newMinutes // reaches the last minute
+
+        const newVisited = visited + newRoom
+        
+        visit(newRoom, newVisited, newMinutes, newScore)
+    }
+}   
 
 ///////////////////////////////////////////////////////////
 
