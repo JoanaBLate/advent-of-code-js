@@ -191,7 +191,7 @@ function fillBoard(visited, score) {
 
 ///////////////////////////////////////////////////////////
 
-// the BOARD has the best score for each group visited individually
+// the BOARD has the best score for each group of visited rooms
 // there are two heroes; their paths must be EXCLUDENT to each other
 // this program starts matching the highest scores
 
