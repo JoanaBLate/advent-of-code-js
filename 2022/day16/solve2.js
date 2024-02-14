@@ -187,7 +187,7 @@ function fillBoard(visited, score) {
 
 ///////////////////////////////////////////////////////////
 
-// the board has the best score for each individual visited group
+// the board has the best score for each group visited individually
 // there are two heroes; their paths must be EXCLUDENT to each other
 
 function findBestScore() {
@@ -205,7 +205,6 @@ function findBestScore() {
         const scoreA = BOARD[keyA]
         
         const bitmaskA = parseInt(keyA) - excess
-
 
         for (let b = a; b < keys.length; b++) {
         
