@@ -212,7 +212,10 @@ function findBestScore() {
         scoreBoard[score].push(parseInt(key))
     }
 
-    //
+    return findBestScore2(scores, scoreBoard)
+}
+
+function findBestScore2(scores, scoreBoard) {
 
     for (let a = 0; a < scores.length - 1; a++) {
     
