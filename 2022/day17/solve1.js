@@ -12,7 +12,7 @@ const STATIC = 2
 
 const WIDTH = 7
 
-const CHAMBER = new Uint8Array(7 * 1000 * 1000)
+const CHAMBER = new Uint8Array(WIDTH * 1000 * 1000)
 
 var lastRock = "E"
 
@@ -87,12 +87,12 @@ function createRockB() {
     let index = fallingBottom * WIDTH    
     CHAMBER[index + 3] = FALLING
     
-    index += 7    
+    index += WIDTH    
     CHAMBER[index + 2] = FALLING
     CHAMBER[index + 3] = FALLING
     CHAMBER[index + 4] = FALLING
     
-    index += 7    
+    index += WIDTH    
     CHAMBER[index + 3] = FALLING
 }
 
@@ -109,10 +109,10 @@ function createRockC() {
     CHAMBER[index + 3] = FALLING 
     CHAMBER[index + 4] = FALLING
     
-    index += 7    
+    index += WIDTH    
     CHAMBER[index + 4] = FALLING
     
-    index += 7    
+    index += WIDTH    
     CHAMBER[index + 4] = FALLING    
 }
 
@@ -127,13 +127,13 @@ function createRockD() {
     let index = fallingBottom * WIDTH    
     CHAMBER[index + 2] = FALLING
  
-    index += 7
+    index += WIDTH
     CHAMBER[index + 2] = FALLING
   
-    index += 7
+    index += WIDTH
     CHAMBER[index + 2] = FALLING
 
-    index += 7
+    index += WIDTH
     CHAMBER[index + 2] = FALLING
 }
 
@@ -149,7 +149,7 @@ function createRockE() {
     CHAMBER[index + 2] = FALLING 
     CHAMBER[index + 3] = FALLING
     
-    index += 7    
+    index += WIDTH    
     CHAMBER[index + 2] = FALLING    
     CHAMBER[index + 3] = FALLING
 }
