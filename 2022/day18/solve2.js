@@ -1,6 +1,6 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.045s
+// solving the puzzle takes (my computer) 0.035s
 
 const input = Deno.readTextFileSync("input.txt").trim()
 
@@ -17,8 +17,6 @@ var greatestZ = 0
 const CUBES = [ ] // 3 dimension array
 
 const surfaceHoles = [ ] 
-
-const visitedHoles = { }
 
 
 function main() {
@@ -133,7 +131,19 @@ function findSurfaceHole(x, y, z) {
 
 function extendSurfaceHoles() {
 
-    for (const hole of surfaceHoles) { extendHole(hole.x, hole.y, hole.z) } 
+    for (const hole of surfaceHoles) { extendSurfaceHole(hole.x, hole.y, hole.z) } 
+}
+
+function extendSurfaceHole(x, y, z) {
+    
+    extendHole(x - 1, y, z)
+    extendHole(x + 1, y, z)
+    
+    extendHole(x, y - 1, z)
+    extendHole(x, y + 1, z)
+    
+    extendHole(x, y, z - 1)
+    extendHole(x, y, z + 1)
 }
 
 function extendHole(x, y, z) {
@@ -146,21 +156,15 @@ function extendHole(x, y, z) {
     if (y > greatestY) { return }
     if (z > greatestZ) { return }
     
-    if (CUBES[x][y][z] == CUBE) { return }
-    
-    const key = x + "~" + y + "~" + z
-    
-    if (visitedHoles[key]) { return }
-    
-    visitedHoles[key] = true
+    if (CUBES[x][y][z] != AIR) { return }
     
     CUBES[x][y][z] = HOLE 
     
-    extendHole(x - 1, y, z, false)
-    extendHole(x + 1, y, z, false)
+    extendHole(x - 1, y, z)
+    extendHole(x + 1, y, z)
     
-    extendHole(x, y - 1, z, false)
-    extendHole(x, y + 1, z, false)
+    extendHole(x, y - 1, z)
+    extendHole(x, y + 1, z)
     
     extendHole(x, y, z - 1)
     extendHole(x, y, z + 1)
