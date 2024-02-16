@@ -410,7 +410,7 @@ function playRound() {
 
 function getJet() {
 
-    jetIndex += FALLING
+    jetIndex += 1
     
     if (jetIndex > jetMax) { jetIndex = 0 }
     
