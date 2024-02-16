@@ -1,6 +1,6 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.030s
+// solving the puzzle takes (my computer) 0.032s
 
 const input = Deno.readTextFileSync("input.txt").trim()
 
