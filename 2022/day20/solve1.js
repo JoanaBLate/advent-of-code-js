@@ -1,6 +1,6 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.045s
+// solving the puzzle takes (my computer) 0.044s
 
 const input = Deno.readTextFileSync("input.txt").trim()
 
@@ -67,35 +67,12 @@ function moveItem(n) {
     
     if (displacement == 0) { return }
     
-    if (displacement < 0) { leftMoveItem(n, displacement) } else { rightMoveItem(n, displacement) }
-}
-
-function rightMoveItem(n, displacement) {
-    
     const oldPosition = TRANSLATED.indexOf(n)
     
     let newPosition = oldPosition + displacement
     
     while (newPosition > LENGTH - 1) { newPosition -= LENGTH - 1 }
-    
-    if (oldPosition < newPosition) {
-    
-        for (let pos = oldPosition; pos < newPosition; pos++) { TRANSLATED[pos] = TRANSLATED[pos + 1] }        
-    }
-    else {
-    
-        for (let pos = oldPosition; pos > newPosition; pos--) { TRANSLATED[pos] = TRANSLATED[pos - 1] }
-    }
-    
-    TRANSLATED[newPosition] = n
-}
-
-function leftMoveItem(n, displacement) {
-    
-    const oldPosition = TRANSLATED.indexOf(n)
-    
-    let newPosition = oldPosition + displacement
-    
+        
     while (newPosition < 0) { newPosition += LENGTH - 1 }
     
     if (oldPosition < newPosition) {
