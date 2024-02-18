@@ -142,8 +142,6 @@ function cloneState(src) {
 
 function startMinute(state) {
 
-    if (state.minutes == 0) { console.log("ERROR: cannot start minute"); Deno.exit() }
-    
     state.minutes -= 1
     
     if (state.newBot == ORE) { state.oreBots += 1 }
@@ -183,16 +181,11 @@ function createBot(state, bot) {
         return
     }
 
-    if (bot == GEODE) { 
+   // (bot == GEODE) 
 
-        state.ore -= geodeRobotOreCost
-    
-        state.obsidian -= geodeRobotObsidianCost
-        
-        return
-    }
-    
-    console.log("ERROR: unknown bot to create"); Deno.exit()
+    state.ore -= geodeRobotOreCost
+
+    state.obsidian -= geodeRobotObsidianCost
 }
 
 function endMinute(state) {
@@ -258,7 +251,7 @@ function search(state, bot) {
 
 function shallCreateOreBot(state, oreBots) {
 
-    if (state.minutes < 4) { return false } // no time for collecting or for the material be useful (geode)
+    if (state.minutes < 4) { return false } // no time for collecting or for the material become useful (geode)
     
     const maxDailyDemand = Math.max(clayRobotOreCost, obsidianRobotOreCost, geodeRobotOreCost) // probably exaggerated
     
@@ -269,7 +262,7 @@ function shallCreateOreBot(state, oreBots) {
 
 function shallCreateClayBot(state, clayBots) {
 
-    if (state.minutes < 6) { return false } // no time for collecting or for the material be useful (geode)
+    if (state.minutes < 6) { return false } // no time for collecting or for the material become useful (geode)
     
     const netDailyDemand = (state.minutes * obsidianRobotClayCost - state.clay) / state.minutes // probably exaggerated
 
@@ -278,7 +271,7 @@ function shallCreateClayBot(state, clayBots) {
 
 function shallCreateObsidianBot(state, clayBots, obsidianBots) {
 
-    if (state.minutes < 4) { return false } // no time for collecting or for the material be useful (geode)
+    if (state.minutes < 4) { return false } // no time for collecting or for the material become useful (geode)
 
     if (clayBots == 0) { return false }
     
@@ -291,7 +284,7 @@ function shallCreateGeodeBot(obsidianBots) {
     
     if (obsidianBots == 0) { return false }
     
-    return true // if there is no time for collecting, minutes will be processed to the end
+    return true // if there is no time for collecting, minutes will be processed till the end
 }
 
 ///////////////////////////////////////////////////////////
