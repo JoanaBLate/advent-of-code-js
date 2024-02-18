@@ -12,7 +12,7 @@ When you were still back at the camp, you overheard some Elves talking about coo
 
 The encrypted file is a list of numbers. To **mix** the file, move each number forward or backward in the file a number of positions equal to the value of the number being moved. The list is **circular**, so moving a number off one end of the list wraps back around to the other end as if the ends were connected.
 
-For example, to move the `1` in a sequence like `4, 5, 6, **1**, 7, 8, 9`, the `1` moves one position forward: `4, 5, 6, 7, `**`1`**`, 8, 9`. To move the `-2` in a sequence like `4, `**`-2`**`, 5, 6, 7, 8, 9`, the `-2` moves two positions backward, wrapping around: `4, 5, 6, 7, 8, `**`-2`**`, 9`.
+For example, to move the `1` in a sequence like `4, 5, 6,`**`1`**`, 7, 8, 9`, the `1` moves one position forward: `4, 5, 6, 7, `**`1`**`, 8, 9`. To move the `-2` in a sequence like `4, `**`-2`**`, 5, 6, 7, 8, 9`, the `-2` moves two positions backward, wrapping around: `4, 5, 6, 7, 8, `**`-2`**`, 9`.
 
 The numbers should be moved **in the order they originally appear** in the encrypted file. Numbers moving around during the mixing process do not change the order in which the numbers are moved.
 
