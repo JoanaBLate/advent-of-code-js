@@ -1,6 +1,6 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.053s
+// solving the puzzle takes (my computer) 0.515s
 
 const input = Deno.readTextFileSync("input.txt").trim()
 
@@ -12,7 +12,7 @@ const CLAY = 2
 const OBSIDIAN = 4
 const GEODE = 8
 
-const MINUTES = 24
+const MINUTES = 32
 
 var oreRobotOreCost = 0 
 
@@ -29,20 +29,19 @@ function main() {
 
     processInput()
     
-    let total = 0
+    readBlueprint(BLUEPRINTS.shift())
+
+    const a = findBestProduction()
+     
+    readBlueprint(BLUEPRINTS.shift())
+
+    const b = findBestProduction()
+     
+    readBlueprint(BLUEPRINTS.shift())
+
+    const c = findBestProduction() 
     
-    let index = 0
-    
-    for (const blueprint of BLUEPRINTS) {
-    
-        readBlueprint(blueprint)
-    
-        index += 1
-    
-        total += index * findBestProduction()   
-    }
-    
-    console.log("the answer is", total)
+    console.log("the answer is", a * b * c)
 }
 
 ///////////////////////////////////////////////////////////
