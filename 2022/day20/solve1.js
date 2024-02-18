@@ -25,15 +25,15 @@ function main() {
     
     let a = index + 1000
     
-    while (a > LENGTH) { a -= LENGTH }
+    while (a >= LENGTH) { a -= LENGTH }
     
     let b = index + 2000
     
-    while (b > LENGTH) { b -= LENGTH }
+    while (b >= LENGTH) { b -= LENGTH }
     
     let c = index + 3000
     
-    while (c > LENGTH) { c -= LENGTH }
+    while (c >= LENGTH) { c -= LENGTH }
     
     console.log("the answer is", result[a] + result[b] + result[c])
 }
