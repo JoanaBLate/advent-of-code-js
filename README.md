@@ -95,6 +95,10 @@ Completed.
 
 **Day 18 PART 2** SOLVED IN JUST **0.03s** 
 
+**Day 19 PART 1** SOLVED IN JUST **0.05s** 
+
+**Day 19 PART 2** SOLVED IN JUST **0.55s** 
+
 
 ## Advent of Code 2023
 
