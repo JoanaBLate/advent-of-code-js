@@ -35,11 +35,13 @@ function processInput() {
         
         const name = tokens.shift().substr(0, 4)
         
-        if (tokens.length == 1) { YELLERS[name] = parseInt(tokens.shift()); continue }
+        if (tokens.length == 1) { YELLERS[name] = tokens.shift(); continue }
         
-        //
+        const operator = { "monkeyA": tokens.shift(), "symbol": tokens.shift(), "monkeyB": tokens.shift(), 
         
-        OPERATORS[name] = { "monkeyA": tokens.shift(), "symbol": tokens.shift(), "monkeyB": tokens.shift(), "doneA": false, "doneB": false }
+                          "doneA": false, "doneB": false }
+                          
+        OPERATORS[name] = operator
     }
 }
 
@@ -49,32 +51,34 @@ function applyValues() {
 
     const names = Object.keys(OPERATORS)
     
-    for (const name of names) {
-    
-        const operator = OPERATORS[name]
-    
-        if (! operator.doneA) {
-        
-            const valueA = YELLERS[operator.monkeyA]
-            
-            if (valueA != undefined) { operator.monkeyA = valueA; operator.doneA = true }    
-        }
-    
-        if (! operator.doneB) {
-        
-            const valueB = YELLERS[operator.monkeyB]
-            
-            if (valueB != undefined) { operator.monkeyB = valueB; operator.doneB = true }    
-        }
-        
-        if (operator.doneA  &&  operator.doneB) {
-        
-            const value = valueFromOperator(operator)
+    for (const name of names) { applyValuesFor(name) }
+}
 
-            YELLERS[name] = "" + value
-            
-            delete OPERATORS[name]        
-        }
+function applyValuesFor(name) {
+ 
+    const operator = OPERATORS[name]
+
+    if (! operator.doneA) {
+    
+        const valueA = YELLERS[operator.monkeyA]
+        
+        if (valueA != undefined) { operator.monkeyA = valueA; operator.doneA = true }    
+    }
+
+    if (! operator.doneB) {
+    
+        const valueB = YELLERS[operator.monkeyB]
+        
+        if (valueB != undefined) { operator.monkeyB = valueB; operator.doneB = true }    
+    }
+    
+    if (operator.doneA  &&  operator.doneB) {
+    
+        const value = valueFromOperator(operator)
+
+        YELLERS[name] = "" + value
+        
+        delete OPERATORS[name]        
     }
 }
 
