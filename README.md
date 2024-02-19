@@ -99,6 +99,8 @@ Completed.
 
 **Day 19 PART 2** SOLVED IN JUST **0.55s** 
 
+**Day 20 PART 2** SOLVED IN JUST **0.14s** 
+
 
 ## Advent of Code 2023
 
