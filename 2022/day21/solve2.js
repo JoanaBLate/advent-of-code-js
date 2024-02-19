@@ -123,7 +123,7 @@ function findHumanValue() {
     return findHumanValue2(targetValue, responseMonkey)
 }
 
-function findHumanValue2(targetValue, responseMonkey) {
+function findHumanValue2(targetValue, responseMonkey) { // walks backwards
 
     let result = targetValue
 
