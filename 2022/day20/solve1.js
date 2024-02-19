@@ -70,10 +70,10 @@ function moveItem(n) {
     const oldPosition = TRANSLATED.indexOf(n)
     
     let newPosition = oldPosition + displacement
-    
-    while (newPosition > LENGTH - 1) { newPosition -= LENGTH - 1 }
         
     while (newPosition < 0) { newPosition += LENGTH - 1 }
+    
+    while (newPosition > LENGTH - 1) { newPosition -= LENGTH - 1 }
     
     if (oldPosition < newPosition) {
     
