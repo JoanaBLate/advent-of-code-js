@@ -103,6 +103,8 @@ Completed.
 
 **Day 21 PART 2** SOLVED IN JUST **0.03s** 
 
+**Day 23 PART 2** SOLVED IN JUST **0.15s** 
+
 
 ## Advent of Code 2023
 
