@@ -1,6 +1,6 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.032s
+// solving the puzzle takes (my computer) 0.031s
 
 const input = Deno.readTextFileSync("input.txt").trimEnd()
 
@@ -32,9 +32,9 @@ function main() {
     
     const col = COL + 1 // base one
     
-    const face = [ "east", "south", "west", "north" ].indexOf(FACING)
+    const facing = [ "east", "south", "west", "north" ].indexOf(FACING)
     
-    console.log("the answer is", 1000 * row + 4 * col + face)
+    console.log("the answer is", 1000 * row + 4 * col + facing)
 }
 
 ///////////////////////////////////////////////////////////
