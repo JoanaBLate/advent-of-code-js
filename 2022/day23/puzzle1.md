@@ -215,7 +215,7 @@ To make sure they're on the right track, the Elves like to check after round 10 
 ...#..#..#..
 ```
 
-In this region, the number of empty ground tiles is `**110**`.
+In this region, the number of empty ground tiles is **`110`**.
 
 Simulate the Elves' process and find the smallest rectangle that contains the Elves after 10 rounds. **How many empty ground tiles does that rectangle contain?**
 
