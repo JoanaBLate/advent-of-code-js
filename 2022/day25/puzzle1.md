@@ -4,7 +4,7 @@ As the expedition finally reaches the extraction point, several large [hot air b
 
 The fuel heating machine is a new addition to the process. When this mountain was a volcano, the ambient temperature was more reasonable; now, it's so cold that the fuel won't work at all without being warmed up first.
 
-The Elves, seemingly in an attempt to make the new machine feel welcome, have already attached a pair of [googly eyes](https://en.wikipedia.org/wiki/Googly**eyes) and started calling it "Bob".
+The Elves, seemingly in an attempt to make the new machine feel welcome, have already attached a pair of [googly eyes](https://en.wikipedia.org/wiki/Googly_eyes) and started calling it "Bob".
 
 To heat the fuel, Bob needs to know the total amount of fuel that will be processed ahead of time so it can correctly calibrate heat output and flow rate. This amount is simply the **sum** of the fuel requirements of all of the hot air balloons, and those fuel requirements are even listed clearly on the side of each hot air balloon's burner.
 
