@@ -1,6 +1,6 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.130s
+// solving the puzzle takes (my computer) 0.125s
 
 /*
     WARNING:
@@ -31,7 +31,7 @@ var HEIGHT = 0
 
 var WIDTH = 0
 
-const MEMORY = { }
+var MEMORY = { }
 
 
 function main() {
@@ -202,7 +202,9 @@ function search() {
             
             //
     
-            const nextMap = MAPS[minute + 1] 
+            const indexOfNextMap = (minute + 1) % NUMBER_OF_MAPS
+    
+            const nextMap = MAPS[indexOfNextMap] 
                 
             if (nextMap[row][col] == FREE) { maybeGrab(row, col) }
                 
