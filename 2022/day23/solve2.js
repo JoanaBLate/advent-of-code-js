@@ -16,13 +16,7 @@ const ELVES = [ ]
 
 const CHOSEN = [ ]
 
-const DIRECTIONS = [
-
-    [ "north", "south", "west", "east" ],
-    [ "south", "west", "east", "north" ],
-    [ "west", "east", "north", "south" ],
-    [ "east", "north", "south", "west" ]
-]
+const DIRECTIONS = [ "north", "south", "west", "east" ]
 
 var MOVING = false
 
@@ -122,7 +116,7 @@ function createMapAndFillElves(stringMap) {
 
 function createElf(row, col) {
 
-    return { "row": row, "col": col, "preference": 0, "chosenRow": 0, "chosenCol": 0, "moving": false }
+    return { "row": row, "col": col, "chosenRow": 0, "chosenCol": 0, "moving": false }
 }
 
 ///////////////////////////////////////////////////////////
@@ -136,6 +130,8 @@ function playRound() {
     for (const elf of ELVES) { chooseSpot(elf) }
     
     for (const elf of ELVES) { moveElf(elf) }
+    
+    DIRECTIONS.push(DIRECTIONS.shift())
 }
 
 ///////////////////////////////////////////////////////////
@@ -170,9 +166,7 @@ function chooseSpot(elf) {
     
     //    
     
-    const directions = DIRECTIONS[elf.preference]
-    
-    for (const direction of directions) {
+    for (const direction of DIRECTIONS) {
         
         if (direction == "north"  &&  north == 0) { reserveSpot(elf, row - 1, col); return }
         
@@ -197,10 +191,6 @@ function reserveSpot(elf, row, col) {
 ///////////////////////////////////////////////////////////
 
 function moveElf(elf) {
-    
-    elf.preference += 1
-    
-    if (elf.preference > 3) { elf.preference = 0 }
 
     if (! elf.moving) { return }
     
