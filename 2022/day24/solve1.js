@@ -1,240 +1,260 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.031s
+// solving the puzzle takes (my computer) 0.170s
 
-const input = Deno.readTextFileSync("input.txt").trimEnd()
+/*
+    WARNING:
+    
+    this program expects the input  
+    
+        - having always the same entrance and exit
+        - having 600 as the number of different maps (it is easy to change)
+        - allowing hero to move on the first minute (and never go back to entrance)    
+*/
 
-const MAP = [ ]
+const input = Deno.readTextFileSync("input.txt").trim()
 
-var PATH = ""
+const FREE = 0
 
-var WIDTH = 0
+const ROCK = 1
+
+const BLIZZARD = 2
+
+var EXIT_ROW = 0
+var EXIT_COL = 0
+
+const NUMBER_OF_MAPS = 600 // number of different maps // map 601 is map 0, map 602 is map 1...
+
+const MAPS = [ ]  // one map for each minute
 
 var HEIGHT = 0
 
-var ROW = 0
-var COL = 0
+var WIDTH = 0
 
-var FACING = "east"
+const MEMORY = { }
 
 
 function main() {
 
-    processInput()
+    const stringMap = processInput()
     
-    COL = MAP[0].indexOf(".")
-
-    while (PATH != "") { walk() }
+ // console.log(stringMap.join("\n"))
     
-    //
+    createDynamicMaps()
     
-    const row = ROW + 1 // base one
+    createBlizzards(stringMap)
     
-    const col = COL + 1 // base one
+    EXIT_ROW = HEIGHT - 1
+    EXIT_COL = WIDTH - 2
+      
+   // for (const map of MAPS) { show(map) }
     
-    const facing = [ "east", "south", "west", "north" ].indexOf(FACING)
-    
-    console.log("the answer is", 1000 * row + 4 * col + facing)
+    console.log("the answer is", search())
 }
 
 ///////////////////////////////////////////////////////////
 
 function processInput() {
+
+    const stringMap = [ ]
         
-    const parts = input.split("\n\n")
+    const lines = input.split("\n")
     
-    PATH = parts.pop().trim()
+    for (const line of lines) { stringMap.push(line.trim()) }
     
-    const lines = parts.shift().split("\n")
+    HEIGHT = stringMap.length
+    WIDTH = stringMap[0].length
     
-    for (const _line of lines) { 
-        
-        const line = _line.trimEnd()
-        
-        if (line == "") { continue }
-        
-        if (line.length > WIDTH) { WIDTH = line.length }
-        
-        MAP.push(line) 
-    }
-       
-    HEIGHT = MAP.length
-    
-    for (let row = 0; row < HEIGHT; row++) { MAP[row] = MAP[row].padEnd(WIDTH, " ") }
+    return stringMap
 }
 
 ///////////////////////////////////////////////////////////
 
-function walk() {
+function createDynamicMaps() {
 
-    if (PATH[0] == "L") { PATH = PATH.substr(1); spinLeft(); return }
+    for (let n = 0; n < NUMBER_OF_MAPS; n++) { MAPS.push(createDynamicMap()) }
+}
 
-    if (PATH[0] == "R") { PATH = PATH.substr(1); spinRight(); return }
+function createDynamicMap() {
 
-    let s = ""
+    const map = [ ]
     
-    while (PATH != "") {
+    for (let row = 0; row < HEIGHT; row++) { map.push(new Uint8Array(WIDTH)) }
     
-        if (PATH[0] == "L") { break }
-        if (PATH[0] == "R") { break }
+    for (let row = 0; row < HEIGHT; row++) {
     
-        s += PATH[0]
+        map[row][0] = ROCK
+    
+        map[row][WIDTH - 1] = ROCK    
+    }  
         
-        PATH = PATH.substr(1)    
+    for (let col = 0; col < WIDTH; col++) { 
+    
+        map[0][col] = ROCK
+    
+        map[HEIGHT - 1][col] = ROCK 
     }
-
-    if (s == "") { return }
-
-    move(parseInt(s))
+    
+    map[HEIGHT - 1][WIDTH - 2] = FREE
+    
+    return map
 }
 
 ///////////////////////////////////////////////////////////
 
-function spinLeft() {
+function createBlizzards(stringMap) {
 
-    if (FACING == "north") { FACING = "west"; return }
-    if (FACING == "west")  { FACING = "south"; return }
-    if (FACING == "south") { FACING = "east"; return }
-    if (FACING == "east")  { FACING = "north"; return }
-}
-
-function spinRight() {
-
-    if (FACING == "north") { FACING = "east"; return }
-    if (FACING == "east")  { FACING = "south"; return }
-    if (FACING == "south") { FACING = "west"; return }
-    if (FACING == "west")  { FACING = "north"; return }
-} 
-
-function move(steps) {
-
-    if (FACING == "north") { moveNorth(steps) }
-
-    if (FACING == "south") { moveSouth(steps) }
-
-    if (FACING == "west")  { moveWest(steps) }
-
-    if (FACING == "east")  { moveEast(steps) }
-}
-
-///////////////////////////////////////////////////////////
-
-function moveNorth(steps) {
-
-    while (steps > 0) {
+    for (let row = 1; row < HEIGHT - 1; row++) {
     
-        steps -= 1
-    
-        let row = ROW - 1
-        
-        if (row < 0) { row = findEndOfCol(row, COL) }
+        for (let col = 1; col < WIDTH - 1; col++) {
+
+            const symbol = stringMap[row][col]
             
-        if (MAP[row][COL] == " ") { row = findEndOfCol(row, COL) }
+            if (symbol == "v") { createBlizzardFromNorth(row, col); continue }
             
-        if (MAP[row][COL] == "#") { return }
+            if (symbol == "^") { createBlizzardFromSouth(row, col); continue }
             
-        ROW = row 
+            if (symbol == ">") { createBlizzardFromWest(row, col); continue }
+            
+            if (symbol == "<") { createBlizzardFromEast(row, col); continue }
+        }
     }
 }
 
-function moveSouth(steps) {
+function createBlizzardFromNorth(row, col) {
 
-    while (steps > 0) {
+    for (let n = 0; n < NUMBER_OF_MAPS; n++) {
     
-        steps -= 1
-    
-        let row = ROW + 1
+        const map = MAPS[n]
         
-        if (row > HEIGHT - 1) { row = findStartOfCol(row, COL) }
-            
-        if (MAP[row][COL] == " ") { row = findStartOfCol(row, COL) }
-            
-        if (MAP[row][COL] == "#") { return }
-            
-        ROW = row 
-    }
-}
-
-function moveWest(steps) {
-
-    while (steps > 0) {
-    
-        steps -= 1
-    
-        let col = COL - 1
+        map[row][col] = BLIZZARD
         
-        if (col < 0) { col = findEndOfRow(ROW, col) }
-            
-        if (MAP[ROW][col] == " ") { col = findEndOfRow(ROW, col) }
-            
-        if (MAP[ROW][col] == "#") { return }
-            
-        COL = col 
-    }
-}
-
-function moveEast(steps) {
-
-    while (steps > 0) {
-    
-        steps -= 1
-    
-        let col = COL + 1
-        
-        if (col > WIDTH - 1) { col = findStartOfRow(ROW, col) }
-            
-        if (MAP[ROW][col] == " ") { col = findStartOfRow(ROW, col) }
-            
-        if (MAP[ROW][col] == "#") { return }
-            
-        COL = col 
-    }
-}
-
-///////////////////////////////////////////////////////////
-
-function findStartOfRow(row, col) {
-
-    while (col > 0) {
-    
-        col -= 1
-        
-        if (MAP[row][col] == " ") { return col + 1 }
-    }
-    return 0
-}
-
-function findEndOfRow(row, col) {
-
-    while (col < WIDTH - 1) {
-    
-        col += 1
-        
-        if (MAP[row][col] == " ") { return col - 1 }
-    }
-    return WIDTH - 1
-}
-
-function findStartOfCol(row, col) {
-
-    while (row > 0) {
-    
-        row -= 1
-        
-        if (MAP[row][col] == " ") { return row + 1 }
-    }
-    return 0
-}
-
-function findEndOfCol(row, col) {
-
-    while (row < HEIGHT - 1) {
-    
         row += 1
         
-        if (MAP[row][col] == " ") { return row - 1 }
+        if (row == HEIGHT - 1) { row = 1 }
     }
-    return HEIGHT - 1
+}
+
+function createBlizzardFromSouth(row, col) {
+
+    for (let n = 0; n < NUMBER_OF_MAPS; n++) {
+    
+        const map = MAPS[n]
+        
+        map[row][col] = BLIZZARD
+        
+        row -= 1
+        
+        if (row == 0) { row = HEIGHT - 2 }
+    }
+}
+
+function createBlizzardFromWest(row, col) {
+
+    for (let n = 0; n < NUMBER_OF_MAPS; n++) {
+    
+        const map = MAPS[n]
+        
+        map[row][col] = BLIZZARD
+        
+        col += 1
+        
+        if (col == WIDTH - 1) { col = 1 }
+    }
+}
+
+function createBlizzardFromEast(row, col) {
+
+    for (let n = 0; n < NUMBER_OF_MAPS; n++) {
+    
+        const map = MAPS[n]
+        
+        map[row][col] = BLIZZARD
+        
+        col -= 1
+        
+        if (col == 0) { col = WIDTH - 2 }
+    }
+}
+
+///////////////////////////////////////////////////////////
+
+function search() {
+
+    let minute = 0
+    
+    let futureSpots = [ createPoint(1, 1) ]
+    
+    while (true) {
+    
+        minute += 1
+        
+        const currentSpots = futureSpots
+
+        futureSpots = [ ]
+        
+        for (const spot of currentSpots) {
+        
+            const row = spot.row
+            const col = spot.col
+            
+            if (row == EXIT_ROW  &&  col == EXIT_COL) { return minute }
+            
+            //
+    
+            const nextMap = MAPS[minute + 1] 
+                
+            if (nextMap[row][col] == FREE) { maybeGrab(row, col) }
+                
+            if (nextMap[row - 1][col] == FREE) { maybeGrab(row - 1, col) }
+                
+            if (nextMap[row + 1][col] == FREE) { maybeGrab(row + 1, col) }
+
+            if (nextMap[row][col - 1] == FREE) { maybeGrab(row, col - 1) }
+
+            if (nextMap[row][col + 1] == FREE) { maybeGrab(row, col + 1) }
+        }
+    }
+    
+    function maybeGrab(row, col) {   
+        
+        const key = minute + "~" + row + "~" + col 
+        
+        if (MEMORY[key]) { return }
+
+        MEMORY[key] = true
+    
+        futureSpots.push(createPoint(row, col))
+    }
+}    
+            
+///////////////////////////////////////////////////////////
+
+function createPoint(row, col) {
+
+    return { "row": row, "col": col }
+}
+
+///////////////////////////////////////////////////////////
+
+function show(src, heroRow, heroCol) {
+
+    const map = [ ]
+    
+    for (const srcLine of src) {
+    
+        const line = [ ]
+        
+        map.push(line)
+    
+        for (const item of srcLine) { line.push(".#@ "[item]) }
+    }
+    
+    if (heroCol != undefined) { map[heroRow][heroCol] = "H" }
+
+    console.log("")
+    
+    for (const line of map) { console.log(line.join("")) }
 }
 
 ///////////////////////////////////////////////////////////
