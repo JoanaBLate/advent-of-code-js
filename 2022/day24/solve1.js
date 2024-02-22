@@ -1,6 +1,6 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.170s
+// solving the puzzle takes (my computer) 0.130s
 
 /*
     WARNING:
@@ -218,11 +218,15 @@ function search() {
     
     function maybeGrab(row, col) {   
         
-        const key = minute + "~" + row + "~" + col 
+        if (MEMORY[minute] == undefined) { MEMORY[minute] = { } }
         
-        if (MEMORY[key]) { return }
+        const subMemory = MEMORY[minute]
+        
+        const subKey = row + "~" + col 
+        
+        if (subMemory[subKey]) { return }
 
-        MEMORY[key] = true
+        subMemory[subKey] = true
     
         futureSpots.push(createPoint(row, col))
     }
