@@ -84,6 +84,8 @@ Completed.
 
 **Day 23 PART 1** SOLVED IN JUST **0.04s** 
 
+**Day 23 PART 2** SOLVED IN JUST **0.52s** 
+
 
 ## Advent of Code 2022
 
