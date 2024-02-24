@@ -1,6 +1,6 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.945s
+// solving the puzzle takes (my computer) 0.135s
 
 /*
   notes:
@@ -167,7 +167,7 @@ function search() {
     
     while (FUTURE.length != 0) {
    
-// console.log("queue length", FUTURE.length)
+ // console.log("queue length", FUTURE.length)
     
         const mazes = FUTURE
         
@@ -182,28 +182,32 @@ function searchThis(map, cost) {
     resetMap(map)
     costOfCurrentMap = cost
     
-    tryHallSpot(1)
-    tryHallSpot(2)
-    tryHallSpot(4)
-    tryHallSpot(6)
-    tryHallSpot(8)
-    tryHallSpot(10)
-    tryHallSpot(11)
+    let success = false
+    
+    if (tryLeaveHall(1))  { success = true }
+    if (tryLeaveHall(2))  { success = true }
+    if (tryLeaveHall(4))  { success = true }
+    if (tryLeaveHall(6))  { success = true }
+    if (tryLeaveHall(8))  { success = true }
+    if (tryLeaveHall(10)) { success = true }
+    if (tryLeaveHall(11)) { success = true }
+    
+    if (success) { return } // not going to hall when a room can be fixed
 
-    tryTopRoom(3)
-    tryTopRoom(5)
-    tryTopRoom(7)
-    tryTopRoom(9)
+    tryLeaveTopRoom(3)
+    tryLeaveTopRoom(5)
+    tryLeaveTopRoom(7)
+    tryLeaveTopRoom(9)
 
-    tryBottomRoom(3)
-    tryBottomRoom(5)
-    tryBottomRoom(7)
-    tryBottomRoom(9)
+    tryLeaveBottomRoom(3)
+    tryLeaveBottomRoom(5)
+    tryLeaveBottomRoom(7)
+    tryLeaveBottomRoom(9)
 }
 
 ///////////////////////////////////////////////////////////
 
-function tryHallSpot(pawnCol) {
+function tryLeaveHall(pawnCol) {
     
     const pawn = MAP[1][pawnCol] 
 
@@ -219,16 +223,16 @@ function tryHallSpot(pawnCol) {
     
     if (hallIsBlocked(pawnCol, roomCol)) { return }
     
-    tryThisMove(1, pawnCol, 2, roomCol)
+    //
     
-    if (MAP[3][roomCol] != ".") { return }
+    if (MAP[3][roomCol] == ".") { return tryThisMove(1, pawnCol, 3, roomCol) } // bottom room
     
-    tryThisMove(1, pawnCol, 3, roomCol)
+    return tryThisMove(1, pawnCol, 2, roomCol) // top room
 }
 
 ///////////////////////////////////////////////////////////
 
-function tryTopRoom(pawnCol) {
+function tryLeaveTopRoom(pawnCol) {
 
    const pawn = MAP[2][pawnCol] 
 
@@ -238,10 +242,10 @@ function tryTopRoom(pawnCol) {
     
     if (pawnCol == roomCol  &&  MAP[3][roomCol] == pawn) { return } // already in place
     
-    leaveRoom(pawn, 2, pawnCol)
+    tryLeaveRoom(pawn, 2, pawnCol)
 }
 
-function tryBottomRoom(pawnCol) {
+function tryLeaveBottomRoom(pawnCol) {
 
    const pawn = MAP[3][pawnCol] 
 
@@ -253,26 +257,32 @@ function tryBottomRoom(pawnCol) {
     
     if (pawnCol == roomCol) { return } // already in place
     
-    leaveRoom(pawn, 3, pawnCol)
+    tryLeaveRoom(pawn, 3, pawnCol)
 }
 
 ///////////////////////////////////////////////////////////
 
-function leaveRoom(pawn, pawnRow, pawnCol) {
+function tryLeaveRoom(pawn, pawnRow, pawnCol) {
 
-    leaveRoomThis(pawnRow, pawnCol, 1)
-    leaveRoomThis(pawnRow, pawnCol, 2)
-    leaveRoomThis(pawnRow, pawnCol, 4)
-    leaveRoomThis(pawnRow, pawnCol, 6)
-    leaveRoomThis(pawnRow, pawnCol, 8)
-    leaveRoomThis(pawnRow, pawnCol, 10)
-    
-    if (pawn == "D") { return }
-  
-    leaveRoomThis(pawnRow, pawnCol, 11)
+    tryLeaveRoomThis(pawn, pawnRow, pawnCol, 1)
+    tryLeaveRoomThis(pawn, pawnRow, pawnCol, 2)
+    tryLeaveRoomThis(pawn, pawnRow, pawnCol, 4)
+    tryLeaveRoomThis(pawn, pawnRow, pawnCol, 6)
+    tryLeaveRoomThis(pawn, pawnRow, pawnCol, 8)
+    tryLeaveRoomThis(pawn, pawnRow, pawnCol, 10)
+    tryLeaveRoomThis(pawn, pawnRow, pawnCol, 11)
 }
 
-function leaveRoomThis(pawnRow, pawnCol, hallCol) {
+function tryLeaveRoomThis(pawn, pawnRow, pawnCol, hallCol) {
+    
+    if (pawn == "D") { 
+    
+        if (hallCol == 11) { return }
+    
+        const goingLeft = hallCol < pawnCol
+        
+        if (goingLeft  &&  hallCol < 8) { return } // 8 means roomColFor["D"] - 1
+    }
 
     if (MAP[1][hallCol] != ".") { return }
 
@@ -331,8 +341,6 @@ function tryThisMove(row1, col1, row2, col2) {
     
     if (cost > BEST_COST) { return }
     
-    if (shallAbort(pawn, row1, col1, row2, col2)) { return }
-    
     //
 
     MAP[row1][col1] = "."
@@ -349,28 +357,19 @@ function tryThisMove(row1, col1, row2, col2) {
     
     if (MEMORY[map] == undefined) { MEMORY[map] = Infinity } 
     
-    if (cost >= MEMORY[map]) { return }
+    if (cost >= MEMORY[map]) { return false }
     
     MEMORY[map] = cost    
     
     if (done) {
         
         if (cost < BEST_COST) { BEST_COST = cost }    
-        return
+        return true
     }
     
     FUTURE.push(createMaze(map, cost))
-}
-
-function shallAbort(pawn, __row1, col1, __row2, col2) {
-
-    if (pawn != "D") { return false }
     
-    if (col2 >= col1) { return false }
-    
-    if (col2 < roomColFor["D"] - 1) { return true }
-    
-    return false
+    return true
 }
 
 ///////////////////////////////////////////////////////////
