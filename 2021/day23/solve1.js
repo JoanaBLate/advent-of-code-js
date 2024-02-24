@@ -339,7 +339,7 @@ function tryThisMove(row1, col1, row2, col2) {
     
     const cost = costOfCurrentMap + (distance * COST[pawn])
     
-    if (cost > BEST_COST) { return }
+    if (cost > BEST_COST) { return false }
     
     //
 
