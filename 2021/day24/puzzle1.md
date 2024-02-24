@@ -61,7 +61,7 @@ When MONAD checks a hypothetical fourteen-digit model number, it uses fourteen s
 
 Then, after MONAD has finished running all of its instructions, it will indicate that the model number was **valid** by leaving a `0` in variable `z`. However, if the model number was **invalid**, it will leave some other non-zero value in `z`.
 
-MONAD imposes additional, mysterious restrictions on model numbers, and legend says the last copy of the MONAD documentation was eaten by a [tanuki](https://en.wikipedia.org/wiki/Japanese**raccoon**dog). You'll need to **figure out what MONAD does** some other way.
+MONAD imposes additional, mysterious restrictions on model numbers, and legend says the last copy of the MONAD documentation was eaten by a [tanuki](https://en.wikipedia.org/wiki/Japanese_raccoon_dog). You'll need to **figure out what MONAD does** some other way.
 
 To enable as many submarine features as possible, find the largest valid fourteen-digit model number that contains no `0` digits. **What is the largest model number accepted by MONAD?**
 
