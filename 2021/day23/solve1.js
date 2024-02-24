@@ -1,8 +1,14 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.135s
+// solving the puzzle takes (my computer) 0.044s
 
 /*
+    **WARNING**: 
+    
+    IF YOU ARE GETTING A WRONG RESULT,
+    LOOK AT FUNCTION 'tryLeaveRoom' AND EDIT IT
+
+
   notes:
 
     hallway positions over the rooms are despised
@@ -264,24 +270,27 @@ function tryLeaveBottomRoom(pawnCol) {
 
 function tryLeaveRoom(pawn, pawnRow, pawnCol) {
 
-    tryLeaveRoomThis(pawn, pawnRow, pawnCol, 1)
     tryLeaveRoomThis(pawn, pawnRow, pawnCol, 2)
     tryLeaveRoomThis(pawn, pawnRow, pawnCol, 4)
     tryLeaveRoomThis(pawn, pawnRow, pawnCol, 6)
     tryLeaveRoomThis(pawn, pawnRow, pawnCol, 8)
     tryLeaveRoomThis(pawn, pawnRow, pawnCol, 10)
+
+    return // *WARNING*: REMOVE THIS LINE IF YOU ARE GETTING A WRONG RESULT!!
+
+    if (pawn == "C") { return } // *WARNING*: REMOVE THIS LINE IF YOU ARE GETTING A WRONG RESULT!!
+
+    if (pawn == "D") { return } 
+        
+    tryLeaveRoomThis(pawn, pawnRow, pawnCol, 1)
     tryLeaveRoomThis(pawn, pawnRow, pawnCol, 11)
 }
 
 function tryLeaveRoomThis(pawn, pawnRow, pawnCol, hallCol) {
     
-    if (pawn == "D") { 
-    
-        if (hallCol == 11) { return }
-    
-        const goingLeft = hallCol < pawnCol
+    if (pawn == "D"  &&  hallCol < pawnCol) { // pawn "D" is going left
         
-        if (goingLeft  &&  hallCol < 8) { return } // 8 means roomColFor["D"] - 1
+        if (hallCol < 8) { return } // 8 means roomColFor["D"] - 1
     }
 
     if (MAP[1][hallCol] != ".") { return }
