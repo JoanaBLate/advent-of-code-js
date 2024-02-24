@@ -1,19 +1,11 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.044s
+// solving the puzzle takes (my computer) 0.520s
 
 /*
-    **WARNING**: 
-    
-    IF YOU ARE GETTING A WRONG RESULT,
-    LOOK AT FUNCTION 'tryLeaveRoom' AND EDIT IT
-
-
   notes:
 
     hallway positions over the rooms are despised
-    
-    pawn D can not go left beyond its room minus 1
     
     map coordinates:
     
@@ -21,21 +13,22 @@
     -01.2.3.4.56-
     ---7-8-9-a---
     ---b-c-d-e---
+    ---f-g-h-i---
+    ---j-k-l-m---
     -------------
 
-    (hexadecimal style)
+    (hexadecimal+ style)
     (valid positions only)
     
-    map state "cd30a9b7" means:
+    map state "cd30hfae2mljik56" means:
     
-    A  is at c
-    A' is at d
-    B  is at 3
-    B' is at 0
-    C  is at a
-    C' ia at 9
-    D  is at b
-    D' is at 7
+    A    is at c
+    A'   is at d
+    A''  is at 3
+    A''' is at 0
+    B    is at h
+    B'   is at f
+    etc.
 */
 
 const input = Deno.readTextFileSync("input.txt").trim()
@@ -44,13 +37,23 @@ const MAP = [ ]
 
 const SPOTS = [ ]
 
-const COORDS = "0123456789abcde"
+const COORDS = "0123456789abcdefghijklm"
 
 const COST = { "A": 1, "B": 10, "C": 100, "D": 1000 }
 
 const hallCols = [ 1, 2, 4, 6, 8, 10, 11 ]
 
 const roomColFor = { "A": 3, "B": 5, "C": 7, "D": 9 }
+
+// status of each room tower
+const MESSED = 0
+const FINISHED = 1
+const HUNGRY2 = 2
+const HUNGRY3 = 3
+const HUNGRY4 = 4
+const HUNGRY5 = 5
+
+const TOWER = { } 
 
 var FUTURE = [ ]
 
@@ -67,8 +70,8 @@ function main() {
     
     fillSpots()
     
- // show()
-    
+ // show()  
+ 
     search()
     
     console.log("the answer is", BEST_COST)
@@ -84,6 +87,14 @@ function processInput() {
     
         MAP.push(line.trimEnd().padEnd(13, " ").split(""))
     }
+    
+    const line4 = MAP.pop()
+    const line3 = MAP.pop()
+    
+    MAP.push("  #D#C#B#A#  ".split(""))
+    MAP.push("  #D#B#A#C#  ".split(""))
+    MAP.push(line3)
+    MAP.push(line4)
 }
 
 ///////////////////////////////////////////////////////////
@@ -95,7 +106,9 @@ function fillSpots() {
         1,1, 1,2,  1,4,  1,6,  1,8,  1,10, 1,11, // top row 
         //       A     B     C     D
                 2,3,  2,5,  2,7,  2,9,           // bottom row 1
-                3,3,  3,5,  3,7,  3,9            // bottom row 2
+                3,3,  3,5,  3,7,  3,9,           // bottom row 2
+                4,3,  4,5,  4,7,  4,9,           // bottom row 3
+                5,3,  5,5,  5,7,  5,9            // bottom row 4
     ]
     
     while (coords.length > 0) {
@@ -115,11 +128,11 @@ function createPoint(row, col) {
 
 function condenseMap() {
 
-    const result = [ "","",  "","",  "","",  "","" ]
+    const result = [ "","","","",  "","","","",  "","","","",  "","","","" ]
 
-    const baseIndex = { "A": 0, "B": 2, "C": 4, "D": 6 }
+    const baseIndex = { "A": 0, "B": 4, "C": 8, "D": 12 }
     
-    for (let n = 0; n < 15; n++) {
+    for (let n = 0; n < 23; n++) {
     
         const point = SPOTS[n]
         
@@ -131,7 +144,10 @@ function condenseMap() {
 
         const index = baseIndex[pawn]
         
-        if (result[index] == "") { result[index] = coord } else { result[index + 1] = coord }        
+        if (result[index] == "")     { result[index]     = coord; continue }
+        if (result[index + 1] == "") { result[index + 1] = coord; continue }
+        if (result[index + 2] == "") { result[index + 2] = coord; continue }
+        if (result[index + 3] == "") { result[index + 3] = coord; continue }
     }
     
     return result.join("")
@@ -141,13 +157,13 @@ function resetMap(string) {
 
     for (const point of SPOTS) { MAP[point.row][point.col] = "." }
     
-    for (let n = 0; n < 8; n++) {
+    for (let n = 0; n < 16; n++) {
     
-        const pawn = "AABBCCDD"[n]
+        const pawn = "AAAABBBBCCCCDDDD"[n]
         
         const coord = string[n]
      
-        const index = parseInt(coord, 16)
+        const index = parseInt(coord, 24)
         
         const point = SPOTS[index]
 
@@ -188,6 +204,11 @@ function searchThis(map, cost) {
     resetMap(map)
     costOfCurrentMap = cost
     
+    TOWER["A"] = calcTowerStatus("A", 3)
+    TOWER["B"] = calcTowerStatus("B", 5)
+    TOWER["C"] = calcTowerStatus("C", 7)
+    TOWER["D"] = calcTowerStatus("D", 9)
+    
     let success = false
     
     if (tryLeaveHall(1))  { success = true }
@@ -199,16 +220,11 @@ function searchThis(map, cost) {
     if (tryLeaveHall(11)) { success = true }
     
     if (success) { return } // not going to hall when a room can be fixed
-
-    tryLeaveTopRoom(3)
-    tryLeaveTopRoom(5)
-    tryLeaveTopRoom(7)
-    tryLeaveTopRoom(9)
-
-    tryLeaveBottomRoom(3)
-    tryLeaveBottomRoom(5)
-    tryLeaveBottomRoom(7)
-    tryLeaveBottomRoom(9)
+    
+    tryLeaveTower("A")
+    tryLeaveTower("B")
+    tryLeaveTower("C")
+    tryLeaveTower("D")
 }
 
 ///////////////////////////////////////////////////////////
@@ -219,79 +235,51 @@ function tryLeaveHall(pawnCol) {
 
     if (pawn == ".") { return }
     
+    const tower = TOWER[pawn]
+    
+    if (tower == MESSED) { return } // FINISHED is impossible: a member is on the hall
+    
     const roomCol = roomColFor[pawn]
-
-    if (MAP[2][roomCol] != ".") { return }
-    
-    const bottom = MAP[3][roomCol]
-    
-    if (bottom != "."  &&  bottom != pawn) { return }
     
     if (hallIsBlocked(pawnCol, roomCol)) { return }
     
-    //
+    // go deep as possible
     
-    if (MAP[3][roomCol] == ".") { return tryThisMove(1, pawnCol, 3, roomCol) } // bottom room
+    if (tower == HUNGRY5) { return tryThisMove(1, pawnCol, 5, roomCol) }
     
-    return tryThisMove(1, pawnCol, 2, roomCol) // top room
+    if (tower == HUNGRY4) { return tryThisMove(1, pawnCol, 4, roomCol) }
+    
+    if (tower == HUNGRY3) { return tryThisMove(1, pawnCol, 3, roomCol) }
+    
+    return tryThisMove(1, pawnCol, 2, roomCol) 
 }
 
 ///////////////////////////////////////////////////////////
 
-function tryLeaveTopRoom(pawnCol) {
+function tryLeaveTower(banner) {
 
-   const pawn = MAP[2][pawnCol] 
+    if (TOWER[banner] != MESSED) { return }
 
-    if (pawn == ".") { return }
-    
-    const roomCol = roomColFor[pawn]
-    
-    if (pawnCol == roomCol  &&  MAP[3][roomCol] == pawn) { return } // already in place
-    
-    tryLeaveRoom(pawn, 2, pawnCol)
+    const roomCol = roomColFor[banner]
+
+    if (MAP[2][roomCol] != ".") { tryLeaveRoom(2, roomCol); return }
+    if (MAP[3][roomCol] != ".") { tryLeaveRoom(3, roomCol); return }
+    if (MAP[4][roomCol] != ".") { tryLeaveRoom(4, roomCol); return }
+    if (MAP[5][roomCol] != ".") { tryLeaveRoom(5, roomCol); return }
 }
 
-function tryLeaveBottomRoom(pawnCol) {
+function tryLeaveRoom(pawnRow, pawnCol) {
 
-   const pawn = MAP[3][pawnCol] 
-
-    if (pawn == ".") { return }
-    
-    if (MAP[2][pawnCol] != ".") { return } // room is blocked
-    
-    const roomCol = roomColFor[pawn]
-    
-    if (pawnCol == roomCol) { return } // already in place
-    
-    tryLeaveRoom(pawn, 3, pawnCol)
+    tryLeaveRoomThis(pawnRow, pawnCol, 1)
+    tryLeaveRoomThis(pawnRow, pawnCol, 2)
+    tryLeaveRoomThis(pawnRow, pawnCol, 4)
+    tryLeaveRoomThis(pawnRow, pawnCol, 6)
+    tryLeaveRoomThis(pawnRow, pawnCol, 8)
+    tryLeaveRoomThis(pawnRow, pawnCol, 10)
+    tryLeaveRoomThis(pawnRow, pawnCol, 11)
 }
 
-///////////////////////////////////////////////////////////
-
-function tryLeaveRoom(pawn, pawnRow, pawnCol) {
-
-    tryLeaveRoomThis(pawn, pawnRow, pawnCol, 2)
-    tryLeaveRoomThis(pawn, pawnRow, pawnCol, 4)
-    tryLeaveRoomThis(pawn, pawnRow, pawnCol, 6)
-    tryLeaveRoomThis(pawn, pawnRow, pawnCol, 8)
-    tryLeaveRoomThis(pawn, pawnRow, pawnCol, 10)
-
-    return // *WARNING*: REMOVE THIS LINE IF YOU ARE GETTING A WRONG RESULT!!
-
-    if (pawn == "C") { return } // *WARNING*: REMOVE THIS LINE IF YOU ARE GETTING A WRONG RESULT!!
-
-    if (pawn == "D") { return } 
-        
-    tryLeaveRoomThis(pawn, pawnRow, pawnCol, 1)
-    tryLeaveRoomThis(pawn, pawnRow, pawnCol, 11)
-}
-
-function tryLeaveRoomThis(pawn, pawnRow, pawnCol, hallCol) {
-    
-    if (pawn == "D"  &&  hallCol < pawnCol) { // pawn "D" is going left
-        
-        if (hallCol < 8) { return } // 8 means roomColFor["D"] - 1
-    }
+function tryLeaveRoomThis(pawnRow, pawnCol, hallCol) {
 
     if (MAP[1][hallCol] != ".") { return }
 
@@ -302,6 +290,23 @@ function tryLeaveRoomThis(pawn, pawnRow, pawnCol, hallCol) {
 
 ///////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////
+
+function calcTowerStatus(banner, col) {
+
+    if (MAP[5][col] == ".") { return HUNGRY5 }
+    if (MAP[5][col] != banner) { return MESSED }
+    
+    if (MAP[4][col] == ".") { return HUNGRY4 }
+    if (MAP[4][col] != banner) { return MESSED }
+    
+    if (MAP[3][col] == ".") { return HUNGRY3 }
+    if (MAP[3][col] != banner) { return MESSED }
+    
+    if (MAP[2][col] == ".") { return HUNGRY2 }
+    if (MAP[2][col] != banner) { return MESSED }
+    
+    return FINISHED
+}
 
 function hallIsBlocked(colA, colB) { 
 
@@ -336,12 +341,22 @@ function hasFinished() {
     if (MAP[3][5] != "B") { return false }
     if (MAP[3][7] != "C") { return false }
     if (MAP[3][9] != "D") { return false }
+    
+    if (MAP[4][3] != "A") { return false }
+    if (MAP[4][5] != "B") { return false }
+    if (MAP[4][7] != "C") { return false }
+    if (MAP[4][9] != "D") { return false }
+    
+    if (MAP[5][3] != "A") { return false }
+    if (MAP[5][5] != "B") { return false }
+    if (MAP[5][7] != "C") { return false }
+    if (MAP[5][9] != "D") { return false }
 
     return true
 }
      
 function tryThisMove(row1, col1, row2, col2) { 
-    
+
     const pawn = MAP[row1][col1]
     
     const distance = Math.abs(row2 - row1) + Math.abs(col2 - col1)
