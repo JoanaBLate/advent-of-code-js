@@ -26,16 +26,16 @@
     (hexadecimal style)
     (valid positions only)
     
-    map state "cd30hfae" means:
+    map state "cd30a9b7" means:
     
     A  is at c
     A' is at d
     B  is at 3
     B' is at 0
-    C  is at h
-    C' ia at f
-    D  is at a
-    D' is at e
+    C  is at a
+    C' ia at 9
+    D  is at b
+    D' is at 7
 */
 
 const input = Deno.readTextFileSync("input.txt").trim()
