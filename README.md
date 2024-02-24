@@ -82,7 +82,7 @@ Completed.
 
 **Day 22 PART 2** SOLVED IN JUST **0.17s** 
 
-**Day 23 PART 1** SOLVED IN JUST **0.14s** 
+**Day 23 PART 1** SOLVED IN JUST **0.04s** 
 
 
 ## Advent of Code 2022
