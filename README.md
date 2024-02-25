@@ -70,7 +70,7 @@ Completed.
 
 ## Advent of Code 2021
 
-(under construction)
+Completed.
 
 **Day 15 PART 2** SOLVED IN JUST **0.32s** 
 
@@ -85,6 +85,8 @@ Completed.
 **Day 23 PART 1** SOLVED IN JUST **0.04s** 
 
 **Day 23 PART 2** SOLVED IN JUST **0.52s** 
+
+**Day 24 PART 2** SOLVED IN JUST **0.02s** 
 
 
 ## Advent of Code 2022
