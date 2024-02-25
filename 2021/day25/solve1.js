@@ -1,6 +1,6 @@
 "use strict"
 
-// solving the puzzle takes (my computer) 0.110s
+// solving the puzzle takes (my computer) 0.075s
 
 const input = Deno.readTextFileSync("input.txt").trim()
 
@@ -12,10 +12,6 @@ var HEIGHT = 0
 var WIDTH = 0
 
 const MAP = [ ]
-
-const ALLOWED = [ ]
-
-const l = console.log
 
 
 function main() {
@@ -63,8 +59,6 @@ function processInput() {
         }
                 
         MAP.push(array)
-    
-        ALLOWED.push(new Uint8Array(WIDTH))
     }
 }
 
@@ -72,98 +66,80 @@ function processInput() {
 
 function playRoundEast() {
     
-    for (let row = 0; row < HEIGHT; row++) {
-
-        for (let col = 0; col < WIDTH; col++) {
-
-            if (MAP[row][col] == TOEAST) { tryReserveToEast(row, col) }
-        }
-    }
-    
     let moved = false
     
     for (let row = 0; row < HEIGHT; row++) {
+    
+        let lastArrivingCol = -1
+    
+        const mayTeleport = (MAP[row][0] == EMPTY)
 
         for (let col = 0; col < WIDTH; col++) {
+        
+            if (col == lastArrivingCol) { continue }
 
-            if (ALLOWED[row][col] == 1) { moveToEast(row, col); moved = true }
+            if (MAP[row][col] != TOEAST) { continue }
+            
+            let newCol = col + 1
+            
+            if (newCol == WIDTH) { 
+                
+                if (! mayTeleport) { continue }
+                
+                newCol = 0 
+            }
+            
+            if (MAP[row][newCol] != EMPTY) { continue }
+            
+            MAP[row][col] = EMPTY
+            MAP[row][newCol] = TOEAST 
+            
+            lastArrivingCol = newCol
+            moved = true           
         }
     }
+    
     return moved
-}
-
-function tryReserveToEast(row, col) {
-
-    const _row = row
-    const _col = col
-
-    col += 1
-    
-    if (col == WIDTH) { col = 0 }
-    
-    if (MAP[row][col] == EMPTY) { ALLOWED[_row][_col] = 1 }
-}
-
-function moveToEast(row, col) {
-    
-    ALLOWED[row][col] = 0
-
-    MAP[row][col] = EMPTY
-
-    col += 1
-    
-    if (col == WIDTH) { col = 0 }
-    
-    MAP[row][col] = TOEAST
 }
 
 ///////////////////////////////////////////////////////////
 
 function playRoundSouth() {
     
-    for (let row = 0; row < HEIGHT; row++) {
-
-        for (let col = 0; col < WIDTH; col++) {
-
-            if (MAP[row][col] == TOSOUTH) { tryReserveToSouth(row, col) }
-        }
-    }
-    
     let moved = false
     
-    for (let row = 0; row < HEIGHT; row++) {
+    for (let col = 0; col < WIDTH; col++) {
+    
+        let lastArrivingRow = -1
+    
+        const mayTeleport = (MAP[0][col] == EMPTY)
 
-        for (let col = 0; col < WIDTH; col++) {
+        for (let row = 0; row < HEIGHT; row++) {
+        
+            if (row == lastArrivingRow) { continue }
 
-            if (ALLOWED[row][col] == 1) { moveToSouth(row, col); moved = true }
+            if (MAP[row][col] != TOSOUTH) { continue }
+            
+            let newRow = row + 1
+            
+            if (newRow == HEIGHT) { 
+                
+                if (! mayTeleport) { continue }
+                
+                newRow = 0 
+            }
+            
+            if (MAP[newRow][col] != EMPTY) { continue }
+            
+            MAP[row][col] = EMPTY
+            MAP[newRow][col] = TOSOUTH 
+            
+            lastArrivingRow = newRow
+            moved = true           
         }
     }
+    
     return moved
-}
-
-function tryReserveToSouth(row, col) {
-
-    const _row = row
-    const _col = col
-
-    row += 1
-    
-    if (row == HEIGHT) { row = 0 }
-    
-    if (MAP[row][col] == EMPTY) { ALLOWED[_row][_col] = 1 }
-}
-
-function moveToSouth(row, col) {
-    
-    ALLOWED[row][col] = 0
-
-    MAP[row][col] = EMPTY
-
-    row += 1
-    
-    if (row == HEIGHT) { row = 0 }
-    
-    MAP[row][col] = TOSOUTH
 }
 
 ///////////////////////////////////////////////////////////
