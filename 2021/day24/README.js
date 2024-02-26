@@ -383,9 +383,12 @@ function forGroupB(digit, balance, xDelta, yDelta) {
     let's write new code!        
                     
     
+///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+    
                  
-    3. NEW STYLE CODE
-    =================
+    3. THE STACK STYLE CODE
+    =======================
     
 
 const ARGUMENTS = [ // (repeated)
@@ -440,7 +443,6 @@ function checkNumber(number) {
     console.log(valid ? "VALID!" : "failed")
 }
 
-
 ///////////////////////////////////////////////////////////
 
     testing the code:
@@ -451,8 +453,90 @@ function checkNumber(number) {
     checkNumber(good)   // VALID!!
     checkNumber(good+1) // failed
     
+
+///////////////////////////////////////////////////////////
+
+    explaining the code:
+    
+    in most solutions, the balance (z) always starts as zero,
+    
+    increases and decreases and must end as zero again;
+    
+    now we know the changing the balance (z) only serves
+    
+    to store information about which digits are valid;
+    
+    we are using a different way, we are using a stack
+    
+    for storing info, so 
+    
+    EACH TIME WE SEE A MATH OPERATION WITH THE BALANCE, 
+    WE TRANSLATE IT INTO A STACK OPERATION - THERE IS
+    NO BALANCE ANYMORE!
+    
+    ** INCREASING THE BALANCE = PUSHING INFO TO THE STACK
+
+    ** DECREASING THE BALANCE = POPPING INFO FROM THE STACK
+
+    ** NUMBER VALIDATION  ==  (BALANCE == 0)  ==  (STACK.LENGTH == 0)
+    
+    
+    translating function forGroupA:
+           
+        unique line:
+        
+            return balance * 26 + digit + yDelta
+
+            means  stack.push(digit + yDelta)
+
+    
+    translating function forGroupB:
+    
+        forGroupB starts popping (the last value from) the stack,
+        
+        because it needs it to replace "balance % 26"
+        
+           
+        first line:
+     
+            if (digit == balance % 26 + xDelta) { return Math.floor(balance / 26) }
+
+            "balance % 26"  means previous stored (digit + yDelta)
+            
+            "return Math.floor(balance / 26)" means pop the stack and go away (return) or not
+            
+            (in the new code, first we pop the stack, after we compare the data; and we go away or not)
+           
+        second line:
+        
+            return Math.floor(balance / 26) * 26 + digit + yDelta 
+
+            means  stack.push(digit + yDelta) after popping old data (already popped at the start)
+            
+            
+    COULDN'T WE ACHIVE THE SAME RESULT, WITHOUT A STACK? JUST PASSING INFO DIRECTLY?
+    
+    NO! Because of the order of the subroutines: they DON'T alternate regularly like
+    
+        groupA, groupB, groupA, groupB, groupA, groupB, groupA, groupB...
+
+    
+///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+    
+                 
+    4. USING THE STACK FOR PREDICTING GOOD DIGITS
+    =============================================
+    
+    
+      
+    
+    
+    
+    
+    
     
     (UNDER CONSTRUCTION...)
-
+   
 */
 
