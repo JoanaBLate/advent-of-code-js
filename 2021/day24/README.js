@@ -1,6 +1,5 @@
-"use strict"
-
-/* 
+/*
+ 
     *WARNING*
 
     THIS SOLUTION MAY NOT WORK FOR YOUR INPUT
@@ -55,7 +54,7 @@
     JavaScript function, which is a much more clear and efficient way
     
     creating a basic/direct translation:
-*/
+
     
 function versionA(digit, balance, zDivisor, xDelta, yDelta) {
        
@@ -101,7 +100,7 @@ function versionA(digit, balance, zDivisor, xDelta, yDelta) {
 }
 
 
-// simplifying the version A:
+    simplifying the version A:
 
     
 function versionB(digit, balance, zDivisor, xDelta, yDelta) {
@@ -122,7 +121,7 @@ function versionB(digit, balance, zDivisor, xDelta, yDelta) {
 }
 
 
-// simplifying the version B:
+    simplifying the version B:
 
     
 function versionC(digit, balance, zDivisor, xDelta, yDelta) {
@@ -153,7 +152,7 @@ function versionC(digit, balance, zDivisor, xDelta, yDelta) {
 }
 
 
-// simplifying the version C:
+    simplifying the version C:
 
     
 function versionD(digit, balance, zDivisor, xDelta, yDelta) {
@@ -171,7 +170,7 @@ function versionD(digit, balance, zDivisor, xDelta, yDelta) {
     return z + y
 }
 
-// simplifying the version D:
+    simplifying the version D:
     
     
 function versionE(digit, balance, zDivisor, xDelta, yDelta) {
@@ -186,7 +185,7 @@ function versionE(digit, balance, zDivisor, xDelta, yDelta) {
 }
 
 
-// simplifying the version E:
+    simplifying the version E:
     
     
 function versionF(digit, balance, zDivisor, xDelta, yDelta) {
@@ -198,7 +197,7 @@ function versionF(digit, balance, zDivisor, xDelta, yDelta) {
     return z * 26 + digit + yDelta
 }
 
-/*
+
     notes about the function:
     
         yDelta affects the result by INCREMENTING it (second return)
@@ -215,8 +214,10 @@ function versionF(digit, balance, zDivisor, xDelta, yDelta) {
     
     below we see the different sets of arguments 
     for each of the 14 subroutines
-    
-    [
+
+
+const ARGUMENTS = [
+
         { zDivisor:  1,  xDelta:  14,  yDelta:  0 }, //  0
         { zDivisor:  1,  xDelta:  13,  yDelta: 12 }, //  1
         { zDivisor:  1,  xDelta:  15,  yDelta: 14 }, //  2
@@ -232,7 +233,8 @@ function versionF(digit, balance, zDivisor, xDelta, yDelta) {
         { zDivisor: 26,  xDelta:  -4,  yDelta: 14 }, // 12
         { zDivisor: 26,  xDelta:  -6,  yDelta: 12 }  // 13
     ]
-    
+
+
     SOME CONCLUSIONS ABOUT THE SUBROUTINES (function versionF and the arguments above)
     
 
@@ -267,26 +269,24 @@ function versionF(digit, balance, zDivisor, xDelta, yDelta) {
     
     Z (balance) is allways a NON NEGATIVE INTEGER
     
-    then, subroutines of group A, don't return from this line:
-*/
+    then, subroutines of group A, DON'T return from this line:
+
 
         if (digit == balance % 26 + xDelta) { return z }
 
-/*
+
     (because balance is non negative, xDelta is greater than 9 and digit is smaller than 10)
 
     subroutines of groupA allways return from this line: 
-*/
+
 
         return z * 26 + digit + yDelta
         
-/*
-    and being groupA, zDivisor is allways 1,
+
+    and being of groupA, zDivisor is allways 1,
         
     so we can create a special function for the group A:
      
-*/
-
 
 function forGroupA(digit, balance, yDelta) {
            
@@ -294,24 +294,22 @@ function forGroupA(digit, balance, yDelta) {
 }
 
 
-/*
     easy! let's make a function for subroutines of the groupB;
     
     we know that the zDivisor is allways 26        
-*/
+
 
 
 function forGroupB_sketch(digit, balance, xDelta, yDelta) {
        
-    let z = Math.floor(balance / 26) 
+    let z = Math.floor(balance / 26)
      
     if (digit == balance % 26 + xDelta) { return z }
     
     return z * 26 + digit + yDelta
 }
 
-
-// setting it more clear:
+    setting it more clear:
 
 
 function forGroupB(digit, balance, xDelta, yDelta) {
@@ -321,36 +319,140 @@ function forGroupB(digit, balance, xDelta, yDelta) {
     return Math.floor(balance / 26) * 26 + digit + yDelta  // SECOND LINE
 }
 
-
-/*
-
-    let's study the functions while running 
     
     remember that ALLWAYS digit + yDelta is smaller than 26
     
-    (number_smaller_than_26 = digit + yDelta)
+    (number_smaller_than_26 = digit + yDelta),
     
     this means that Math.floor(balance / 26) erases the eventually added number_smaller_than_26
     
     
-    function forGroupA followed by function forGroupB:
+    function forGroupA:
+        
+        returns balance * 26 + number_smaller_than_26
+        
+        -> allways increases balance 
+        
+    function forGroupB:
     
-        forGroupA:
+        first line (if runs to end): returns floor(balance / 26) 
         
-            returns balance * 26 + number_smaller_than_26
-        
-        forGroupB:
-        
-            first line (if runs to end) returns floor(balance / 26) 
-            balance reverts to its original value before the execution of forGroupA
+        -> reverts balance to a previous state
             
-            second line (if runs) returns balance floor(balance / 26) * 26 + OTHER_number_smaller_than_26
-            erasing the effect of the number_smaller_than_26 in the previous function
-            
-           
+        second line (if runs): returns balance floor(balance / 26) * 26 + number_smaller_than_26
         
+        -> erases previous number_smaller_than_26  and  adds another number_smaller_than_26
+        
+        
+        
+    about "balance % 26"  in the first line of function forGroupB:
+    
+        it means "digit + yDelta" of the previous function (or some function before that)
+        
+        for example:
+        
+            we call forGroupA(digit=3, balance=100, yDelta=4)
+            
+                it returns 26 * 100 + 3 + 4 -> 2607
+            
+            then we call forGroupB(digit=8, balance=2607, xDelta=-5, yDelta=9)
+            
+                it checks "if (digit == balance % 26 + xDelta)"
+                
+                the digit we know because we provided
+                
+                xDelta we know from the arguments table
+                
+                balance % 26 we also know just for the previous digit and previous yDelta:
+                
+                    2607 % 26 -> 7 -> 3 + 4 (previous digit + previous yDelta)
+                    
+                in other words:
+                
+                    if (digit == balance % 26 + xDelta)
+                    
+                    means
+                    
+                    if (currentDigit == previousDigit + previousYDelta + currentXDelta)
+                
+    
+    CONCLUSION: MULTIPLYING BY 26, DIVIDING BY 26 AND GETTING THE MODULE OF 26 IS JUST A 
+                COMPLICATED/DISGUISED WAY OF **STORING** AND PASSING A FEW LOW INTEGERS!!!
+                    
+         
+    let's write new code!        
+                    
+    
+                 
+    3. NEW STYLE CODE
+    =================
+    
 
-    (under construction)
+const ARGUMENTS = [ // (repeated)
+
+        { zDivisor:  1,  xDelta:  14,  yDelta:  0 }, //  0
+        { zDivisor:  1,  xDelta:  13,  yDelta: 12 }, //  1
+        { zDivisor:  1,  xDelta:  15,  yDelta: 14 }, //  2
+        { zDivisor:  1,  xDelta:  13,  yDelta:  0 }, //  3
+        { zDivisor: 26,  xDelta:  -2,  yDelta:  3 }, //  4
+        { zDivisor:  1,  xDelta:  10,  yDelta: 15 }, //  5
+        { zDivisor:  1,  xDelta:  13,  yDelta: 11 }, //  6
+        { zDivisor: 26,  xDelta: -15,  yDelta: 12 }, //  7
+        { zDivisor:  1,  xDelta:  11,  yDelta:  1 }, //  8
+        { zDivisor: 26,  xDelta:  -9,  yDelta: 12 }, //  9
+        { zDivisor: 26,  xDelta:  -9,  yDelta:  3 }, // 10
+        { zDivisor: 26,  xDelta:  -7,  yDelta: 10 }, // 11
+        { zDivisor: 26,  xDelta:  -4,  yDelta: 14 }, // 12
+        { zDivisor: 26,  xDelta:  -6,  yDelta: 12 }  // 13
+    ]
+
+
+function checkNumber(number) {
+
+    const digits = number.toString()
+
+    const stack = [ ]
     
-*/    
+    for (let n = 0; n < digits.length; n++) {
     
+        const digit = parseInt(digits[n])
+        
+        const args = ARGUMENTS[n]
+        
+        const isGroupA = args.zDivisor == 1
+
+        const xDelta = args.xDelta
+        const yDelta = args.yDelta
+        
+        if (isGroupA) { stack.push(digit + yDelta); continue }
+        
+        // groupB:
+        
+        const last = stack.pop()
+        
+        if (digit == last + xDelta) { continue }
+        
+        stack.push(yDelta)
+    }
+    
+    const valid = stack.length == 0
+    
+    console.log(valid ? "VALID!" : "failed")
+}
+
+
+///////////////////////////////////////////////////////////
+
+    testing the code:
+    
+    const good = 91297395919993
+    
+    checkNumber(good-1) // failed
+    checkNumber(good)   // VALID!!
+    checkNumber(good+1) // failed
+    
+    
+    (UNDER CONSTRUCTION...)
+
+*/
+
