@@ -303,11 +303,11 @@ function forGroupA(digit, balance, yDelta) {
 
 function forGroupB_sketch(digit, balance, xDelta, yDelta) {
        
-    let z = Math.floor(balance / 26)  // FIRST LINE
+    let z = Math.floor(balance / 26) 
      
-    if (digit == balance % 26 + xDelta) { return z } // SECOND LINE
+    if (digit == balance % 26 + xDelta) { return z }
     
-    return z * 26 + digit + yDelta  // THIRD LINE
+    return z * 26 + digit + yDelta
 }
 
 
@@ -324,7 +324,7 @@ function forGroupB(digit, balance, xDelta, yDelta) {
 
 /*
 
-    let's study the functions running 
+    let's study the functions while running 
     
     remember that ALLWAYS digit + yDelta is smaller than 26
     
