@@ -6,18 +6,36 @@
     *WARNING*
     
     THIS SOLUTION MAY NOT WORK FOR YOUR INPUT
+    
+    
+    --> PLEASE READ THE FILE "EXPLANATION.js",
+    
+    that presents a deep explanation on the principles used here    
+    
 */
 
 const input = Deno.readTextFileSync("input.txt").trim()
 
 const SUBROUTINES = [ ]
 
+const DATA = [ ]
+
 
 function main() {
 
     processInput()
     
-    console.log("the answer is", search())
+    fillData()
+    
+    setRelationships()
+    
+    let result = ""
+    
+    for (const data of DATA) { result += findMinDigit(data) }
+    
+  //  console.log(DATA)
+    
+    console.log("the answer is", parseInt(result))
 }
 
 ///////////////////////////////////////////////////////////
@@ -46,121 +64,78 @@ function processInput() {
 
 ///////////////////////////////////////////////////////////
 
-function getSignifcantCommands() {
+function fillData() {
 
-    // the ALU program is a sequence of 14 VERY SIMILAR subroutines
-    // (one for each digit of the number to be validated)
+    for (const subroutine of SUBROUTINES) { fillDataThis(subroutine) }
+}
+
+function fillDataThis(subroutine) {
+
+    const isFeeder = parseInt(subroutine[4].operand2) == 1
+
+    const xDelta = parseInt(subroutine[5].operand2)
+
+    const yDelta = parseInt(subroutine[15].operand2)
     
-    // from each subroutine we take its SIGNIFICANT part as data
-    
-    // the subroutines can be thought as (push/pop) stack operations
+    const data = { "isFeeder": isFeeder, "xDelta": xDelta, "yDelta": yDelta, "next": -1, "previous": -1, "digit": -1 }
 
-    /**
-     *  0. inp w
-     *  1. mul x 0
-     *  2. add x z
-     *  3. mod x 26
-     *  4. div z 1   <-- truncates z
-     *  5. add x 10  <-- increments x
-     *  6. eql x w
-     *  7. eql x 0
-     *  8. mul y 0
-     *  9. add y 25
-     * 10. mul y x
-     * 11. add y 1
-     * 12. mul z y
-     * 13. mul y 0
-     * 14. add y w
-     * 15. add y 5   <-- increments y
-     * 16. mul y x
-     * 17. add z y
-     */
-
-    const commands = [ ]
-
-    for (const subroutine of SUBROUTINES) {
-
-        const truncatesZ = 26 == parseInt(subroutine[4].operand2)
-
-        const incrementX = parseInt(subroutine[5].operand2)
-
-        const incrementY = parseInt(subroutine[15].operand2)
-
-        const stackOp = truncatesZ ? "pop" : "push" // pops read x_inc, pushes read y_inc
-
-        const value = truncatesZ ? incrementX : incrementY
-
-        commands.push({ "stackOp": stackOp, "value": value })
-    }
-
-    return commands
+    DATA.push(data)
 }
 
 ///////////////////////////////////////////////////////////
 
-function getRestraints() {
-
-    const commands = getSignifcantCommands()
-
+function setRelationships() {
+    
     const stack = [ ]
-
-    const restraints = [ ]
-
-    for (let index = 0; index < commands.length; index++) {
-
-        const command = commands[index]
-        
-        if (command.stackOp == "push") { 
-        
-            const obj = { "index": index, "value": command.value }
-            
-            stack.push(obj)
-        }
-        
-        else { // command.stackOp == "pop" 
-
-            const head = stack.pop()
-
-            const obj = { "left": index, "right": head.index, "value": head.value + command.value }
-
-            restraints.push(obj)
-        }
-    }
     
-    return restraints
+    for (let index = 0; index < 14; index++) {
+        
+        if (DATA[index].isFeeder) { 
+        
+            stack.push(index)
+        }
+        
+        else { // is retriever
+
+            const previous = stack.pop()
+            
+            DATA[index].previous = previous
+            
+            DATA[previous].next = index
+        }
+    }     
 }
 
 ///////////////////////////////////////////////////////////
 
-function search() {
+function findMinDigit(data) {
 
-    const result = new Array(14)
+    if (! data.isFeeder) { return data.digit }
 
-    result.fill(0)
-
-    for (const restraint of getRestraints()) {
-
-        const rightInput = findMinRightInput(restraint.value)
-
-        const leftInput = rightInput + restraint.value
-
-        result[restraint.left] = leftInput
-
-        result[restraint.right] = rightInput
+    for (const c of "123456789") {
+    
+        const digit = parseInt(c)
+        
+        if (isGoodDigitFeeder(data, digit)) { data.digit = digit; return digit }
     }
-
-    return parseInt(result.join(""))
 }
 
-function findMinRightInput(restraint) {
+function isGoodDigitFeeder(data, digit) { // also sets the next data digit! 
 
-    for (let digit = 1; digit <= 9; digit++) {
+    const nextData = DATA[data.next]
+
+    for (const c of "123456789") {
     
-        if (digit + restraint < 1) { continue }
-        if (digit + restraint > 9) { continue }
+        const nextDigit = parseInt(c)
+    
+        if (nextDigit != (digit + data.yDelta) + nextData.xDelta) { continue }
         
-        return digit
-    }    
+        nextData.digit = nextDigit 
+       
+        return true
+    }
+    
+    return false    
 }
 
 ///////////////////////////////////////////////////////////
