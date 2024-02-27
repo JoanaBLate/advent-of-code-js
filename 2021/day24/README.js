@@ -26,7 +26,7 @@
       w: a constant that holds the current input digit
       x: is reset before being used 
       y: is reset before being used
-      z: holds the balance (value that a subroutine pass to the next subroutine)
+      z: holds the balance (value that a subroutine receives and passes ahead)
     
     for each subsroutine, doesn't matter the previous values of w, x and y
 
@@ -200,17 +200,51 @@ function versionF(digit, balance, zDivisor, xDelta, yDelta) {
 
     notes about the function:
     
-        yDelta affects the result by INCREMENTING it (second return)
+        yDelta affects the balance by INCREMENTING it (second return)
         
-        xDelta affects the result by AVOIDING OR NOT it being incremented
+        xDelta affects the balance by AVOIDING OR NOT it being incremented
+        
+        
+    USING THE SIMPLIFIED FUNCTION:
     
+    
+function validate(number) {
+
+    let strNumber = "" + number
+
+    let balance = 0
+    
+    for (let n = 0; n < strNumber.length; n++) {
+    
+        const digit = parseInt(strNumber[n])
+
+        const data = ARGUMENTS[n]
+    
+        // the balance returned by one subroutine is an argument to the next subroutine
+    
+        balance = universalSubroutine(digit, balance, data.zDivisor, data.xDelta, data.yDelta)
+    }
+    
+    console.log(number, balance == 0 ? "VALIDATED!" : "failed")
+}
+
+function universalSubroutine(digit, balance, zDivisor, xDelta, yDelta) {  // function versionF
+       
+    let z = Math.floor(balance / zDivisor) 
+     
+    if (balance % 26  ==  digit - xDelta) { return z }
+    
+    return z * 26 + digit + yDelta
+}  
+
+validate(91297395919993)  
     
 ///////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////
 
 
-    2. SMART ASSUMPTIONS BASED ON **MY** INPUT
-    ==========================================
+    2. SMART ASSUMPTIONS BASED ON *MY* INPUT
+    ========================================
     
     below we see the different sets of arguments 
     for each of the 14 subroutines
@@ -238,7 +272,7 @@ const ARGUMENTS = [
     SOME CONCLUSIONS ABOUT THE SUBROUTINES (function versionF and the arguments above)
     
 
-    there are two groups of subroutines:
+    there are two groups of SEVEN subroutines:
     
         GROUP A (subroutines 0, 1, 2, 3, 5, 6, and 8)
         
@@ -299,7 +333,6 @@ function forGroupA(digit, balance, yDelta) {
     we know that the zDivisor is allways 26        
 
 
-
 function forGroupB_sketch(digit, balance, xDelta, yDelta) {
        
     let z = Math.floor(balance / 26)
@@ -314,46 +347,81 @@ function forGroupB_sketch(digit, balance, xDelta, yDelta) {
 
 function forGroupB(digit, balance, xDelta, yDelta) {
      
-    if (digit == balance % 26 + xDelta) { Math.floor(balance / 26) } // FIRST LINE
+    if (digit == balance % 26 + xDelta) { return Math.floor(balance / 26) } // FIRST LINE
     
     return Math.floor(balance / 26) * 26 + digit + yDelta  // SECOND LINE
 }
 
+///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
     
-    remember that ALLWAYS digit + yDelta is smaller than 26
+                 
+    3. THE MAGICAL NUMBER 26 AND THE STACK (or What is going on?)
+    =============================================================
     
-    (number_smaller_than_26 = digit + yDelta),
+    One of the main features of the ALU program is storing numbers inside numbers.
     
-    this means that Math.floor(balance / 26) erases the eventually added number_smaller_than_26
+    How is that possible?
+    
+    Imagine that you want to store a list of 3 digits, [5, 2, 8], in the possible (memory) cheapest way.
+    
+    All you have to do is store the number 528.
+    
+    Our decimal numbers do this all the time, with digits from 0 to 9. But the ALU program stores numbers from 
+    
+    0 to 25 (digit + yDelta), totalizing 26 numbers. That's why the number 26 is everywhere.
     
     
-    function forGroupA:
-        
-        returns balance * 26 + number_smaller_than_26
-        
-        -> allways increases balance 
-        
-    function forGroupB:
+    Another main feature of the ALU program is to shuffle the data for validating the digits in different subrorutines.
     
-        first line (if runs to end): returns floor(balance / 26) 
-        
-        -> reverts balance to a previous state
-            
-        second line (if runs): returns balance floor(balance / 26) * 26 + number_smaller_than_26
-        
-        -> erases previous number_smaller_than_26  and  adds another number_smaller_than_26
-        
-        
-        
-    about "balance % 26"  in the first line of function forGroupB:
+    For example, the data necessary for validating the last digit is not on the last subroutine.
     
-        it means "digit + yDelta" of the previous function (or some function before that)
-        
-        for example:
+    Therefore, data from a subroutine must be stored for later use.
+    
+    
+    It is easier to understand if we think that the subroutines exchange data via a stack (pushing and popping).
+    
+    Subroutines of groupA only push values to the stack.
+    
+    Subroutines of groupB pop values from the stack. But, when the digit is bad, they push value to the stack.
+    
+    There are 7 subroutines of each kind. Seven only push. And seven should only pop, for a good number.
+    
+    Only if the stack is empty after running all subroutines the number is validated. 
+    
+    This is how the ALU program works.
+    
+    
+    Let's see those functions again:
+    
+    
+// forGroupA allways "pushes to the stack"
+
+function forGroupA(digit, balance, yDelta) { 
+           
+    return balance * 26 + digit + yDelta // "balance * 26" is just "left margin"; 
+                                         // "digit + yDelta" is the info being stored
+}
+      
+      
+// forGroupB allways "pops from the stack"; only "pushes" when the digit is bad
+ 
+function forGroupB(digit, balance, xDelta, yDelta) {
+     
+    if (digit == balance % 26 + xDelta) { return Math.floor(balance / 26) } // "balance % 26" is reading the stored info,
+                                                                            //  the content after "left margin"
+                                                                            //  returning "floor(balance / 26)" is popping the info
+    
+    return Math.floor(balance / 26) * 26 + digit + yDelta // this line stores excessive info (digit + yDelta); 
+                                                          // it only runs when the digit is bad
+}
+    
+    
+    A small example (storing the value 7 iside the number 2607):
         
             we call forGroupA(digit=3, balance=100, yDelta=4)
             
-                it returns 26 * 100 + 3 + 4 -> 2607
+                it returns 26 * 100 + 3 + 4 -> 2607 
             
             then we call forGroupB(digit=8, balance=2607, xDelta=-5, yDelta=9)
             
@@ -363,7 +431,7 @@ function forGroupB(digit, balance, xDelta, yDelta) {
                 
                 xDelta we know from the arguments table
                 
-                balance % 26 we also know just for the previous digit and previous yDelta:
+                balance % 26 we also know: the previous digit and previous yDelta:
                 
                     2607 % 26 -> 7 -> 3 + 4 (previous digit + previous yDelta)
                     
@@ -375,21 +443,36 @@ function forGroupB(digit, balance, xDelta, yDelta) {
                     
                     if (currentDigit == previousDigit + previousYDelta + currentXDelta)
                 
+
+            MULTIPLYING BY 26, DIVIDING BY 26 AND GETTING THE MODULE OF 26 
+            IS JUST AWAY OF **STORING** AND PASSING A FEW LOW INTEGERS!!!
     
-    CONCLUSION: MULTIPLYING BY 26, DIVIDING BY 26 AND GETTING THE MODULE OF 26 IS JUST A 
-                COMPLICATED/DISGUISED WAY OF **STORING** AND PASSING A FEW LOW INTEGERS!!!
-                    
-         
-    let's write new code!        
-                    
     
 ///////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////
     
                  
-    3. THE STACK STYLE CODE
+    4. THE STACK STYLE CODE
     =======================
     
+    
+    Let's rewrite our code in pure stack style.
+    
+
+    how the old code is translated to the new stack style code:
+
+    
+    EACH TIME WE SEE A MATH OPERATION WITH THE BALANCE, 
+    WE TRANSLATE IT INTO A STACK OPERATION - THERE IS
+    NO BALANCE ANYMORE!
+    
+    ** INCREASING THE BALANCE = PUSHING INFO TO THE STACK
+
+    ** DECREASING THE BALANCE = POPPING INFO FROM THE STACK
+
+    ** NUMBER VALIDATION  ==  (BALANCE == 0)  ==  (STACK.LENGTH == 0)
+    
+
 
 const ARGUMENTS = [ // (repeated)
 
@@ -427,15 +510,17 @@ function checkNumber(number) {
         const xDelta = args.xDelta
         const yDelta = args.yDelta
         
-        if (isGroupA) { stack.push(digit + yDelta); continue }
+        if (isGroupA) { stack.push(digit + yDelta); continue } // groupA subroutine, just stores info
         
-        // groupB:
+        // groupB subroutine:
         
-        const last = stack.pop()
+        const last = stack.pop() // retrieving info
         
-        if (digit == last + xDelta) { continue }
+        if (digit == last + xDelta) { continue } // here is the criteria for a good digit,
+                                                 // it must be equal to:
+                                                 // current_xDelta + previous_digit + previous_yDelta  
         
-        stack.push(yDelta)
+        stack.push(yDelta) // -> bad digit corrupts the stack
     }
     
     const valid = stack.length == 0
@@ -445,7 +530,7 @@ function checkNumber(number) {
 
 ///////////////////////////////////////////////////////////
 
-    testing the code:
+    testing the new code:
     
     const good = 91297395919993
     
@@ -455,64 +540,6 @@ function checkNumber(number) {
     
 
 ///////////////////////////////////////////////////////////
-
-    explaining the code:
-    
-    in most solutions, the balance (z) always starts as zero,
-    
-    increases and decreases and must end as zero again;
-    
-    now we know the changing the balance (z) only serves
-    
-    to store information about which digits are valid;
-    
-    we are using a different way, we are using a stack
-    
-    for storing info, so 
-    
-    EACH TIME WE SEE A MATH OPERATION WITH THE BALANCE, 
-    WE TRANSLATE IT INTO A STACK OPERATION - THERE IS
-    NO BALANCE ANYMORE!
-    
-    ** INCREASING THE BALANCE = PUSHING INFO TO THE STACK
-
-    ** DECREASING THE BALANCE = POPPING INFO FROM THE STACK
-
-    ** NUMBER VALIDATION  ==  (BALANCE == 0)  ==  (STACK.LENGTH == 0)
-    
-    
-    translating function forGroupA:
-           
-        unique line:
-        
-            return balance * 26 + digit + yDelta
-
-            means  stack.push(digit + yDelta)
-
-    
-    translating function forGroupB:
-    
-        forGroupB starts popping (the last value from) the stack,
-        
-        because it needs it to replace "balance % 26"
-        
-           
-        first line:
-     
-            if (digit == balance % 26 + xDelta) { return Math.floor(balance / 26) }
-
-            "balance % 26"  means previous stored (digit + yDelta)
-            
-            "return Math.floor(balance / 26)" means pop the stack and go away (return) or not
-            
-            (in the new code, first we pop the stack, after we compare the data; and we go away or not)
-           
-        second line:
-        
-            return Math.floor(balance / 26) * 26 + digit + yDelta 
-
-            means  stack.push(digit + yDelta) after popping old data (already popped at the start)
-            
             
     COULDN'T WE ACHIVE THE SAME RESULT, WITHOUT A STACK? JUST PASSING INFO DIRECTLY?
     
@@ -527,16 +554,92 @@ function checkNumber(number) {
                  
     4. USING THE STACK FOR PREDICTING GOOD DIGITS
     =============================================
+    (running the function checkNumber with feedback)
     
-    
+    this is what happens with the stack when validating a good number (91297395919993)
       
+    checking digit 9 at position 0
+        pushing 9                     <-- pushing the value 9 here
+    checking digit 1 at position 1
+        pushing 13
+    checking digit 2 at position 2
+        pushing 16
+    checking digit 9 at position 3
+        pushing 9
+    checking digit 7 at position 4
+        popping 9
+    checking digit 3 at position 5
+        pushing 18
+    checking digit 9 at position 6
+        pushing 20
+    checking digit 5 at position 7
+        popping 20
+    checking digit 9 at position 8
+        pushing 10
+    checking digit 1 at position 9
+        popping 10
+    checking digit 9 at position 10
+        popping 18
+    checking digit 9 at position 11
+        popping 16
+    checking digit 9 at position 12
+        popping 13
+    checking digit 3 at position 13
+        popping 9                    <-- retrieving the value 9 here
+    VALID!
+
+
     
+    this is what happens with the stack when validating a bad number (81297395919993)
+      
+checking digit 8 at position 0    <-- bad digit
+    pushing 8                     <-- pushing the value 8 here
+checking digit 1 at position 1
+    pushing 13
+checking digit 2 at position 2
+    pushing 16
+checking digit 9 at position 3
+    pushing 9
+checking digit 7 at position 4
+    popping 9
+checking digit 3 at position 5
+    pushing 18
+checking digit 9 at position 6
+    pushing 20
+checking digit 5 at position 7
+    popping 20
+checking digit 9 at position 8
+    pushing 10
+checking digit 1 at position 9
+    popping 10
+checking digit 9 at position 10
+    popping 18
+checking digit 9 at position 11
+    popping 16
+checking digit 9 at position 12
+    popping 13
+checking digit 3 at position 13
+    popping 8                     <-- popping the value 8 here
+    pushing 15                    <-- pushing after popping - only happens with bad digits
+failed
+
+
+
+
+    IN FACT, GROUPA SUBROUTINES NEVER CHECK ANYTHING
     
+    GROUPB SUBROUTINES VALIDATE OR NOT THE CURRENT DIGIT BASED 
+    
+    ON TEH DIGIT ITESELF, THE CURRENT XDELTA AND THE PREVIOUS
+    
+    DIGIT + PREVIOUS YDELTA
+
+
     
     
     
     
     (UNDER CONSTRUCTION...)
-   
+
 */
 
