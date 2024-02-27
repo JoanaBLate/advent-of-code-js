@@ -331,7 +331,7 @@ function forGroupB(digit, balance, xDelta, yDelta) {
      
     if (digit == balance % 26 + xDelta) { // CHECKS THE DIGIT
     
-        return Math.floor(balance / 26) // DIGIT OS GOOD(*)
+        return Math.floor(balance / 26) // DIGIT IS GOOD(*)
     }
     else {
         return Math.floor(balance / 26) * 26 + digit + yDelta  // DIGIT IS BAD(*)
