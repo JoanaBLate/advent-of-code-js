@@ -559,7 +559,7 @@ checkNumber(good+1) // failed
 ///////////////////////////////////////////////////////////
     
              
-4. USING THE STACK FOR PREDICTING GOOD DIGITS
+5. USING THE STACK FOR PREDICTING GOOD DIGITS
 =============================================
 
 (running the function checkNumber with feedback)
