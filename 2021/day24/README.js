@@ -383,7 +383,7 @@ function forGroupB(digit, balance, xDelta, yDelta) {
     
     Subroutines of groupA only push values to the stack.
     
-    Subroutines of groupB pop values from the stack. But, when the digit is bad, they push value to the stack.
+    Subroutines of groupB pop values from the stack. But, when the digit is bad, they push value to the stack too.
     
     There are 7 subroutines of each kind. Seven only push. And seven should only pop, for a good number.
     
@@ -409,7 +409,7 @@ function forGroupA(digit, balance, yDelta) {
 function forGroupB(digit, balance, xDelta, yDelta) {
      
     if (digit == balance % 26 + xDelta) { return Math.floor(balance / 26) } // "balance % 26" is reading the stored data,
-                                                                            //  the content after "left margin"
+                                                                            //  the content after "left margin";
                                                                             //  returning "floor(balance / 26)" is popping the data
     
     return Math.floor(balance / 26) * 26 + digit + yDelta // this line stores excessive data (digit + yDelta); 
@@ -628,7 +628,11 @@ function checkNumber(number) {
 ///////////////////////////////////////////////////////////
 
 
-  >>  IN FACT, GROUPA SUBROUTINES NEVER CHECK ANYTHING
+    the principles used for solving the puzzle:
+    
+
+  >>  GROUPA SUBROUTINES NEVER CHECK ANYTHING, JUST STORES DATA
+      ONTO THE STACK
     
   >>  GROUPB SUBROUTINES VALIDATE OR NOT THE CURRENT DIGIT BASED 
     
@@ -636,7 +640,7 @@ function checkNumber(number) {
     
       DIGIT + THE PREVIOUS YDELTA
 
-      "PREVIOUS" MEANS THE LAST POPPED VALUE FROM THE STACK
+      "PREVIOUS" MEANS THE LAST POPPED DATA FROM THE STACK
       
       
       >>> predicting the max valid number, it is just predicting
