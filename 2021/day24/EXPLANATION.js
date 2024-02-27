@@ -534,11 +534,10 @@ function checkNumber(number) {
         
         const last = stack.pop() // retrieving data
         
-        if (digit == last + xDelta) { continue } // here is the criteria for a good digit,
-                                                 // it must be equal to:
-                                                 // current_xDelta + previous_digit + previous_yDelta  
+        if (digit == last + xDelta) { continue } // here is the criteria for a good digit;
+                                                 // last means previous_digit + previous_yDelta  
         
-        stack.push(digit + yDelta) // -> bad digit corrupts the stack with excessive data
+        stack.push(digit + yDelta) // -> bad digit corrupts the stack with excessive data;
                                    // -> any data pushed now works, need not to be "digit + yDelta"
     }
     
