@@ -400,7 +400,7 @@ function forGroupB(digit, balance, xDelta, yDelta) {
 function forGroupA(digit, balance, yDelta) { 
            
     return balance * 26 + digit + yDelta // "balance * 26" is just "left margin"; 
-                                         // "digit + yDelta" is the info being stored
+                                         // "digit + yDelta" is the data being stored
 }
       
       
@@ -408,11 +408,11 @@ function forGroupA(digit, balance, yDelta) {
  
 function forGroupB(digit, balance, xDelta, yDelta) {
      
-    if (digit == balance % 26 + xDelta) { return Math.floor(balance / 26) } // "balance % 26" is reading the stored info,
+    if (digit == balance % 26 + xDelta) { return Math.floor(balance / 26) } // "balance % 26" is reading the stored data,
                                                                             //  the content after "left margin"
-                                                                            //  returning "floor(balance / 26)" is popping the info
+                                                                            //  returning "floor(balance / 26)" is popping the data
     
-    return Math.floor(balance / 26) * 26 + digit + yDelta // this line stores excessive info (digit + yDelta); 
+    return Math.floor(balance / 26) * 26 + digit + yDelta // this line stores excessive data (digit + yDelta); 
                                                           // it only runs when the digit is bad
 }
     
@@ -466,9 +466,9 @@ function forGroupB(digit, balance, xDelta, yDelta) {
     WE TRANSLATE IT INTO A STACK OPERATION - THERE IS
     NO BALANCE ANYMORE!
     
-    ** INCREASING THE BALANCE = PUSHING INFO TO THE STACK
+    ** INCREASING THE BALANCE = PUSHING DATA TO THE STACK
 
-    ** DECREASING THE BALANCE = POPPING INFO FROM THE STACK
+    ** DECREASING THE BALANCE = POPPING DATA FROM THE STACK
 
     ** NUMBER VALIDATION  ==  (BALANCE == 0)  ==  (STACK.LENGTH == 0)
     
@@ -510,11 +510,11 @@ function checkNumber(number) {
         const xDelta = args.xDelta
         const yDelta = args.yDelta
         
-        if (isGroupA) { stack.push(digit + yDelta); continue } // groupA subroutine, just stores info
+        if (isGroupA) { stack.push(digit + yDelta); continue } // groupA subroutine, just stores data
         
         // groupB subroutine:
         
-        const last = stack.pop() // retrieving info
+        const last = stack.pop() // retrieving data
         
         if (digit == last + xDelta) { continue } // here is the criteria for a good digit,
                                                  // it must be equal to:
@@ -541,7 +541,7 @@ function checkNumber(number) {
 
 ///////////////////////////////////////////////////////////
             
-    COULDN'T WE ACHIVE THE SAME RESULT, WITHOUT A STACK? JUST PASSING INFO DIRECTLY?
+    COULDN'T WE ACHIVE THE SAME RESULT, WITHOUT A STACK? JUST PASSING DATA DIRECTLY?
     
     NO! Because of the order of the subroutines: they DON'T alternate regularly like
     
@@ -554,6 +554,7 @@ function checkNumber(number) {
                  
     4. USING THE STACK FOR PREDICTING GOOD DIGITS
     =============================================
+    
     (running the function checkNumber with feedback)
     
     this is what happens with the stack when validating a good number (91297395919993)
@@ -592,54 +593,57 @@ function checkNumber(number) {
     
     this is what happens with the stack when validating a bad number (81297395919993)
       
-checking digit 8 at position 0    <-- bad digit
-    pushing 8                     <-- pushing the value 8 here
-checking digit 1 at position 1
-    pushing 13
-checking digit 2 at position 2
-    pushing 16
-checking digit 9 at position 3
-    pushing 9
-checking digit 7 at position 4
-    popping 9
-checking digit 3 at position 5
-    pushing 18
-checking digit 9 at position 6
-    pushing 20
-checking digit 5 at position 7
-    popping 20
-checking digit 9 at position 8
-    pushing 10
-checking digit 1 at position 9
-    popping 10
-checking digit 9 at position 10
-    popping 18
-checking digit 9 at position 11
-    popping 16
-checking digit 9 at position 12
-    popping 13
-checking digit 3 at position 13
-    popping 8                     <-- popping the value 8 here
-    pushing 15                    <-- pushing after popping - only happens with bad digits
-failed
+    checking digit 8 at position 0    <-- bad digit
+        pushing 8                     <-- pushing the value 8 here
+    checking digit 1 at position 1
+        pushing 13
+    checking digit 2 at position 2
+        pushing 16
+    checking digit 9 at position 3
+        pushing 9
+    checking digit 7 at position 4
+        popping 9
+    checking digit 3 at position 5
+        pushing 18
+    checking digit 9 at position 6
+        pushing 20
+    checking digit 5 at position 7
+        popping 20
+    checking digit 9 at position 8
+        pushing 10
+    checking digit 1 at position 9
+        popping 10
+    checking digit 9 at position 10
+        popping 18
+    checking digit 9 at position 11
+        popping 16
+    checking digit 9 at position 12
+        popping 13
+    checking digit 3 at position 13
+        popping 8                     <-- popping the value 8 here
+        pushing 15                    <-- pushing after popping - only happens with bad digits
+    failed
 
 
+///////////////////////////////////////////////////////////
 
 
-    IN FACT, GROUPA SUBROUTINES NEVER CHECK ANYTHING
+  >>  IN FACT, GROUPA SUBROUTINES NEVER CHECK ANYTHING
     
-    GROUPB SUBROUTINES VALIDATE OR NOT THE CURRENT DIGIT BASED 
+  >>  GROUPB SUBROUTINES VALIDATE OR NOT THE CURRENT DIGIT BASED 
     
-    ON TEH DIGIT ITESELF, THE CURRENT XDELTA AND THE PREVIOUS
+      ON THE DIGIT ITSELF, THE CURRENT XDELTA AND THE PREVIOUS
     
-    DIGIT + PREVIOUS YDELTA
+      DIGIT + THE PREVIOUS YDELTA
 
+      "PREVIOUS" MEANS THE LAST POPPED VALUE FROM THE STACK
+      
+      
+      >>> predicting the max valid number, it is just predicting
+          each max valid digit, based on the criterion above,
+          of course the shuffled data must be tracked first
 
+          (the same works for the minimum valid number)
     
-    
-    
-    
-    (UNDER CONSTRUCTION...)
-
 */
 
