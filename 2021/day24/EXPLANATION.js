@@ -267,22 +267,22 @@ There are two groups of SEVEN subroutines:
     
     GROUP A (subroutines 0, 1, 2, 3, 5, 6, and 8)
     
-        zDivisor is allways 1
-        xDelta is allways greater than 9 
+        zDivisor is always 1
+        xDelta is always greater than 9 
         yDelta is never negative
         yDelta + digit is smaller than 26
 
     GROUP B (subroutines 4, 7, 9, 10, 11, 12, and 13)
     
-        zDivisor is allways 26
-        xDelta is allways negative
+        zDivisor is always 26
+        xDelta is always negative
         yDelta is never negative
         yDelta + digit is smaller than 26
     
 --
 
-As the digit, zDivisor and yDelta are allways non negative, 
-z (balance) is allways a NON NEGATIVE INTEGER.
+As the digit, zDivisor and yDelta are always non negative, 
+z (balance) is always a NON NEGATIVE INTEGER.
 
 --
 
@@ -296,9 +296,9 @@ And has two possible outputs:
     
 --
     
-Because balance is allways non negative,
-digit is allways smaller than 10 and,
-for subroutines of GROUP A, xDelta is allways greater than 9,    
+Because balance is always non negative,
+digit is always smaller than 10 and,
+for subroutines of GROUP A, xDelta is always greater than 9,    
 subroutines of groupA NEVER return from this line: 
 
     if (digit == balance % 26 + xDelta) { return z }
@@ -323,7 +323,7 @@ function forGroupA(digit, balance, yDelta) {
 
 And now we create a function for subroutines of the groupB.
     
-Because, for the groupB, the zDivisor is allways 26:
+Because, for the groupB, the zDivisor is always 26:
 
 */
 
