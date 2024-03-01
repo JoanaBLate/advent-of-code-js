@@ -53,6 +53,8 @@ Completed.
 
 **Day 20 PART 2** SOLVED IN JUST **0.04s** 
 
+**Day 22 PART 2** SOLVED IN JUST **0.02s - NO math formula**
+
 ## Advent of Code 2020
 
 Completed.
