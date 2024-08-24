@@ -7,7 +7,7 @@ const DATA = [ ]
 var shipRow = 0
 var shipCol = 0
 
-// wp mean waypoint
+// wp means waypoint
 
 var wpRow = -1
 var wpCol = 10
