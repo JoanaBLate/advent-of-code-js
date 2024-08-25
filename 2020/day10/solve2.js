@@ -2,32 +2,26 @@
 
 // solving the puzzle takes (my computer) 0.025s
 
-// WARNING: THIS PROGRAM MAY NOT WORK WITH ANOTHER INPUT! //
-
 const DATA = [ ]
+
+const nodes = [ ]
 
 
 function main() {
 
     processInput()
     
-    if (! DATA.includes(0)) { DATA.push(0) }
+    if (! DATA.includes(0)) { DATA.push(0) } // the zero start will easy the search
     
-    DATA.sort(function (a, b) { return a - b })
+    DATA.sort(function (a, b) { return a - b })    
     
-    const last = DATA.at(-1)
+    for (const joltage of DATA) { nodes.push(createNode(joltage, 0)) }
+
+    nodes[0].paths = 1
     
-    DATA.push(last + 3)
-        
-    const segments = [ ] // delta between consecutive values of any segment is always 1
-    
-    while (DATA.length != 0) { segments.push(createSegment(DATA)) }
-    
-    let n = 1
-    
-    for (const segment of segments) { n *= possibilitiesOfSegment(segment) }
+    search()
      
-    console.log("the answer is", n)
+    console.log("the answer is", nodes.at(-1).paths)
 }
 
 function processInput() {
@@ -39,43 +33,28 @@ function processInput() {
     for (const line of lines) { DATA.push(parseInt(line)) }
 }
 
-function createSegment(DATA) {
+function createNode(jolts, paths) {
 
-    const segment = [ DATA.shift() ]
-    
-    while (DATA.length != 0) {
-        
-        const delta = DATA[0] - segment.at(-1)
-        
-        if (delta != 1) { break }
-    
-        segment.push(DATA.shift())
-    }
-    return segment
+    return { "jolts": jolts, "paths": paths }
 }    
 
-function possibilitiesOfSegment(segment) {
+function search() {
 
-    // delta between consecutive values of any segment is always 1
-    
-    // the first and the last element must be present or else the
-    // segment will not be able to connect with others
+    for (let index = 0; index < nodes.length; index++) { searchThis(index); }
+}
 
-    const len = segment.length
+function searchThis(baseIndex) {
+
+    const baseNode = nodes[baseIndex];
     
-    if (len == 1) { return 1 } // 0
+    for (let index = baseIndex + 1; index < nodes.length; index++) {
     
-    if (len == 2) { return 1 } // 0,1
-    
-    if (len == 3) { return 2 } // 0,1,2; 0,2
-    
-    if (len == 4) { return 4 } // 0,1,2,3; 0,3; 0,1,3, 0,2,3; 
-    
-    if (len == 5) { return 7 } // 0,1,2,3,4; 0,1,4; 0,2,4; 0,3,4; 0,1,2,4; 0,1,3,4; 0,2,3,4
-    
-    console.log("ERROR: not expecting input that generates segment larger than 5")
-    
-    Deno.exit()
+        var currentNode = nodes[index];
+
+        if (currentNode.jolts - baseNode.jolts > 3) { return; }
+        
+        currentNode.paths += baseNode.paths;
+    }
 }
 
 main()
