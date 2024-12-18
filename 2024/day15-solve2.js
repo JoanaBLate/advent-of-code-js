@@ -67,14 +67,7 @@ function processInput() {
 
 function walk() {
 
-    let guideIndex = -1
-
-    while (true) {
-    
-        guideIndex += 1
-        const direction = guide[guideIndex]
-        
-        if (direction == undefined) { return }
+    for (const direction of guide) {
         
         if (direction == "^") { walkVertical(-1); continue }
         if (direction == "v") { walkVertical(+1); continue }
