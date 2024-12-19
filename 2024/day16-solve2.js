@@ -1,4 +1,4 @@
-// solution for https://adventofcode.com/2024/day/16 part 1
+// solution for https://adventofcode.com/2024/day/16 part 2
 
 // expecting all map borders to be blocked ("#")
 
@@ -22,7 +22,9 @@ function main() {
 
     walk()
     
-    console.log("the answer is", Math.min(goalCell.north, goalCell.south, goalCell.east, goalCell.west))
+    search()
+    
+    console.log("the answer is", countCellsInPaths())
 }
 
 function processInput() {
@@ -55,7 +57,7 @@ function processInput() {
 
 function createCell(row, col, blocked) {
 
-    return { "row": row, "col": col, "blocked": blocked, "north": BIG, "south": BIG, "east": BIG, "west": BIG }        
+    return { "row": row, "col": col, "blocked": blocked, "north": BIG, "south": BIG, "east": BIG, "west": BIG, "inPath": false }        
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -194,7 +196,103 @@ function grabCellWest(previousCell, leastCost, cellsToWalk) {
     cellsToWalk.push(cell) 
 }
 
+///////////////////////////////////////////////////////////////////////////////
+
+function search() { // walking backwards
+    
+    goalCell.inPath = true
+
+    const leastCost = Math.min(goalCell.north, goalCell.south, goalCell.east, goalCell.west)
+    
+    const northCell = table[goalCell.row - 1][goalCell.col]
+    const southCell = table[goalCell.row + 1][goalCell.col]
+
+    const eastCell  = table[goalCell.row][goalCell.col + 1]
+    const westCell  = table[goalCell.row][goalCell.col - 1]
+    
+    searchThis(northCell, leastCost, "south")
+    searchThis(southCell, leastCost, "north")
+
+    searchThis(eastCell, leastCost, "west")
+    searchThis(westCell, leastCost, "east")
+}
+
+function searchThis(cell, targetCost, pathDirection) { // recursive function
+    
+    if (cell.blocked) { return }
+    if (cell.inPath)  { return }
+    
+    if (pathDirection == "north") {
+    
+        if (cell.north + 1 == targetCost) { searchFrom(cell, cell.north, "north") }
+        
+        if (cell.east + 1001 == targetCost) { searchFrom(cell, cell.east, "east") }
+        
+        if (cell.west + 1001 == targetCost) { searchFrom(cell, cell.west, "west") }
+        
+        return
+    }
+    
+    if (pathDirection == "south") {
+    
+        if (cell.south + 1 == targetCost) { searchFrom(cell, cell.south, "south") }
+        
+        if (cell.east + 1001 == targetCost) { searchFrom(cell, cell.east, "east") }
+        
+        if (cell.west + 1001 == targetCost) { searchFrom(cell, cell.west, "west") }
+        
+        return
+    }
+    
+    if (pathDirection == "east") {
+    
+        if (cell.east + 1 == targetCost) { searchFrom(cell, cell.east, "east") }
+        
+        if (cell.north + 1001 == targetCost) { searchFrom(cell, cell.north, "north") }
+        
+        if (cell.south + 1001 == targetCost) { searchFrom(cell, cell.south, "south") }
+        
+        return
+    }
+    
+    if (pathDirection == "west") {
+    
+        if (cell.west + 1 == targetCost) { searchFrom(cell, cell.west, "west") }
+        
+        if (cell.north + 1001 == targetCost) { searchFrom(cell, cell.north, "north") }
+        
+        if (cell.south + 1001 == targetCost) { searchFrom(cell, cell.south, "south") }
+        
+        return
+    }
+}
+
+function searchFrom(cell, targetCost, pathDirection) {
+
+    cell.inPath = true
+
+    searchThis(table[cell.row - 1][cell.col], targetCost, pathDirection) // north
+    searchThis(table[cell.row + 1][cell.col], targetCost, pathDirection) // south
+    searchThis(table[cell.row][cell.col + 1], targetCost, pathDirection) // east
+    searchThis(table[cell.row][cell.col - 1], targetCost, pathDirection) // west
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+function countCellsInPaths() {
+
+    let count = 0
+    
+    for (const line of table) {
+        for (const cell of line) {
+        
+            if (cell.inPath) { count += 1 }   
+        }
+    }
+    return count
+}
+
 console.time("execution time")
 main()
-console.timeEnd("execution time") // 20ms
+console.timeEnd("execution time") // 23ms
 
