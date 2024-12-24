@@ -6,49 +6,49 @@ const input = Deno.readTextFileSync("day21-input.txt").trim()
 
 const allCodes = [ ]
 
-const numericKeypad = {
+const numericPadSteps = { } // shortest and simplest paths between buttons (redundant when possible)
 
-    "7": { "row": 0, "col": 0 },
-    "8": { "row": 0, "col": 1 },
-    "9": { "row": 0, "col": 2 },
+const directionalPadSteps = { // shortest path between buttons
 
-    "4": { "row": 1, "col": 0 },
-    "5": { "row": 1, "col": 1 },
-    "6": { "row": 1, "col": 2 },
+    // doesn't need redundant paths (because of the design of the keypad?)
     
-    "1": { "row": 2, "col": 0 },
-    "2": { "row": 2, "col": 1 },
-    "3": { "row": 2, "col": 2 },
+    "^ to ^": "",
+    "^ to v": "v",
+    "^ to <": "v<",
+    "^ to >": "v>",
+    "^ to A": ">",
     
-    "!": { "row": 3, "col": 0 },
-    "0": { "row": 3, "col": 1 },
-    "A": { "row": 3, "col": 2 }
+    "v to ^": "^",
+    "v to v": "",
+    "v to <": "<",
+    "v to >": ">",
+    "v to A": "^>",
+    
+    "< to ^": ">^",
+    "< to v": ">",
+    "< to <": "",
+    "< to >": ">>",
+    "< to A": ">>^",
+    
+    "> to ^": "^<",
+    "> to v": "<",
+    "> to <": "<<",
+    "> to >": "",
+    "> to A": "^",
+    
+    "A to ^": "<",
+    "A to v": "v<",
+    "A to <": "v<<",
+    "A to >": "v",
+    "A to A": ""
 }
-
-const directionalKeypad = {
-
-    "!": { "row": 0, "col": 0 },
-    "^": { "row": 0, "col": 1 },
-    "A": { "row": 0, "col": 2 },
-
-    "<": { "row": 1, "col": 0 },
-    "v": { "row": 1, "col": 1 },
-    ">": { "row": 1, "col": 2 }
-}
-
-const numericPadSteps = { } // shortest paths between keys
-
-const directionalPadSteps = { } // shortest paths between keys
 
 
 function main() {
 
     processInput()
 
-    fillPadSteps(numericKeypad, "0123456789A", numericPadSteps)
-    
-    fillPadSteps(directionalKeypad, "^v<>A", directionalPadSteps)
-    
+    fillNumericPadSteps()
 
     let complexity = 0
 
@@ -73,21 +73,39 @@ function processInput() {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function fillPadSteps(keypad, symbols, padSteps) {
+function fillNumericPadSteps() {
+
+    const keypad = { }
+    
+    let row = -1
+    
+    for (const line of [ "789", "456", "123", "!0A" ]) {
+        
+        row += 1
+        let col = -1
+        
+        for (const char of line) {
+     
+            col += 1
+            keypad[char]  = { "row": row, "col": col }
+        }
+    }
+    
+    const symbols = "0123456789A"
 
     const forbidden = keypad["!"]
 
     for (const symbolA of symbols) {
         for (const symbolB of symbols) {
         
-            const id = symbolA + "~" + symbolB 
+            const id = symbolA + " to " + symbolB 
             
-            if (symbolA == symbolB) { padSteps[id] = [ "" ]; continue }
+            if (symbolA == symbolB) { numericPadSteps[id] = [ "" ]; continue }
             
             const a = keypad[symbolA]
             const b = keypad[symbolB]
             
-            padSteps[id] = findPadPaths(a.row, a.col, b.row, b.col, forbidden.row, forbidden.col)
+            numericPadSteps[id] = findPadPaths(a.row, a.col, b.row, b.col, forbidden.row, forbidden.col)
         }
     }
 }
@@ -146,27 +164,17 @@ function isSimplePath(path) { // equal symbols must be together
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function runNumericBot(code) {
-
-    return runBot(code, numericPadSteps) 
-}
-
-function runDirectionalBot(commands) {
-
-    return runBot(commands, directionalPadSteps)
-}
-
-function runBot(data, padSteps) {
+function runNumericBot(code) { // generates the initial sequences
 
     let position = "A"
 
     let paths = [ "" ]
 
-    for (const symbol of data) { 
+    for (const symbol of code) { 
         
         const newPaths = [ ]
 
-        const tokens = padSteps[position + "~" + symbol]
+        const tokens = numericPadSteps[position + " to " + symbol]
         
         position = symbol
 
@@ -182,52 +190,41 @@ function runBot(data, padSteps) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function runHuman(data) { // gives the length of the path
-
-    // different datas may produce different child path lengths, but
-    // all child paths of each received data have the same length (among them)
-
-    let position = "A"
-
-    let path = ""
-
-    for (const symbol of data) { 
-        
-        const tokens = directionalPadSteps[position + "~" + symbol]
-        
-        const token = tokens[0] // all tokens have the same length
-        
-        position = symbol
-
-        path += token + "A"
-    }
-    
-    return path.length
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
 function calcLeastDirectionalSteps(initialDirectionalPaths) {
-    
+  
     let minSize = 1000 * 1000
     
     for (const path of initialDirectionalPaths) {
-    
-        const newDirectionalPaths = runDirectionalBot(path)
+
+        const path2 = runDirectionalBot(path)
         
-        // all paths inside (a lot of) newPaths have the same length
-        // and each one will have children of the same length among them;
-        // we only need to search on one path
+        const path3 = runDirectionalBot(path2)
         
-        const newPath = newDirectionalPaths[0]
-        
-        const size = runHuman(newPath)
+        const size = path3.length
             
         if (size < minSize) { minSize = size } 
     }
 
    return minSize
-}
+}     
+
+function runDirectionalBot(buttons) { // generates the next sequence (only one)
+
+    let position = "A"
+
+    let path = ""
+    
+    for (const symbol of buttons) { 
+
+        const token = directionalPadSteps[position + " to " + symbol]
+
+        path += token + "A"
+                
+        position = symbol        
+    }
+    
+    return path
+}   
 
 ///////////////////////////////////////////////////////////////////////////////
 
