@@ -6,60 +6,172 @@ const input = Deno.readTextFileSync("day21-input.txt").trim()
 
 const allCodes = [ ]
 
-const numericPadSteps = { } // shortest and simplest paths between buttons (redundant when possible)
-
-const directionalPadSteps = { // shortest path between buttons
-
-    // doesn't need redundant paths (because of the design of the keypad?)
-    
-    "^ to ^": "",
-    "^ to v": "v",
-    "^ to <": "v<",
-    "^ to >": "v>",
-    "^ to A": ">",
-    
-    "v to ^": "^",
-    "v to v": "",
-    "v to <": "<",
-    "v to >": ">",
-    "v to A": "^>",
-    
-    "< to ^": ">^",
-    "< to v": ">",
-    "< to <": "",
-    "< to >": ">>",
-    "< to A": ">>^",
-    
-    "> to ^": "^<",
-    "> to v": "<",
-    "> to <": "<<",
-    "> to >": "",
-    "> to A": "^",
-    
-    "A to ^": "<",
-    "A to v": "v<",
-    "A to <": "v<<",
-    "A to >": "v",
-    "A to A": ""
+const numericCommands = { // shortest and simplest commands only
+    "0 to 0": [ "A" ],
+    "0 to 1": [ "^<A" ],
+    "0 to 2": [ "^A" ],
+    "0 to 3": [ "^>A", ">^A" ],
+    "0 to 4": [ "^^<A" ],
+    "0 to 5": [ "^^A" ],
+    "0 to 6": [ "^^>A", ">^^A" ],
+    "0 to 7": [ "^^^<A" ],
+    "0 to 8": [ "^^^A" ],
+    "0 to 9": [ "^^^>A", ">^^^A" ],
+    "0 to A": [ ">A" ],
+    "1 to 0": [ ">vA" ],
+    "1 to 1": [ "A" ],
+    "1 to 2": [ ">A" ],
+    "1 to 3": [ ">>A" ],
+    "1 to 4": [ "^A" ],
+    "1 to 5": [ "^>A", ">^A" ],
+    "1 to 6": [ "^>>A", ">>^A" ],
+    "1 to 7": [ "^^A" ],
+    "1 to 8": [ "^^>A", ">^^A" ],
+    "1 to 9": [ "^^>>A", ">>^^A" ],
+    "1 to A": [ ">>vA" ],
+    "2 to 0": [ "vA" ],
+    "2 to 1": [ "<A" ],
+    "2 to 2": [ "A" ],
+    "2 to 3": [ ">A" ],
+    "2 to 4": [ "^<A", "<^A" ],
+    "2 to 5": [ "^A" ],
+    "2 to 6": [ "^>A", ">^A" ],
+    "2 to 7": [ "^^<A", "<^^A" ],
+    "2 to 8": [ "^^A" ],
+    "2 to 9": [ "^^>A", ">^^A" ],
+    "2 to A": [ "v>A", ">vA" ],
+    "3 to 0": [ "v<A", "<vA" ],
+    "3 to 1": [ "<<A" ],
+    "3 to 2": [ "<A" ],
+    "3 to 3": [ "A" ],
+    "3 to 4": [ "^<<A", "<<^A" ],
+    "3 to 5": [ "^<A", "<^A" ],
+    "3 to 6": [ "^A" ],
+    "3 to 7": [ "^^<<A", "<<^^A" ],
+    "3 to 8": [ "^^<A", "<^^A" ],
+    "3 to 9": [ "^^A" ],
+    "3 to A": [ "vA" ],
+    "4 to 0": [ ">vvA" ],
+    "4 to 1": [ "vA" ],
+    "4 to 2": [ "v>A", ">vA" ],
+    "4 to 3": [ "v>>A", ">>vA" ],
+    "4 to 4": [ "A" ],
+    "4 to 5": [ ">A" ],
+    "4 to 6": [ ">>A" ],
+    "4 to 7": [ "^A" ],
+    "4 to 8": [ "^>A", ">^A" ],
+    "4 to 9": [ "^>>A", ">>^A" ],
+    "4 to A": [ ">>vvA" ],
+    "5 to 0": [ "vvA" ],
+    "5 to 1": [ "v<A", "<vA" ],
+    "5 to 2": [ "vA" ],
+    "5 to 3": [ "v>A", ">vA" ],
+    "5 to 4": [ "<A" ],
+    "5 to 5": [ "A" ],
+    "5 to 6": [ ">A" ],
+    "5 to 7": [ "^<A", "<^A" ],
+    "5 to 8": [ "^A" ],
+    "5 to 9": [ "^>A", ">^A" ],
+    "5 to A": [ "vv>A", ">vvA" ],
+    "6 to 0": [ "vv<A", "<vvA" ],
+    "6 to 1": [ "v<<A", "<<vA" ],
+    "6 to 2": [ "v<A", "<vA" ],
+    "6 to 3": [ "vA" ],
+    "6 to 4": [ "<<A" ],
+    "6 to 5": [ "<A" ],
+    "6 to 6": [ "A" ],
+    "6 to 7": [ "^<<A", "<<^A" ],
+    "6 to 8": [ "^<A", "<^A" ],
+    "6 to 9": [ "^A" ],
+    "6 to A": [ "vvA" ],
+    "7 to 0": [ ">vvvA" ],
+    "7 to 1": [ "vvA" ],
+    "7 to 2": [ "vv>A", ">vvA" ],
+    "7 to 3": [ "vv>>A", ">>vvA" ],
+    "7 to 4": [ "vA" ],
+    "7 to 5": [ "v>A", ">vA" ],
+    "7 to 6": [ "v>>A", ">>vA" ],
+    "7 to 7": [ "A" ],
+    "7 to 8": [ ">A" ],
+    "7 to 9": [ ">>A" ],
+    "7 to A": [ ">>vvvA" ],
+    "8 to 0": [ "vvvA" ],
+    "8 to 1": [ "vv<A", "<vvA" ],
+    "8 to 2": [ "vvA" ],
+    "8 to 3": [ "vv>A", ">vvA" ],
+    "8 to 4": [ "v<A", "<vA" ],
+    "8 to 5": [ "vA" ],
+    "8 to 6": [ "v>A", ">vA" ],
+    "8 to 7": [ "<A" ],
+    "8 to 8": [ "A" ],
+    "8 to 9": [ ">A" ],
+    "8 to A": [ "vvv>A", ">vvvA" ],
+    "9 to 0": [ "vvv<A", "<vvvA" ],
+    "9 to 1": [ "vv<<A", "<<vvA" ],
+    "9 to 2": [ "vv<A", "<vvA" ],
+    "9 to 3": [ "vvA" ],
+    "9 to 4": [ "v<<A", "<<vA" ],
+    "9 to 5": [ "v<A", "<vA" ],
+    "9 to 6": [ "vA" ],
+    "9 to 7": [ "<<A" ],
+    "9 to 8": [ "<A" ],
+    "9 to 9": [ "A" ],
+    "9 to A": [ "vvvA" ],
+    "A to 0": [ "<A" ],
+    "A to 1": [ "^<<A" ],
+    "A to 2": [ "^<A", "<^A" ],
+    "A to 3": [ "^A" ],
+    "A to 4": [ "^^<<A" ],
+    "A to 5": [ "^^<A", "<^^A" ],
+    "A to 6": [ "^^A" ],
+    "A to 7": [ "^^^<<A" ],
+    "A to 8": [ "^^^<A", "<^^^A" ],
+    "A to 9": [ "^^^A" ],
+    "A to A": [ "A" ]
 }
+
+const COMMANDS = { // shortest and simplest commands only;    
+    "^ to ^": [ "A" ],
+    "^ to v": [ "vA" ],
+    "^ to <": [ "v<A", "<vA" ],
+    "^ to >": [ "v>A", ">vA" ],
+    "^ to A": [ ">A" ],
+    
+    "v to ^": [ "^A" ],
+    "v to v": [ "A" ],
+    "v to <": [ "<A" ],
+    "v to >": [ ">A" ],
+    "v to A": [ "^>A", ">^A" ],
+    
+    "< to ^": [ ">^A", "^>A" ],
+    "< to v": [ ">A" ],
+    "< to <": [ "A" ],
+    "< to >": [ ">>A" ],
+    "< to A": [ ">>^A", "^>>A" ],
+    
+    "> to ^": [ "^<A", "<^A" ],
+    "> to v": [ "<A" ],
+    "> to <": [ "<<A" ],
+    "> to >": [ "A" ],
+    "> to A": [ "^A" ],
+    
+    "A to ^": [ "<A" ],
+    "A to v": [ "v<A", "<vA" ],
+    "A to <": [ "v<<A", "<<vA" ],
+    "A to >": [ "vA" ],
+    "A to A": [ "A" ]
+}
+
+const memory = { }
 
 
 function main() {
 
     processInput()
 
-    fillNumericPadSteps()
-
     let complexity = 0
 
-    for (const code of allCodes) { 
-    
-        const initialDirectionalPaths = runNumericBot(code)
-        
-        const leastSteps = calcLeastDirectionalSteps(initialDirectionalPaths)
-        
-        complexity += parseInt(code) * leastSteps
-    }
+    for (const code of allCodes) { complexity += calcComplexityOf(code) }
       
     console.log("the answer is", complexity)    
 }
@@ -71,160 +183,140 @@ function processInput() {
     for (const rawLine of rawLines) { allCodes.push(rawLine.trim()) }
 }
 
-///////////////////////////////////////////////////////////////////////////////
+function calcComplexityOf(code) {
 
-function fillNumericPadSteps() {
+    const initialSequences = generateInitialSequences(code)
 
-    const keypad = { }
+    const leastSteps = calcLeastSteps(initialSequences)
     
-    let row = -1
-    
-    for (const line of [ "789", "456", "123", "!0A" ]) {
-        
-        row += 1
-        let col = -1
-        
-        for (const char of line) {
-     
-            col += 1
-            keypad[char]  = { "row": row, "col": col }
-        }
-    }
-    
-    const symbols = "0123456789A"
-
-    const forbidden = keypad["!"]
-
-    for (const symbolA of symbols) {
-        for (const symbolB of symbols) {
-        
-            const id = symbolA + " to " + symbolB 
-            
-            if (symbolA == symbolB) { numericPadSteps[id] = [ "" ]; continue }
-            
-            const a = keypad[symbolA]
-            const b = keypad[symbolB]
-            
-            numericPadSteps[id] = findPadPaths(a.row, a.col, b.row, b.col, forbidden.row, forbidden.col)
-        }
-    }
+    return parseInt(code) * leastSteps
 }
 
-function findPadPaths(rowA, colA, rowB, colB, forbiddenRow, forbiddenCol) {
+///////////////////////////////////////////////////////////////////////////////
 
-    const goodPaths = [ ]
+function generateInitialSequences(code) { 
 
-    let pathsToGo = [ "" ]
+    let lastButton = "A"
+
+    let sequences = [ "" ]
+
+    for (const button of code) { 
+        
+        const temp = [ ]
+
+        const commands = numericCommands[lastButton + " to " + button]
+        
+        lastButton = button
+
+        for (const command of commands) {
+        
+            for (const sequence of sequences) { temp.push(sequence + command) }
+        }
+        
+        sequences = temp
+    }
     
-    while (true) {
-    
-        const newPathsToGo = [ ]
-            
-        for (const path of pathsToGo) {
-            
-            let row = rowA
-            let col = colA
+    return sequences
+}      
+
+///////////////////////////////////////////////////////////////////////////////
+
+function calcLeastSteps(initialSequences) {
   
-            for (const symbol of path) {
-            
-                if (symbol == "^") { row -= 1 }
-                if (symbol == "v") { row += 1 }
-                if (symbol == "<") { col -= 1 }
-                if (symbol == ">") { col += 1 }
-            }
-            
-            if (row == forbiddenRow  &&  col == forbiddenCol) { continue }
-              
-            if (row == rowB  &&  col == colB) { 
-            
-                if (isSimplePath(path)) { goodPaths.push(path) }
-                continue 
-            }
-                
-            if (rowB < row) { newPathsToGo.push(path + "^") }
-            if (rowB > row) { newPathsToGo.push(path + "v") }
-            if (colB < col) { newPathsToGo.push(path + "<") }
-            if (colB > col) { newPathsToGo.push(path + ">") }
-        }
-        
-        if (newPathsToGo.length == 0) { return goodPaths }
-        
-        pathsToGo = newPathsToGo   
-    }
-}
-
-function isSimplePath(path) { // equal symbols must be together
-
-    const head = path[0]
+    let minLength = Infinity
     
-    const length = 1 + path.lastIndexOf(head)
-    
-    return path.startsWith(head.repeat(length))
-}
+    for (const sequence of initialSequences) {
 
-///////////////////////////////////////////////////////////////////////////////
+        const length = findFutureLength(sequence)
 
-function runNumericBot(code) { // generates the initial sequences
+        if (length < minLength) { minLength = length }             
+    }        
 
-    let position = "A"
-
-    let paths = [ "" ]
-
-    for (const symbol of code) { 
-        
-        const newPaths = [ ]
-
-        const tokens = numericPadSteps[position + " to " + symbol]
-        
-        position = symbol
-
-        for (const token of tokens) {
-        
-            for (const path of paths) { newPaths.push(path + token + "A") }
-        }
-        
-        paths = newPaths
-    }
-    return paths
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-function calcLeastDirectionalSteps(initialDirectionalPaths) {
-  
-    let minSize = 1000 * 1000
-    
-    for (const path of initialDirectionalPaths) {
-
-        const path2 = runDirectionalBot(path)
-        
-        const path3 = runDirectionalBot(path2)
-        
-        const size = path3.length
-            
-        if (size < minSize) { minSize = size } 
-    }
-
-   return minSize
+   return minLength
 }     
 
-function runDirectionalBot(buttons) { // generates the next sequence (only one)
+function findFutureLength(sequence) {
 
-    let position = "A"
+    const tokens = tokenize(sequence)
 
-    let path = ""
+    let length = 0
     
-    for (const symbol of buttons) { 
+    for (const token of tokens) { length += smallestFutureLengthForToken(token) }
 
-        const token = directionalPadSteps[position + " to " + symbol]
+    return length
+}
 
-        path += token + "A"
-                
-        position = symbol        
+function tokenize(sequence) {
+
+    const tokens = [ ]
+
+    let token = ""
+    
+    for (const button of sequence) {
+
+        token += button
+        
+        if (button == "A") { tokens. push(token); token = "" }
     }
+    return tokens
+}
+
+function smallestFutureLengthForToken(token) {
+
+    let minLength = Infinity
+  
+    const sequences = generateSequencesFromToken(token, 2)
     
-    return path
-}   
+    for (const sequence of sequences) {
+    
+        if (sequence.length < minLength) { minLength = sequence.length }             
+    }        
+
+   return minLength
+}     
+
+///////////////////////////////////////////////////////////////////////////////
+
+function generateSequencesFromToken(sourceToken, roundsToGo) { 
+
+    if (roundsToGo == 0) { return [ sourceToken ] }
+
+    const id = sourceToken + "~" + roundsToGo
+    
+    if (memory[id] != undefined) { return memory[id] }
+    
+    //
+    
+    let sequences = [ "" ]
+
+    let lastButton = "A"
+
+    for (const button of sourceToken) {
+
+        const temp = [ ]
+
+        const newTokens = COMMANDS[lastButton + " to " + button]
+       
+        lastButton = button
+
+        const listA = generateSequencesFromToken(newTokens[0], roundsToGo - 1)
+        
+        let listB = [ ]
+        
+        if (newTokens[1] != undefined) { listB = generateSequencesFromToken(newTokens[1], roundsToGo - 1) }
+        
+        for (const sequence of sequences) {
+        
+            for (const newSequence of listA) { temp.push(sequence + newSequence) }
+            for (const newSequence of listB) { temp.push(sequence + newSequence) }
+        }
+        
+        sequences = temp
+    }
+        
+    memory[id] = sequences
+    return sequences
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 
