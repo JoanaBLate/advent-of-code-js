@@ -1,6 +1,11 @@
-// solution for https://adventofcode.com/2024/day/21 part 1
+// solution for https://adventofcode.com/2024/day/21 part 2
 
-// this solution tests ALL shortest and simplest commands combinations!
+// this solution doesn't check all combinations of directional commands
+// at any possible branch;
+// instead it uses only directional commands that performed better when 
+// tested, so...
+
+// *** MAYBE THIS WILL NOT WORK FOR YOUR INPUT ***
 
 "use strict"
 
@@ -133,37 +138,37 @@ const numericCommandsByMove = { // simplest commands only
     "A to A": [ "A" ]
 }
 
-const directionalCommandsByMove = { // simplest commands only
-   
-    "^ to ^": [ "A" ],
-    "^ to v": [ "vA" ],
-    "^ to <": [ "v<A" ],
-    "^ to >": [ "v>A", ">vA" ],
-    "^ to A": [ ">A" ],
+const directionalCommandsByMove = { // shortest and simplest commands only    
+
+    "^ to ^": "A",
+    "^ to v": "vA",
+    "^ to <": "v<A",
+    "^ to >": "v>A", // ">vA"  does not result in the shortest sequence 
+    "^ to A": ">A",
     
-    "v to ^": [ "^A" ],
-    "v to v": [ "A" ],
-    "v to <": [ "<A" ],
-    "v to >": [ ">A" ],
-    "v to A": [ "^>A", ">^A" ],
+    "v to ^": "^A",
+    "v to v": "A",
+    "v to <": "<A",
+    "v to >": ">A",
+    "v to A": "^>A", // ">^A" does not result in the shortest sequence 
     
-    "< to ^": [ ">^A" ],
-    "< to v": [ ">A" ],
-    "< to <": [ "A" ],
-    "< to >": [ ">>A" ],
-    "< to A": [ ">>^A" ], 
+    "< to ^": ">^A", 
+    "< to v": ">A",
+    "< to <": "A",
+    "< to >": ">>A",
+    "< to A": ">>^A", 
     
-    "> to ^": [ "^<A", "<^A" ],
-    "> to v": [ "<A" ],
-    "> to <": [ "<<A" ],
-    "> to >": [ "A" ],
-    "> to A": [ "^A" ],
+    "> to ^": "<^A", // "^<A" does not result in the shortest sequence 
+    "> to v": "<A",
+    "> to <": "<<A",
+    "> to >": "A",
+    "> to A": "^A",
     
-    "A to ^": [ "<A" ],
-    "A to v": [ "v<A", "<vA" ],
-    "A to <": [ "v<<A" ], 
-    "A to >": [ "vA" ],
-    "A to A": [ "A" ]
+    "A to ^": "<A",
+    "A to v": "<vA", // "v<A" does not result in the shortest sequence 
+    "A to <": "v<<A",
+    "A to >": "vA",
+    "A to A": "A"
 }
 
 const memory = { }
@@ -245,7 +250,7 @@ function findFutureLength(sequence) {
 
     let length = 0
     
-    for (const token of tokens) { length += smallestFutureLengthForToken(token) }
+    for (const token of tokens) { length += findLengthFromExpandedToken(token, 25) }
 
     return length
 }
@@ -265,25 +270,11 @@ function tokenize(sequence) {
     return tokens
 }
 
-function smallestFutureLengthForToken(token) {
-
-    let minLength = Infinity
-  
-    const sequences = generateSequencesFromToken(token, 2)
-    
-    for (const sequence of sequences) {
-    
-        if (sequence.length < minLength) { minLength = sequence.length }             
-    }        
-
-   return minLength
-}     
-
 ///////////////////////////////////////////////////////////////////////////////
 
-function generateSequencesFromToken(sourceToken, roundsToGo) { 
+function findLengthFromExpandedToken(sourceToken, roundsToGo) { 
 
-    if (roundsToGo == 0) { return [ sourceToken ] }
+    if (roundsToGo == 0) { return sourceToken.length }
 
     const id = sourceToken + "~" + roundsToGo
     
@@ -291,35 +282,21 @@ function generateSequencesFromToken(sourceToken, roundsToGo) {
     
     //
     
-    let sequences = [ "" ]
+    let length = 0
 
     let lastButton = "A"
 
     for (const button of sourceToken) {
 
-        const temp = [ ]
-
-        const newTokens = directionalCommandsByMove[lastButton + " to " + button]
+        const newToken = directionalCommandsByMove[lastButton + " to " + button]
        
         lastButton = button
-
-        const listA = generateSequencesFromToken(newTokens[0], roundsToGo - 1)
         
-        let listB = [ ]
-        
-        if (newTokens[1] != undefined) { listB = generateSequencesFromToken(newTokens[1], roundsToGo - 1) }
-        
-        for (const sequence of sequences) {
-        
-            for (const newSequence of listA) { temp.push(sequence + newSequence) }
-            for (const newSequence of listB) { temp.push(sequence + newSequence) }
-        }
-        
-        sequences = temp
+        length += findLengthFromExpandedToken(newToken, roundsToGo - 1)
     }
         
-    memory[id] = sequences
-    return sequences
+    memory[id] = length
+    return length
 }
 
 ///////////////////////////////////////////////////////////////////////////////
