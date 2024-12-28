@@ -1,6 +1,6 @@
 // solution for https://adventofcode.com/2024/day/21 part 1
 
-// this solution tests ALL shortest and simplest commands combinations!
+// this solution tests ALL combinations of the simplest commands!
 
 "use strict"
 
