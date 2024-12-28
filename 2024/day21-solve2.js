@@ -3,9 +3,7 @@
 // this solution doesn't check all combinations of directional commands
 // at any possible branch;
 // instead it uses only directional commands that performed better when 
-// tested, so...
-
-// *** MAYBE THIS WILL NOT WORK FOR YOUR INPUT ***
+// tested
 
 "use strict"
 
