@@ -56,7 +56,7 @@ function search() {
     }
 }
 
-function searchThis(master, computers) { // master is granted to be compatible with each other
+function searchThis(master, computers) { // master is granted to be compatible with all others
 
     const unfriendship = { }
     
