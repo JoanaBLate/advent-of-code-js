@@ -52,13 +52,11 @@ function search() {
     
         const computers = allConnections[computer]
         
-        computers.push(computer)
-        
-        searchThis(computers) 
+        searchThis(computer, computers) 
     }
 }
 
-function searchThis(computers) {
+function searchThis(master, computers) { // master is granted to be compatible with each other
 
     const unfriendship = { }
     
@@ -86,6 +84,8 @@ function searchThis(computers) {
     removeIncompatibles(unfriendship) // only friends remain
     
     const friendsOnly = Object.keys(unfriendship)
+        
+    friendsOnly.push(master)
     
     if (friendsOnly.length > bestLanParty.length) { bestLanParty = friendsOnly }   
 }
@@ -127,5 +127,5 @@ function removeTheMostIncompatible(unfriendship) {
 
 console.time("execution time")
 main()
-console.timeEnd("execution time") // 20ms
+console.timeEnd("execution time") // 19ms
 
