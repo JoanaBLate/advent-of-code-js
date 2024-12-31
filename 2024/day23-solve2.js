@@ -1,27 +1,30 @@
 // solution for https://adventofcode.com/2024/day/23 part 2
 
-// for each group of computers, we keep removing then *most*
-// incompatible till the group has only compatible computers;
-// for each removed incompatible computer, other computers
-// automatically improve their compatibility
-
 "use strict"
 
 const input = Deno.readTextFileSync("day23-input.txt").trim()
 
 const allConnections = { }
 
-var bestLanParty = [ ]
+const allNetworks = [ ]
+
+var greatestNetworkLength = 0
+
+var bestNetwork = [ ]
 
 
 function main() {
 
     processInput() 
     
+    fillAllNetworks()
+    
     search()
 
-    console.log("the answer is", bestLanParty.sort().join(","))
+    console.log("the answer is", bestNetwork.sort().join(","))
 }
+
+///////////////////////////////////////////////////////////////////////////////
 
 function processInput() {
     
@@ -42,90 +45,124 @@ function processInput() {
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-
-function search() {
+function fillAllNetworks() {
 
     const allComputers = Object.keys(allConnections)
     
     for (const computer of allComputers) {
     
-        const computers = allConnections[computer]
+        const network = allConnections[computer].slice()
         
-        searchThis(computer, computers) 
+        network.unshift(computer)
+        
+        allNetworks.push(network)
+        
+        if (network.length > greatestNetworkLength) { greatestNetworkLength = network.length } 
     }
 }
 
-function searchThis(master, computers) { // master is granted to be compatible with all others
+///////////////////////////////////////////////////////////////////////////////
 
-    const unfriendship = { }
+function search() {
     
-    for (const computer of computers) { unfriendship[computer] = [ ] }
+    for (const network of allNetworks) { // searches without removing any member
     
-    const off = computers.length
+        if (! allMembersAreFriends(network)) { continue }
+    
+        if (network.length > bestNetwork.length) { bestNetwork = network }
+        
+        if (bestNetwork.length == greatestNetworkLength) { return }
+    }
+
+    while (true) {
+    
+        searchRemovingTheWorstMember()
+        
+        if (bestNetwork.length != 0) { return }
+    }
+}
+
+function searchRemovingTheWorstMember() {
+    
+    greatestNetworkLength -= 1
+    
+    for (const network of allNetworks) {
+    
+        removeTheWorstMember(network)
+    
+        if (! allMembersAreFriends(network)) { continue }
+    
+        if (network.length > bestNetwork.length) { bestNetwork = network }
+        
+        if (bestNetwork.length == greatestNetworkLength) { return }
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+function removeTheWorstMember(network) { // expects network having at least one bad member
+
+    const unfriendship = [ ]
+    
+    for (let n = 0; n < network.length; n++) { unfriendship.push(0) }
+    
+    
+    let worstIndex = 0
+    let worstValue = -1
+
+    const off = network.length
     
     for (let a = 0; a < off - 1; a++) {
     
-        const computerA = computers[a]
+        const computerA = network[a]
     
         const connectionsA = allConnections[computerA]
         
         for (let b = a + 1; b < off; b++) {
         
-            const computerB = computers[b] 
+            const computerB = network[b] 
             
             if (connectionsA.includes(computerB)) { continue }
             
-            unfriendship[computerA].push(computerB) 
-            unfriendship[computerB].push(computerA) 
+            unfriendship[a] += 1
+            unfriendship[b] += 1
+            
+            if (unfriendship[a] > worstValue) { worstValue = unfriendship[a]; worstIndex = a }
+            if (unfriendship[b] > worstValue) { worstValue = unfriendship[b]; worstIndex = b }
         }
-    }    
+    }
     
-    removeIncompatibles(unfriendship) // only friends remain
+ //  if (worstIndex == -1) { return } // not needed
     
-    const friendsOnly = Object.keys(unfriendship)
-        
-    friendsOnly.push(master)
-    
-    if (friendsOnly.length > bestLanParty.length) { bestLanParty = friendsOnly }   
+    network.splice(worstIndex, 1)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function removeIncompatibles(unfriendship) {
+function allMembersAreFriends(network) {
 
-    while (removeTheMostIncompatible(unfriendship)) { }
-}
-
-function removeTheMostIncompatible(unfriendship) {
-
-    let worstCount = 0
-    let worstComputer = ""
-
-    for (const computer of Object.keys(unfriendship)) { 
+    const off = network.length
     
-        const notFriends = unfriendship[computer]
-
-        if (notFriends.length > worstCount) { worstCount = notFriends.length; worstComputer = computer }
-    }
+    for (let a = 0; a < off - 1; a++) {
     
-    if (worstComputer == "") { return false }
+        const computerA = network[a]
     
-    delete unfriendship[worstComputer]
-    
-    for (const list of Object.values(unfriendship)) {
-    
-        const index = list.indexOf(worstComputer)
+        const connectionsA = allConnections[computerA]
         
-        if (index != -1) { list.splice(index, 1) }    
-    }
+        for (let b = a + 1; b < off; b++) {
+        
+            const computerB = network[b] 
+            
+            if (! connectionsA.includes(computerB)) { return false }
+        }
+    }    
     
-    return true        
+    return true
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 console.time("execution time")
 main()
-console.timeEnd("execution time") // 19ms
+console.timeEnd("execution time") // 5ms
 
