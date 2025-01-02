@@ -213,6 +213,8 @@ function show(gates) {
 }
 
 function showGate(gate) {
+
+    // slot is only meaningful for base gates!
         
     console.log({ "slot": gate.wire1.substr(1), "kind": gate.kind, "paste": gate.paste, "forward": gate.forward })    
 }
