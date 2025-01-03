@@ -28,7 +28,7 @@ function main() {
     
     const register = search(BigInt(0), 1)
     
-    console.log("the answer is", register.toString())
+    console.log("the answer is", parseInt(register))
 }
 
 function processInput() {
