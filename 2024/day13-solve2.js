@@ -71,9 +71,9 @@ creating a third equation by joining the other two {
 
 isolating bClicks in the third equation {
 
-    buttonAy * (prizeX - bClicks*buttonBx) = buttonAx * (prizeY - bClicks*buttonBy) PASSED
+    buttonAy * (prizeX - bClicks*buttonBx) = buttonAx * (prizeY - bClicks*buttonBy) 
     
-    buttonAy*prizeX - buttonAy*bClicks*buttonBx = buttonAx*prizeY - buttonAx*bClicks*buttonBy PASSSED
+    buttonAy*prizeX - buttonAy*bClicks*buttonBx = buttonAx*prizeY - buttonAx*bClicks*buttonBy 
     
     buttonAx*bClicks*buttonBy - buttonAy*bClicks*buttonBx = buttonAx*prizeY - buttonAy*prizeX
     
