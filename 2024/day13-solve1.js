@@ -1,9 +1,5 @@
 // solution for https://adventofcode.com/2024/day/13 part 1
 
-// solving using linear algebra (system of 2 equations and 2 variables)
-
-// adapted from https://github.com/BigBear0812/AdventOfCode/blob/master/2024/Day13.js
-
 "use strict"
 
 const input = Deno.readTextFileSync("day13-input.txt").trim()
@@ -29,41 +25,49 @@ function processInput() {
         const parts2 = lines.shift().trim().split(",")
         const parts3 = lines.shift().trim().split(",")
         
-        const buttonAx = parseInt(parts1.shift().replace("Button A: X+", ""))
-        const buttonAy = parseInt(parts1.shift().replace(" Y+", ""))
+        const buttonAX = parseInt(parts1.shift().replace("Button A: X+", ""))
+        const buttonAY = parseInt(parts1.shift().replace(" Y+", ""))
         
-        const buttonBx = parseInt(parts2.shift().replace("Button B: X+", ""))
-        const buttonBy = parseInt(parts2.shift().replace(" Y+", ""))
+        const buttonBX = parseInt(parts2.shift().replace("Button B: X+", ""))
+        const buttonBY = parseInt(parts2.shift().replace(" Y+", ""))
         
         const prizeX = parseInt(parts3.shift().replace("Prize: X=", ""))
         const prizeY = parseInt(parts3.shift().replace(" Y=", ""))
         
-        processMachine(buttonAx, buttonAy, buttonBx, buttonBy, prizeX, prizeY)
+        processMachine(buttonAX, buttonAY, buttonBX, buttonBY, prizeX, prizeY)
     }
 }
 
-function processMachine(buttonAx, buttonAy, buttonBx, buttonBy, prizeX, prizeY) {
+function processMachine(buttonAX, buttonAY, buttonBX, buttonBY, prizeX, prizeY) {
 
-    const aClicksXMultiplier =   buttonAx * buttonBy
-    const aClicksYMultiplier = -(buttonAy * buttonBx)
-    const prizeXMultiplied =   prizeX * buttonBy
-    const prizeYMultiplied = -(prizeY * buttonBx)
-
-    const aClicksMultiplierCombined = aClicksXMultiplier + aClicksYMultiplier
-    const prizeMultipliedCombined = prizeXMultiplied + prizeYMultiplied
-
-    const aClicks = prizeMultipliedCombined / aClicksMultiplierCombined
+    const maxButtonAForX = Math.floor(prizeX / buttonAX)
+    const maxButtonAForY = Math.floor(prizeY / buttonAY)
     
-    if (prizeMultipliedCombined % aClicksMultiplierCombined != 0) { return } // has no solution
+    const maxButtonA = Math.max(maxButtonAForX, maxButtonAForY)
     
-    const bClicks = (prizeX - (buttonAx * aClicks)) / buttonBx
+    let best = Infinity
     
-    if (bClicks != Math.floor(bClicks)) { return } // has no solution 
-      
-    minimumSpentTokens += aClicks * 3 + bClicks
+    for (let a = 0; a <= maxButtonA; a++) {
+    
+        const missingX = prizeX - (a * buttonAX) // zero or positive
+    
+        const b = Math.floor(missingX / buttonBX)
+        
+        if (b * buttonBX != missingX) { continue }
+        
+        const missingY = prizeY - (a * buttonAY) // zero or positive
+        
+        if (b * buttonBY != missingY) { continue }
+        
+        const spent = 3 * a + b
+        
+        if (spent < best) { best = spent }    
+    }
+    
+    if (best < Infinity) { minimumSpentTokens += best }
 }
 
 console.time("execution time")
 main()
-console.timeEnd("execution time") // 1ms
+console.timeEnd("execution time") // 4ms
 
