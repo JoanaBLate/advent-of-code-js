@@ -2,15 +2,13 @@
 
 // solving using linear algebra (system of 2 equations and 2 variables)
 
-// adapted from https://github.com/BigBear0812/AdventOfCode/blob/master/2024/Day13.js
-
 "use strict"
 
 const input = Deno.readTextFileSync("day13-input.txt").trim()
 
 var minimumSpentTokens = 0
 
-const OFFSET = 10 * 1000 * 1000 * 1000 * 1000
+const OFFSET = BigInt(10 * 1000 * 1000 * 1000 * 1000)
 
 
 function main() {
@@ -32,14 +30,14 @@ function processInput() {
         const parts2 = lines.shift().trim().split(",")
         const parts3 = lines.shift().trim().split(",")
         
-        const buttonAx = parseInt(parts1.shift().replace("Button A: X+", ""))
-        const buttonAy = parseInt(parts1.shift().replace(" Y+", ""))
+        const buttonAx = BigInt(parts1.shift().replace("Button A: X+", ""))
+        const buttonAy = BigInt(parts1.shift().replace(" Y+", ""))
         
-        const buttonBx = parseInt(parts2.shift().replace("Button B: X+", ""))
-        const buttonBy = parseInt(parts2.shift().replace(" Y+", ""))
+        const buttonBx = BigInt(parts2.shift().replace("Button B: X+", ""))
+        const buttonBy = BigInt(parts2.shift().replace(" Y+", ""))
         
-        const prizeX = parseInt(parts3.shift().replace("Prize: X=", ""))
-        const prizeY = parseInt(parts3.shift().replace(" Y=", ""))
+        const prizeX = BigInt(parts3.shift().replace("Prize: X=", ""))
+        const prizeY = BigInt(parts3.shift().replace(" Y=", ""))
         
         processMachine(buttonAx, buttonAy, buttonBx, buttonBy, OFFSET + prizeX, OFFSET + prizeY)
     }
@@ -47,26 +45,60 @@ function processInput() {
 
 function processMachine(buttonAx, buttonAy, buttonBx, buttonBy, prizeX, prizeY) {
 
-    const aClicksXMultiplier =   buttonAx * buttonBy
-    const aClicksYMultiplier = -(buttonAy * buttonBx)
-    const prizeXMultiplied =   prizeX * buttonBy
-    const prizeYMultiplied = -(prizeY * buttonBx)
+/*
 
-    const aClicksMultiplierCombined = aClicksXMultiplier + aClicksYMultiplier
-    const prizeMultipliedCombined = prizeXMultiplied + prizeYMultiplied
+EXPLAINING THE FORMULAS THAT WILL BE USED:
 
-    const aClicks = prizeMultipliedCombined / aClicksMultiplierCombined
+there are two basic equations {
+
+    aClicks*buttonAx + bClicks*buttonBx = prizeX
+    aClicks*buttonAy + bClicks*buttonBy = prizeY
+}
+
+isolating aClicks in both equations {
+
+    aClicks*buttonAx = prizeX - bClicks*buttonBx
+    aClicks*buttonAy = prizeY - bClicks*buttonBy
+
+    aClicks = (prizeX - bClicks*buttonBx) / buttonAx // both formulas are good but we 
+    aClicks = (prizeY - bClicks*buttonBy) / buttonAy // need to find the value of bClicks first
+}
+
+creating a third equation by joining the other two {
+
+    (prizeX - bClicks*buttonBx) / buttonAx = (prizeY - bClicks*buttonBy) / buttonAy
+}
+
+isolating bClicks in the third equation {
+
+    buttonAy * (prizeX - bClicks*buttonBx) = buttonAx * (prizeY - bClicks*buttonBy) PASSED
     
-    if (prizeMultipliedCombined % aClicksMultiplierCombined != 0) { return } // has no solution
+    buttonAy*prizeX - buttonAy*bClicks*buttonBx = buttonAx*prizeY - buttonAx*bClicks*buttonBy PASSSED
     
-    const bClicks = (prizeX - (buttonAx * aClicks)) / buttonBx
+    buttonAx*bClicks*buttonBy - buttonAy*bClicks*buttonBx = buttonAx*prizeY - buttonAy*prizeX
     
-    if (bClicks != Math.floor(bClicks)) { return } // has no solution 
-      
-    minimumSpentTokens += aClicks * 3 + bClicks
+    bClicks * (buttonAx*buttonBy - buttonAy*buttonBx) = buttonAx*prizeY - buttonAy*prizeX
+    
+    bClicks = (buttonAx*prizeY - buttonAy*prizeX) / (buttonAx*buttonBy - buttonAy*buttonBx)
+}
+
+*/
+
+    let aClicks = BigInt(0)
+    let bClicks = BigInt(0)
+
+    bClicks = (buttonAx*prizeY - buttonAy*prizeX) / (buttonAx*buttonBy - buttonAy*buttonBx)
+    
+    aClicks = (prizeX - bClicks*buttonBx) / buttonAx
+    
+    
+    if (aClicks*buttonAx + bClicks*buttonBx != prizeX) { return } // has no solution
+    if (aClicks*buttonAy + bClicks*buttonBy != prizeY) { return } // has no solution
+          
+    minimumSpentTokens += 3 * parseInt(aClicks) + parseInt(bClicks)
 }
 
 console.time("execution time")
 main()
-console.timeEnd("execution time") // 1ms
+console.timeEnd("execution time") // 2ms
 
