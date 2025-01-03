@@ -135,4 +135,4 @@ Completed.
 
 ## Advent of Code 2024
 
-Under construction.
+Completed.
