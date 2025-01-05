@@ -7,7 +7,7 @@ The code is written in the **most basic vanilla JavaScript**, without external l
 
 Solutions are made in an  optimized (when needed) **computing/programming style**, NOT by applying magical math formulas.
 
-NOTE: All the measured times INCLUDE the Deno starting up time (around 0.025s). 
+NOTE: *Before year 2024*, the measured times INCLUDE the Deno starting up time (around 0.025s). 
 
 [**hints for blazingly fast AOC solutions in JavaScript**](https://medium.com/javascript-in-plain-english/what-you-need-to-know-for-solving-the-advent-of-code-puzzles-blazingly-fast-with-javascript-7365be28abea)
 
@@ -136,3 +136,15 @@ Completed.
 ## Advent of Code 2024
 
 Completed.
+
+**Day 13 PART 2** SOLVED IN JUST **2ms** - **algebra explained**
+
+**Day 20 PART 2** SOLVED IN JUST **99ms**
+
+**Day 21 PART 2** SOLVED IN JUST **1ms**
+
+**Day 22 PART 2** SOLVED IN JUST **340ms**
+
+**Day 23 PART 2** SOLVED IN JUST **5ms**
+
+**Day 24 PART 2** SOLVED IN JUST **2ms**
