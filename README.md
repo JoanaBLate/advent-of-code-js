@@ -137,6 +137,8 @@ Completed.
 
 Completed.
 
+**Day 06 PART 2** SOLVED IN JUST **50ms**
+
 **Day 13 PART 2** SOLVED IN JUST **2ms** - **algebra explained**
 
 **Day 20 PART 2** SOLVED IN JUST **99ms**
