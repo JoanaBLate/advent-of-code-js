@@ -8,7 +8,7 @@
 // - there is *only* one jump instruction, it is in the last position, if register A is
 //   zero it finishes the execution, otherwise it jumps back to the first line of the program
 //
-// - register A % 8 (its *THREE BITS* OT THE RIGHT) controls the value of each output
+// - register A % 8 (its *THREE BITS* TO THE RIGHT) controls the value of each output
 // - register A / pow(8, n) (its *OTHER BITS*) controls how many loops (outputs) will exist
 
 "use strict"
