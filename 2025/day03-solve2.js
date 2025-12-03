@@ -17,70 +17,38 @@ function main() {
 
 function processBank(bank) {
     
-    const headMaxIndex = bank.length - 1 - 11 // eleven digits must follow the head digit
-
-    const headData = getBestBatteryData(bank, 0, headMaxIndex)
+    let token = ""
     
-    let token = headData.best
-    
-    let positions = headData.positions
-    
-    //
+    let position = -1
     
     while (token.length < 12) {
     
         const maxIndex = bank.length - 1 - (11 - token.length)
         
-        const data = getBestBatteryCandidatesData(bank, positions, maxIndex)
+        const data = getBestBatteryData(bank, position + 1, maxIndex)
         
         token += data.best
         
-        positions = data.positions
+        position = data.position
     }
         
     result += parseInt(token)
-} 
-
-function getBestBatteryCandidatesData(bank, oldIndexes, maxIndex) {
-
-    let best = " "
-    let positions = [ ]
-    
-    for (const oldIndex of oldIndexes) {
-    
-        const data = getBestBatteryData(bank, oldIndex + 1, maxIndex)
-        
-        if (data.best < best) { continue }
-        
-        if (data.best > best) { best = data.best; positions = data.positions; continue }
-        
-        // same as best but from other segment:
-        
-        for (const position of data.positions) { positions.push(position) }
-    }
-    
-    return { "best": best, "positions": positions }
 }
 
 function getBestBatteryData(bank, from, to) {
 
     let best = " "
-    let positions = [ ]
+    let position = 0
 
     for (let index = from; index <= to; index++) {
     
-        if (bank[index] < best) { continue }
-        
-        if (bank[index] == best) { positions.push(index); continue }
-        
-        best = bank[index] 
-        positions = [ index ]
+        if (bank[index] > best) { best = bank[index]; position = index }
     }
     
-    return { "best": best, "positions": positions }
+    return { "best": best, "position": position }
 }
 
 console.time("execution time")
 main()
-console.timeEnd("execution time") // 95ms
+console.timeEnd("execution time") // 2ms
 
