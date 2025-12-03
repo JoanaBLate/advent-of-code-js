@@ -29,9 +29,9 @@ function processBank(bank) {
     
     while (token.length < 12) {
     
-        const max = bank.length - 1 - (11 - token.length)
+        const maxIndex = bank.length - 1 - (11 - token.length)
         
-        const data = getBestBatteryCandidatesData(bank, positions, max)
+        const data = getBestBatteryCandidatesData(bank, positions, maxIndex)
         
         token += data.best
         
