@@ -27,21 +27,18 @@ function processBank(bank) {
     
     let bestA = " "
     
+    let home = 0
+        
     for (let indexA = 0; indexA < offA; indexA++) {
     
-        if (bank[indexA] > bestA) { bestA = bank[indexA] }
+        if (bank[indexA] > bestA) { bestA = bank[indexA]; home = indexA }
     }
     
     let bestB = " "
     
-    for (let indexA = 0; indexA < offA; indexA++) {
+    for (let indexB = home + 1; indexB < offB; indexB++) {
     
-        if (bank[indexA] != bestA) { continue }
-        
-        for (let indexB = indexA + 1; indexB < offB; indexB++) {
-        
-            if (bank[indexB] > bestB) { bestB = bank[indexB] }
-        }
+        if (bank[indexB] > bestB) { bestB = bank[indexB] }
     }
     
     const token = bestA + bestB
@@ -51,5 +48,5 @@ function processBank(bank) {
 
 console.time("execution time")
 main()
-console.timeEnd("execution time") // 2ms
+console.timeEnd("execution time") // 1ms
 
