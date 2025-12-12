@@ -6,7 +6,7 @@
 // you must adjust the resolution of your screen or save the output 
 // to a file and "read" it zoomed out
 
-const input = Deno.readTextFileSync("input.txt").trim()
+const input = Deno.readTextFileSync("day09-input.txt").trim()
 
 const allRedTiles = [ ]
 
