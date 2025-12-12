@@ -97,7 +97,7 @@ function createSegment(indexA, indexB) {
             
     const segment = { "top": top, "bottom": bottom, "left": left, "right": right, 
 
-                      "index": perimeter.length, "offAreaIs": NONE }
+                      "index": perimeter.length, "greenAreaIs": NONE }
         
     perimeter.push(segment)
 }
@@ -108,7 +108,7 @@ function improvePerimeterInfo() {
     
     const highestSegment = perimeter[index]
     
-    highestSegment.offAreaIs = ABOVE
+    highestSegment.greenAreaIs = BELOW
 
     let previousSegment = highestSegment
         
@@ -120,7 +120,7 @@ function improvePerimeterInfo() {
     
         const segment = perimeter[index]
     
-        if (segment.offAreaIs != NONE) { return } // already done
+        if (segment.greenAreaIs != NONE) { return } // already done
         
         if (segment.top == segment.bottom) { 
         
@@ -152,11 +152,11 @@ function markVerticalSegment(segment, previousSegment) {
 
     if (segment.top == previousSegment.top) { // going down
     
-        segment.offAreaIs = (previousSegment.offAreaIs == ABOVE) ? AT_RIGHT : AT_LEFT    
+        segment.greenAreaIs = (previousSegment.greenAreaIs == BELOW) ? AT_LEFT : AT_RIGHT    
     }
     else { // going up
 
-        segment.offAreaIs = (previousSegment.offAreaIs == ABOVE) ? AT_LEFT : AT_RIGHT 
+        segment.greenAreaIs = (previousSegment.greenAreaIs == BELOW) ? AT_RIGHT : AT_LEFT 
     }
 }
 
@@ -164,11 +164,11 @@ function markHorizontalSegment(segment, previousSegment) {
 
     if (segment.left == previousSegment.left) { // going right
     
-        segment.offAreaIs = (previousSegment.offAreaIs == AT_LEFT) ? BELOW : ABOVE   
+        segment.greenAreaIs = (previousSegment.greenAreaIs == AT_LEFT) ? ABOVE : BELOW   
     }
     else { // going left
 
-        segment.offAreaIs = (previousSegment.offAreaIs == AT_LEFT) ? ABOVE : BELOW 
+        segment.greenAreaIs = (previousSegment.greenAreaIs == AT_LEFT) ? BELOW : ABOVE 
     }
 }
 
@@ -202,7 +202,7 @@ function searchRectangles() {
 
             if (rectangleHasIntruder(top, left, bottom, right)) { continue }
            
-            if (isBadUpperLeftCorner(top, left)) { continue }
+            if (! isGoodUpperLeftCorner(top, left)) { continue }
             
             largestArea = area
         }
@@ -233,7 +233,7 @@ function rectangleHasIntruder(top, left, bottom, right) {
     
 corner at the start of the row, its column goes down:
 
-        off
+        
      #-------
      | green
      |
@@ -245,7 +245,7 @@ corner at the start of the row, its column goes up:
 
      |
      |
-     |  off
+     | 
      #--------
        green
         
@@ -256,28 +256,26 @@ corner at the start of the row, its column goes up:
 corner at the end of the row, its column goes up:
      
              |
+             | 
              |
-        off  |
      --------#
-            green
+       green
         
                  #
 .........................................     
                   
 corner at the end of the row, its column goes down:
              
-       green  
+        
      --------#
-        off  | 
+             | 
              |  green
              |    
                    #
                    
- (this diagram is different from the others: off area is below)  
-                   
 ************************************************************/
        
-function isBadUpperLeftCorner(cornerRow, cornerCol) { // corner coordinates
+function isGoodUpperLeftCorner(cornerRow, cornerCol) { // corner coordinates
 
     for (const segment of perimeter) {
 
@@ -285,18 +283,22 @@ function isBadUpperLeftCorner(cornerRow, cornerCol) { // corner coordinates
         
         if (segment.top != cornerRow) { continue }
                 
-        if (segment.left == cornerCol) { return segment.offAreaIs == ABOVE }
+        if (segment.left == cornerCol) { return segment.greenAreaIs == BELOW }
         
-        if (columnAtEndGoesUp(segment)) { return segment.offAreaIs == ABOVE }
+        const columnAtRight = findColumnAtRight(segment) 
         
-        return ! segment.offAreaIs == ABOVE
+        // column goes up
+        if (columnAtRight.bottom == segment.top) { return segment.greenAreaIs == BELOW }
+        
+        // column goes down
+        
+        return columnAtRight.greenAreaIs == AT_RIGHT
     }
 }
     
-function columnAtEndGoesUp(segment) {
-
+function findColumnAtRight(segment) {
+    
     const targetLeft = segment.right
-    const targetBottom = segment.top
     
     const deltas = [ -1, +1 ]
     
@@ -310,10 +312,10 @@ function columnAtEndGoesUp(segment) {
     
         const candidate = perimeter[index]
         
-        if (candidate.left == targetLeft  &&  candidate.bottom == targetBottom) { return true }    
+        if (candidate.left == targetLeft) { return candidate }    
     }
-
-    return false
+    
+    console.log("ERROR in function 'findColumnAtRight'")
 }
   
 console.time("execution time")
