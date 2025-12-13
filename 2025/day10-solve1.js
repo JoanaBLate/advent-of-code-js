@@ -84,7 +84,9 @@ function calcFewestPressesFor(model, buttons) {
 
     let count = 0
     
-    let combinations = buttons.slice()
+    let combinations = new Uint16Array(buttons.length)
+    
+    for (let index = 0; index < buttons.length; index++) { combinations[index] = buttons[index] }
 
     while (true) {
     
@@ -107,5 +109,5 @@ function calcFewestPressesFor(model, buttons) {
 
 console.time("execution time")
 main()
-console.timeEnd("execution time") // 285ms
+console.timeEnd("execution time") // 200ms
 
