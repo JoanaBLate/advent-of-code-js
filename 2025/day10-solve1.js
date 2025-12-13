@@ -27,27 +27,24 @@ function processInputLine(line) {
 
     const tokens = line.split(" ")
 
-    const modelPart = tokens.shift()
+    const lightPart = tokens.shift()
     
     const joltagePart = tokens.pop()
 
-    const model = createModelFromInput(modelPart)
+    const target = createTargetFromInput(lightPart)
         
-    const numberOfLights = modelPart.length - 2
+    const numberOfLights = lightPart.length - 2
         
     const buttons = [ ]
     
     for (const token of tokens) { buttons.push(createButtonFromInput(token, numberOfLights)) }
     
-    return calcFewestPressesFor(model, buttons)
+    return calcFewestPressesFor(target, buttons)
 }
 
-function createModelFromInput(token) {
+function createTargetFromInput(token) {
 
-    const chars = token.split("")
-    
-    chars.shift() // '['
-    chars.pop()   // ']'
+    const chars = token.replace("[", "").replace("]", "").split("")
     
     let number = 0
     
@@ -63,15 +60,15 @@ function createModelFromInput(token) {
     return number
 }
 
-function createButtonFromInput(token, numberOfLights) {
+function createButtonFromInput(text, numberOfLights) {
 
-    const subTokens = token.replace("(", "").replace(")", "").split(",")    
+    const tokens = text.replace("(", "").replace(")", "").split(",")    
 
     let number = 0
 
-    for (const subToken of subTokens) { 
+    for (const token of tokens) { 
     
-        const index = parseInt(subToken)
+        const index = parseInt(token)
     
         const n = numberOfLights - 1 - index
         
@@ -95,12 +92,13 @@ function calcFewestPressesFor(model, buttons) {
     
         for (const combination of combinations) { if (combination == model) { return count } }
                  
-        let newCombinations = [ ]
+        let newCombinations = new Uint16Array(combinations.length * buttons.length)
+        
+        let index = -1
          
         for (const combination of combinations) {
           
-            for (const button of buttons) { newCombinations.push(combination ^ button) }
-          
+            for (const button of buttons) {  index += 1; newCombinations[index] = combination ^ button }          
         }
         
         combinations = newCombinations
@@ -109,5 +107,5 @@ function calcFewestPressesFor(model, buttons) {
 
 console.time("execution time")
 main()
-console.timeEnd("execution time") // 1.1s
+console.timeEnd("execution time") // 285ms
 

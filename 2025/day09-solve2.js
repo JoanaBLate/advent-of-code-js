@@ -290,8 +290,7 @@ function isGoodUpperLeftCorner(cornerRow, cornerCol) { // corner coordinates
         // column goes up
         if (columnAtRight.bottom == segment.top) { return segment.greenAreaIs == BELOW }
         
-        // column goes down
-        
+        // column goes down        
         return columnAtRight.greenAreaIs == AT_RIGHT
     }
 }
