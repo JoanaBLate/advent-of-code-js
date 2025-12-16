@@ -23,8 +23,15 @@
 //  #                         #
 //  ###########################
 
+
 //
-//             ***VERY IMPORTANT***
+//             ***VERY IMPORTANT 1***
+//
+// This program expects the coordinates order to be **CLOCKWISE**.
+//
+
+//
+//             ***VERY IMPORTANT 2***
 //
 // First this program was written using the system {ROW,COL} FOR COORDINATES, NOT THE {X,Y} system;
 // but for solving the puzzle input which seems to use the input {X,Y} coordinates, I've made this hack:
