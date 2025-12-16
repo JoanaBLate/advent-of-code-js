@@ -23,6 +23,32 @@
 //  #                         #
 //  ###########################
 
+//
+//             ***VERY IMPORTANT***
+//
+// this program uses the system {ROW,COL} FOR COORDINATES, NOT THE {X,Y} system;
+// it may produce wrong results if input {X,Y} coordinates into it,
+// especially for tight figures like this:
+//
+//    0123456789
+//    1         
+//    2         
+//    3  D#####E       
+//    4  #A###J#  
+//    5  CB   ##  
+//    6       ## 
+//    7  H####I# 
+//    8  G#####F 
+//    9     
+//
+// There is a hack if you want to use the {X,Y} system:
+// inside the function 'fillAllRedTiles', change the order
+// of theses two lines:
+//   
+//        const col = parseInt(tokens.shift())
+//        const row = parseInt(tokens.shift())
+//   
+
 const input = Deno.readTextFileSync("day09-input.txt").trim()
 
 const NONE = 0
