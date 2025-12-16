@@ -26,28 +26,19 @@
 //
 //             ***VERY IMPORTANT***
 //
-// this program uses the system {ROW,COL} FOR COORDINATES, NOT THE {X,Y} system;
-// it may produce wrong results if input {X,Y} coordinates into it,
-// especially for tight figures like this:
+// First this program was written using the system {ROW,COL} FOR COORDINATES, NOT THE {X,Y} system;
+// but for solving the puzzle input which seems to use the input {X,Y} coordinates, I've made this hack:
 //
-//    0123456789
-//    1         
-//    2         
-//    3  D#####E       
-//    4  #A###J#  
-//    5  CB   ##  
-//    6       ## 
-//    7  H####I# 
-//    8  G#####F 
-//    9     
-//
-// There is a hack if you want to use the {X,Y} system:
-// inside the function 'fillAllRedTiles', change the order
-// of theses two lines:
+// Inside the function 'fillAllRedTiles', I have changed the {ROW,COL} order:
 //   
 //        const col = parseInt(tokens.shift())
 //        const row = parseInt(tokens.shift())
-//   
+//        
+// This means that now the program EXPECTS {X,Y} coordinates as input, although it
+// talks all the time about {ROW,COL}.
+//
+// Feel free to reverse that hack as you need. 
+//
 
 const input = Deno.readTextFileSync("day09-input.txt").trim()
 
