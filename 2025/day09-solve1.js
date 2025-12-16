@@ -2,6 +2,23 @@
 
 "use strict"
 
+//
+//             ***VERY IMPORTANT ***
+//
+// First this program was written using the system {ROW,COL} FOR COORDINATES, NOT THE {X,Y} system;
+// but for solving the puzzle input which seems to use the input {X,Y} coordinates, I've made this hack:
+//
+// Inside the function 'fillAllRedTiles', I have changed the {ROW,COL} order:
+//   
+//        const col = parseInt(tokens.shift())
+//        const row = parseInt(tokens.shift())
+//        
+// This means that now the program EXPECTS {X,Y} coordinates as input, although it
+// talks all the time about {ROW,COL}.
+//
+// Feel free to reverse that hack as you need. 
+//
+
 const input = Deno.readTextFileSync("day09-input.txt").trim()
 
 const allRedTiles = [ ] 
