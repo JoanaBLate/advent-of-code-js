@@ -100,7 +100,7 @@ function calcFewestPressesFor(model, buttons) {
          
         for (const combination of combinations) {
           
-            for (const button of buttons) {  index += 1; newCombinations[index] = combination ^ button }          
+            for (const button of buttons) { index += 1; newCombinations[index] = combination ^ button }          
         }
         
         combinations = newCombinations
