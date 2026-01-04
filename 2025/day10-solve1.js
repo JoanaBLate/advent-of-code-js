@@ -2,112 +2,116 @@
 
 "use strict"
 
-// for eficiency reasons:
-// this solution converts the input data to binary data in form of
-// decimal integers and applies the bitwise operator XOR (^) on it
-// (XOR has the toggle effect)
+// we don't need to consider multiple pressings of any button of a combo
+// because any even number of presses has the same effect of zero presses
+// and any odd number of presses has the same effect of one press
 
 const input = Deno.readTextFileSync("day10-input.txt").trim()
 
-var fewestPresses = 0
+var LIGHTS = ""
+
+var BUTTONS = [ ]
+
+var COMBOS = { } // { lights: combo } // inside each combo, no button has repeated presses
+
 
 function main() {
 
+    let result = 0
+    
     const rawLines = input.split("\n")
     
     for (const rawLine of rawLines) { 
-    
-        fewestPresses += processInputLine(rawLine.trim())
+
+        parseInputLine(rawLine.trim())
+
+        fillCombos()    
+
+        result += COMBOS[LIGHTS]
     }
+    
+    console.log("the answer is ", result)
+}    
 
-    console.log("the answer is", fewestPresses)
-}
+// parsing input line /////////////////////////////////////////////////////////
 
-function processInputLine(line) {
-
+function parseInputLine(line) {
+    
     const tokens = line.split(" ")
+    
+    setLights(tokens.shift())
 
-    const lightPart = tokens.shift()
+    tokens.pop() // joltage
     
-    const joltagePart = tokens.pop()
-
-    const target = createTargetFromInput(lightPart)
-        
-    const numberOfLights = lightPart.length - 2
-        
-    const buttons = [ ]
+    BUTTONS = [ ]
     
-    for (const token of tokens) { buttons.push(createButtonFromInput(token, numberOfLights)) }
-    
-    return calcFewestPressesFor(target, buttons)
+    for (const token of tokens) { BUTTONS.push(createButton(token)) }
 }
 
-function createTargetFromInput(token) {
-
-    const chars = token.replace("[", "").replace("]", "").split("")
+function setLights(token) {
     
-    let number = 0
-    
-    let factor = 1
-    
-    while (chars.length != 0) {
-    
-        if (chars.pop() == "#") { number += factor }
-        
-        factor *= 2    
-    }
-    
-    return number
+    LIGHTS = token.substr(0, token.length - 1).substr(1)
 }
 
-function createButtonFromInput(text, numberOfLights) {
+function createButton(text) {
 
-    const tokens = text.replace("(", "").replace(")", "").split(",")    
+    const button = new Int16Array(LIGHTS.length)
+    
+    const tokens = text.substr(0, text.length - 1).substr(1).split(",")    
 
-    let number = 0
-
-    for (const token of tokens) { 
+    for (const token of tokens) { button[parseInt(token)] = 1 }
     
-        const index = parseInt(token)
-    
-        const n = numberOfLights - 1 - index
-        
-        number += Math.pow(2, n)
-    }
-    
-    return number
+    return button
 }
 
-// ----------------------------------------------------------------------------
+// combos /////////////////////////////////////////////////////////////////////
 
-function calcFewestPressesFor(model, buttons) {
+function fillCombos() { 
 
-    let count = 0
+    COMBOS = { }
     
-    let combinations = new Uint16Array(buttons.length)
-    
-    for (let index = 0; index < buttons.length; index++) { combinations[index] = buttons[index] }
-
-    while (true) {
-    
-        count += 1
-    
-        for (const combination of combinations) { if (combination == model) { return count } }
-                 
-        let newCombinations = new Uint16Array(combinations.length * buttons.length)
+    const table = new Uint8Array(LIGHTS.length) // reusable table, makes the program much faster
         
-        let index = -1
-         
-        for (const combination of combinations) {
-          
-            for (const button of buttons) { index += 1; newCombinations[index] = combination ^ button }          
+    const off = Math.pow(2, BUTTONS.length)
+
+    // skips 0 (no button pressed)
+    for (let n = 1; n < off; n++) { fillCombosWith(n, table) }
+}
+
+function fillCombosWith(bitwiseCombo, table) {
+    
+    table.fill(0)
+
+    let presses = 0
+    
+    for (let buttonIndex = 0; buttonIndex < BUTTONS.length; buttonIndex++) {
+    
+        const adjustedButtonIndex = BUTTONS.length - 1 - buttonIndex
+        
+        const buttonValueInBitwiseCombo = bitwiseCombo >> adjustedButtonIndex
+
+        if ((buttonValueInBitwiseCombo & 1) != 1) { continue }
+
+        presses += 1
+                
+        const button = BUTTONS[buttonIndex] 
+        
+        for (let lightIndex = 0; lightIndex < LIGHTS.length; lightIndex++) {
+        
+            table[lightIndex] += button[lightIndex]
         }
-        
-        combinations = newCombinations
     }
-}
+
+    let lights = ""
+    
+    for (const value of table) { lights += (value % 2 == 0) ? "." : "#" }
+    
+    if (COMBOS[lights] == undefined) { COMBOS[lights] = presses; return }
+    
+    if (presses < COMBOS[lights]) {  COMBOS[lights] = presses }
+}   
 
 console.time("execution time")
 main()
-console.timeEnd("execution time") // 200ms
+console.timeEnd("execution time") // 55ms
 
