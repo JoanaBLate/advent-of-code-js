@@ -108,7 +108,7 @@ function fillCombosWith(bitwiseCombo, table) {
     
     if (COMBOS[lights] == undefined) { COMBOS[lights] = presses; return }
     
-    if (presses < COMBOS[lights]) {  COMBOS[lights] = presses }
+    if (presses < COMBOS[lights]) { COMBOS[lights] = presses }
 }   
 
 console.time("execution time")
