@@ -7,8 +7,8 @@
 // this program was inspired by the brilliant post by tenthmascot at
 // https://www.reddit.com/r/adventofcode/comments/1pk87hl/2025_day_10_part_2_bifurcate_your_way_to_victory/
 
-// this algorithm works using optimized brute force, without
-// heavy optimization; using brute force would be impossible
+// this algorithm works using optimized brute force; without
+// heavy optimization, using brute force would be impossible
 // in practice
 
 // the program organizes all possible button combinations (without
