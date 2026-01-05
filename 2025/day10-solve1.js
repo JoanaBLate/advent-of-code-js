@@ -55,7 +55,7 @@ function setLights(token) {
 
 function createButton(text) {
 
-    const button = new Int16Array(LIGHTS.length)
+    const button = new Uint16Array(LIGHTS.length)
     
     const tokens = text.substr(0, text.length - 1).substr(1).split(",")    
 
