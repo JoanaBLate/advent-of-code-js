@@ -110,20 +110,16 @@ function fillPatternsAndCombos() {
 }
 
 function fillPatternsAndCombosWith(bitwiseCombo) {
-
- // const guide = bitwiseCombo.toString(2).padStart(BUTTONS.length, 0)
-    
- // const combo = [ ]
-
- // for (const c of guide) { combo.push(parseInt(c)) }
     
     let presses = 0
         
     const joltage = Array(JOLTAGES.length).fill(0) 
+
+ // const guide = bitwiseCombo.toString(2).padStart(BUTTONS.length, 0)    
     
     for (let buttonIndex = 0; buttonIndex < BUTTONS.length; buttonIndex++) {
     
-     // if (combo[comboIndex] != 1) { continue }
+    //  if (guide[buttonIndex] != "1") { continue }
     
         const adjustedButtonIndex = BUTTONS.length - 1 - buttonIndex
         
