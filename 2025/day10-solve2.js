@@ -15,13 +15,11 @@
 
 // when it is time to apply the combo (pressing some buttons), only
 // the combos with the same even/odd pattern as the current joltage
-// are tried, which has 3 advantages:
+// are tried, which has 2 advantages:
 // 1. MUCH more efficient (testing only a couple of combos out of
 // hundreds)
 // 2. since the new current joltage has only even numbers, we can
 // divide it by two and skip a lot of processing
-// 3. the set of pressings grows automatically optimized (I am not
-// sure why this happens, but it does)
 
 
 const input = Deno.readTextFileSync("day10-input.txt").trim()
