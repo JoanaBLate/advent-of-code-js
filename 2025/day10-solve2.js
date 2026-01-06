@@ -7,9 +7,8 @@
 // this program was inspired by the brilliant post by tenthmascot at
 // https://www.reddit.com/r/adventofcode/comments/1pk87hl/2025_day_10_part_2_bifurcate_your_way_to_victory/
 
-// this algorithm works using optimized brute force; without
-// heavy optimization, using brute force would be impossible
-// in practice
+// this algorithm works using optimized brute force; using
+// brute force would be impossible without optimization
 
 // the program organizes all possible button combinations (without
 // pressing any button twice) according to a pattern of even/odd joltage
@@ -178,7 +177,7 @@ function countPresses(target) {
                 
         for (let joltageIndex = 0; joltageIndex < JOLTAGES.length; joltageIndex++) {
         
-            const newJolt = Math.floor((target[joltageIndex] - comboObj.joltage[joltageIndex]) / 2) // Math.floor is necessary
+            const newJolt = (target[joltageIndex] - comboObj.joltage[joltageIndex]) / 2 // granted to be integer
             
             halfTarget[joltageIndex] = newJolt
         }
