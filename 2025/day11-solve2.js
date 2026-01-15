@@ -6,7 +6,7 @@ const input = Deno.readTextFileSync("day11-input.txt").trim()
 
 const DEVICES = { "out": [ ] } // { parentName: childrenNames }
 
-const REVERSED = { } // { childName: parentNames }
+const REVERSED = { "svr": [ ] } // { childName: parentNames }
 
 const isDAC = { }
 
@@ -37,8 +37,6 @@ function main() {
         }
     }
     
-    if (REVERSED["svr"] == undefined) { REVERSED["svr"] = [ ] }
-
     walkDAC("dac")
     isDAC["dac"] = false // or else will not reverse walk
     reverseWalkDAC("dac")
