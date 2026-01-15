@@ -54,16 +54,16 @@ function treeIsGood(rawLine) {
 
 function treeIsGood2(width, height, amounts) {
     
-    const loseWidth  = Math.floor(width / 3)
-    const loseHeight = Math.floor(height / 3)
+    const looseWidth  = Math.floor(width / 3)
+    const looseHeight = Math.floor(height / 3)
     
-    const capacityForLosePresents = loseWidth * loseHeight
+    const capacityForLoosePresents = looseWidth * looseHeight
 
-    let losePresents = 0
+    let loosePresents = 0
     
-    for (const amount of amounts) { losePresents += amount }
+    for (const amount of amounts) { loosePresents += amount }
     
-    if (losePresents <= capacityForLosePresents) { return 1 }
+    if (loosePresents <= capacityForLoosePresents) { return 1 }
     
     //
     
